@@ -1,0 +1,148 @@
+You are a senior UI/UX designer and frontend engineer.
+
+## 🎯 OBJECTIVE
+
+Redesign the frontend of this legal AI chatbot to achieve a **modern, premium, flat UI/UX design** aligned with the latest design standards (2025-level).
+
+The application name must be: **Chatbot IA Monafassa**
+
+---
+
+## 🎨 DESIGN REQUIREMENTS
+
+### 1. Visual Style
+
+* Use a **flat design** approach (no heavy gradients, no skeuomorphism)
+* Clean, minimal, and highly professional (institutional level)
+* Inspired by modern SaaS dashboards (Notion, Linear, Stripe)
+
+---
+
+### 2. Color System
+
+* Primary color: **modern green palette** (elegant, not flashy)
+
+  * Deep green (primary)
+  * Soft green (accents)
+* Background:
+
+  * Off-white / very light grey
+  * Subtle layered cards
+* Maintain strong contrast and readability
+
+---
+
+### 3. Typography
+
+* Use modern fonts (Inter, Poppins, or equivalent)
+* Clear hierarchy:
+
+  * Titles → bold and structured
+  * Body → clean and readable
+* Strong spacing system
+
+---
+
+### 4. Layout
+
+#### Sidebar (left)
+
+* Slightly dark or tinted background
+* Display:
+
+  * Logo of **Conseil de la Concurrence**
+  * App name: **Chatbot IA Monafassa**
+* Clean vertical navigation style
+
+#### Main Area
+
+* Centered chat interface
+* Clear visual hierarchy
+* Spacious layout
+
+---
+
+### 5. Branding (IMPORTANT)
+
+* Integrate the **official logo of the Conseil de la Concurrence**
+* Use it subtly (top-left)
+* Maintain institutional credibility
+* The branding must feel governmental and trustworthy
+
+---
+
+### 6. Background Usage
+
+* Use a **subtle, intelligent background**
+
+  * light gradient OR abstract legal pattern
+* Must remain discreet and elegant
+
+---
+
+### 7. Chat Experience
+
+* Smooth animations (fade/slide)
+* Rounded message bubbles (modern style)
+* Clear distinction between user and assistant
+* Input field:
+
+  * large
+  * clean
+  * modern
+
+---
+
+### 8. Components to Improve
+
+* Chat container
+* Input field
+* Buttons (rounded, soft shadow, modern)
+* Sidebar
+* Source display (cards with legal references)
+
+---
+
+### 9. UX Improvements
+
+* Add loading indicator (AI thinking animation)
+* Add hover states
+* Add subtle transitions (150–250ms)
+* Ensure responsiveness (desktop-first)
+
+---
+
+## ⚙️ TECH REQUIREMENTS
+
+* Use React best practices
+* Use TailwindCSS
+* Clean component structure
+* No messy inline styles
+
+---
+
+## 🚫 AVOID
+
+* Outdated UI
+* Bright or aggressive colors
+* Cluttered interface
+* Generic chatbot design
+
+---
+
+## 🎯 FINAL GOAL
+
+Deliver a **high-end legal AI interface** named:
+
+👉 **Chatbot IA Monafassa**
+
+The interface must feel:
+
+* institutional
+* modern
+* reliable
+* premium
+
+It should look like a tool used by a national authority, not a prototype.
+
+Proceed with a full frontend redesign.
