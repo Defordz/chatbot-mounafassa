@@ -1,0 +1,123 @@
+You are working on a legal AI chatbot (LexConc-MA) specialized in Moroccan competition law.
+
+## 🎯 OBJECTIVE
+
+Refactor the application to REMOVE all user-side document upload features and switch to a PRIVATE INTERNAL KNOWLEDGE BASE.
+
+The chatbot must no longer allow users to upload PDFs. All legal documents must be loaded automatically from the backend.
+
+---
+
+## 🔴 FRONTEND CHANGES (React)
+
+1. Remove completely:
+
+   * File upload components
+   * "Documents juridiques" section
+   * Any "Upload PDF" buttons or drag-and-drop areas
+
+2. Clean the UI:
+
+   * Keep only the chat interface
+   * Keep the input box for questions
+   * Optionally display "Sources utilisées" in answers
+
+3. Ensure the interface looks like a professional legal assistant (clean, minimal, no upload features)
+
+---
+
+## 🟢 BACKEND CHANGES (Python - RAG system)
+
+1. Remove any upload endpoint:
+
+   * Delete routes like:
+     /upload
+     /files
+     or any API handling file uploads
+
+2. Create a fixed internal data directory:
+
+   Path: /data/
+
+3. Load ALL PDFs automatically from /data/ at startup:
+
+```python
+from langchain.document_loaders import PyPDFLoader
+import os
+
+DATA_PATH = "data/"
+documents = []
+
+for file in os.listdir(DATA_PATH):
+    if file.endswith(".pdf"):
+        loader = PyPDFLoader(os.path.join(DATA_PATH, file))
+        documents.extend(loader.load())
+```
+
+4. Split and index documents:
+
+```python
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=150
+)
+
+docs = text_splitter.split_documents(documents)
+```
+
+5. Create vector store:
+
+```python
+from langchain.vectorstores import FAISS
+from langchain.embeddings import OpenAIEmbeddings
+
+embeddings = OpenAIEmbeddings()
+vectorstore = FAISS.from_documents(docs, embeddings)
+retriever = vectorstore.as_retriever()
+```
+
+6. Ensure the chatbot ONLY uses this retriever for answering questions
+
+---
+
+## 🔒 BEHAVIOR RULES
+
+* The chatbot must NOT accept external documents
+* The knowledge base is fixed and internal
+* Answers must be based ONLY on indexed documents
+* If no answer is found → respond that information is not available
+
+---
+
+## 📁 FILE STRUCTURE
+
+Ensure the project includes:
+
+/data/
+
+* loi_104_12.pdf
+* loi_20_13.pdf
+* guidelines_concentration.pdf
+* autres_guidelines.pdf
+* communiques.pdf
+
+---
+
+## 🧪 FINAL CHECK
+
+After refactoring:
+
+* The UI must NOT show any upload option
+* The chatbot must still answer legal questions
+* Answers must be grounded in internal documents
+* The system must work immediately at startup without user input
+
+---
+
+## 🎯 GOAL
+
+Transform this app from a demo chatbot into a PROFESSIONAL INTERNAL LEGAL ASSISTANT with a controlled knowledge base.
+
+Proceed with all necessary code modifications.

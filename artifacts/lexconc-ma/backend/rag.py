@@ -2,12 +2,11 @@ import os
 import json
 import re
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 
 
@@ -79,10 +78,18 @@ SOURCE_TYPE_LABELS = {
     "autre": "Autre",
 }
 
+FILENAME_METADATA = {
+    "loi_104_12.pdf": {"source_type": "loi", "source_name": "Loi 104-12"},
+    "loi_20_13.pdf": {"source_type": "loi", "source_name": "Loi 20-13"},
+    "guidelines_concentration.pdf": {"source_type": "ligne_directrice", "source_name": "Lignes directrices — Concentrations"},
+    "autres_guidelines.pdf": {"source_type": "ligne_directrice", "source_name": "Autres lignes directrices"},
+    "communiques.pdf": {"source_type": "communique", "source_name": "Communiqués du Conseil"},
+}
+
 
 class LexConcRAG:
-    def __init__(self, documents_dir: str, vector_store_dir: str):
-        self.documents_dir = Path(documents_dir)
+    def __init__(self, data_dir: str, vector_store_dir: str):
+        self.data_dir = Path(data_dir)
         self.vector_store_dir = Path(vector_store_dir)
         self.embeddings = OpenAIEmbeddings(
             model="text-embedding-3-large",
@@ -97,52 +104,66 @@ class LexConcRAG:
         self._doc_registry: list[dict] = []
 
         self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=600,
-            chunk_overlap=80,
+            chunk_size=1000,
+            chunk_overlap=150,
             separators=["\n\n\n", "\n\n", "\nArticle", "\nArt.", "\n", " "],
             length_function=len,
         )
 
-        self._load_or_init_vector_store()
+        self._load_or_build_index()
 
-    def _load_or_init_vector_store(self):
+    def _resolve_metadata(self, filename: str) -> dict:
+        if filename in FILENAME_METADATA:
+            return FILENAME_METADATA[filename]
+        name = filename.replace("_", " ").replace(".pdf", "")
+        if "loi" in filename.lower():
+            return {"source_type": "loi", "source_name": name}
+        if "guideline" in filename.lower() or "ligne" in filename.lower():
+            return {"source_type": "ligne_directrice", "source_name": name}
+        if "communique" in filename.lower() or "communiqué" in filename.lower():
+            return {"source_type": "communique", "source_name": name}
+        if "decision" in filename.lower() or "décision" in filename.lower():
+            return {"source_type": "decision", "source_name": name}
+        return {"source_type": "autre", "source_name": name}
+
+    def _load_or_build_index(self):
         registry_path = self.vector_store_dir / "doc_registry.json"
 
-        if self.vector_store_dir.exists() and (self.vector_store_dir / "index.faiss").exists():
+        pdfs_in_data = sorted(self.data_dir.glob("*.pdf"))
+
+        if (
+            self.vector_store_dir.exists()
+            and (self.vector_store_dir / "index.faiss").exists()
+            and registry_path.exists()
+        ):
             try:
                 self.vector_store = FAISS.load_local(
                     str(self.vector_store_dir),
                     self.embeddings,
                     allow_dangerous_deserialization=True,
                 )
-                if registry_path.exists():
-                    with open(registry_path, encoding="utf-8") as f:
-                        self._doc_registry = json.load(f)
-                return
+                with open(registry_path, encoding="utf-8") as f:
+                    self._doc_registry = json.load(f)
+
+                indexed_files = {d["filename"] for d in self._doc_registry}
+                data_files = {p.name for p in pdfs_in_data}
+
+                if indexed_files == data_files:
+                    return
             except Exception:
                 pass
 
-        if (self.documents_dir).exists():
-            pdfs = list(self.documents_dir.glob("*.pdf"))
-            if pdfs:
-                for pdf in pdfs:
-                    meta_file = self.documents_dir / f"{pdf.name}.meta.json"
-                    metadata = {}
-                    if meta_file.exists():
-                        with open(meta_file, encoding="utf-8") as f:
-                            metadata = json.load(f)
-                    try:
-                        self.ingest_document(str(pdf), metadata)
-                    except Exception:
-                        pass
+        self.vector_store = None
+        self._doc_registry = []
 
-    def _save_registry(self):
-        self.vector_store_dir.mkdir(parents=True, exist_ok=True)
-        registry_path = self.vector_store_dir / "doc_registry.json"
-        with open(registry_path, "w", encoding="utf-8") as f:
-            json.dump(self._doc_registry, f, ensure_ascii=False, indent=2)
+        for pdf in pdfs_in_data:
+            metadata = self._resolve_metadata(pdf.name)
+            try:
+                self._ingest_pdf(str(pdf), metadata)
+            except Exception as e:
+                print(f"[WARN] Failed to ingest {pdf.name}: {e}")
 
-    def ingest_document(self, pdf_path: str, metadata: dict) -> int:
+    def _ingest_pdf(self, pdf_path: str, metadata: dict) -> int:
         loader = PyPDFLoader(pdf_path)
         pages = loader.load()
 
@@ -150,7 +171,6 @@ class LexConcRAG:
         source_type = metadata.get("source_type", "autre")
         source_name = metadata.get("source_name", filename)
 
-        enriched_pages = []
         for page in pages:
             page.metadata.update({
                 "source_type": source_type,
@@ -158,13 +178,14 @@ class LexConcRAG:
                 "filename": filename,
                 "page": page.metadata.get("page", 0) + 1,
             })
-            enriched_pages.append(page)
 
-        chunks = self.text_splitter.split_documents(enriched_pages)
+        chunks = self.text_splitter.split_documents(pages)
 
         for i, chunk in enumerate(chunks):
             chunk.metadata["chunk_id"] = f"{filename}_{i}"
-            article_match = re.search(r"(?:Article|Art\.)\s*(\d+(?:\s*bis)?)", chunk.page_content, re.IGNORECASE)
+            article_match = re.search(
+                r"(?:Article|Art\.)\s*(\d+(?:\s*bis)?)", chunk.page_content, re.IGNORECASE
+            )
             if article_match:
                 chunk.metadata["article_ref"] = f"Art. {article_match.group(1)}"
 
@@ -192,14 +213,14 @@ class LexConcRAG:
                 "pages": len(pages),
             })
 
-        self._save_registry()
+        registry_path = self.vector_store_dir / "doc_registry.json"
+        with open(registry_path, "w", encoding="utf-8") as f:
+            json.dump(self._doc_registry, f, ensure_ascii=False, indent=2)
+
         return len(chunks)
 
     def has_documents(self) -> bool:
         return self.vector_store is not None and len(self._doc_registry) > 0
-
-    def list_documents(self) -> list[dict]:
-        return self._doc_registry
 
     def get_stats(self) -> dict:
         return {
@@ -217,7 +238,7 @@ class LexConcRAG:
     ) -> dict:
         if not self.has_documents():
             return {
-                "answer": "Aucun document n'a été chargé.",
+                "answer": "La base de connaissances juridiques n'est pas encore disponible. Veuillez contacter l'administrateur.",
                 "sources": [],
                 "confidence_score": 0.0,
                 "retrieved_chunks": [],
@@ -246,7 +267,6 @@ class LexConcRAG:
         if max_score == 0:
             max_score = 1.0
         normalized_scores = [(doc, 1 - (score / max_score)) for doc, score in docs_with_scores]
-
         avg_confidence = sum(s for _, s in normalized_scores) / len(normalized_scores)
 
         retrieved_chunks = []
@@ -285,7 +305,6 @@ class LexConcRAG:
         context = "\n\n".join(context_parts)
 
         messages = []
-
         for turn in conversation_history[-4:]:
             if turn.get("role") == "user":
                 messages.append(("human", turn["content"]))
@@ -299,7 +318,6 @@ class LexConcRAG:
         ])
 
         chain = prompt | self.llm
-
         response = chain.invoke({"context": context, "question": question})
         answer = response.content
 

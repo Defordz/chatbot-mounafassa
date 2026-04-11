@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, BookOpen, Scale, ChevronDown, RotateCcw, Filter, PanelLeft } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Send, Loader2, BookOpen, Scale, ChevronDown, RotateCcw, Filter } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
-import DocumentPanel from "@/components/DocumentPanel";
-import type { ChatMessage, Document } from "@/lib/api";
-import { sendChatMessage, fetchDocuments } from "@/lib/api";
+import type { ChatMessage } from "@/lib/api";
+import { sendChatMessage } from "@/lib/api";
 
 const EXAMPLE_QUESTIONS = [
   "Qu'est-ce qu'une concentration au sens du droit marocain ?",
@@ -29,27 +28,10 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [documents, setDocuments] = useState<Document[]>([]);
   const [sourceFilter, setSourceFilter] = useState("all");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [filterOpen, setFilterOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const loadDocuments = useCallback(async () => {
-    try {
-      const docs = await fetchDocuments();
-      setDocuments(docs);
-    } catch {
-      // Backend might not be ready
-    }
-  }, []);
-
-  useEffect(() => {
-    loadDocuments();
-    const interval = setInterval(loadDocuments, 10000);
-    return () => clearInterval(interval);
-  }, [loadDocuments]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -118,39 +100,15 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      <div
-        className={`${sidebarOpen ? "w-72" : "w-0"} flex-shrink-0 bg-sidebar border-r border-sidebar-border transition-all duration-300 overflow-hidden flex flex-col`}
-      >
-        <div className="flex-shrink-0 p-4 border-b border-sidebar-border">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-              <Scale className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-sidebar-foreground">LexConc-MA</div>
-              <div className="text-[10px] text-sidebar-foreground/50">Droit de la concurrence marocain</div>
-            </div>
-          </div>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <DocumentPanel documents={documents} onDocumentsChange={loadDocuments} />
-        </div>
-      </div>
-
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border bg-card/80 backdrop-blur-sm">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground"
-          >
-            <PanelLeft className="w-4 h-4" />
-          </button>
-
+        <header className="flex-shrink-0 flex items-center gap-3 px-5 py-3 border-b border-border bg-card/80 backdrop-blur-sm">
+          <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center border border-primary/20">
+            <Scale className="w-4 h-4 text-primary" />
+          </div>
           <div className="flex items-center gap-2 flex-1">
-            <BookOpen className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-foreground">Assistant Juridique</span>
+            <span className="text-sm font-bold text-foreground">LexConc-MA</span>
             <span className="text-xs text-muted-foreground hidden sm:block">
-              — Droit de la concurrence marocain
+              — Assistant juridique · Droit de la concurrence marocain
             </span>
           </div>
 
@@ -190,33 +148,21 @@ export default function ChatPage() {
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
             )}
-
-            <div className="flex items-center gap-1.5">
-              <div className={`w-1.5 h-1.5 rounded-full ${documents.length > 0 ? "bg-green-500" : "bg-amber-500"}`} />
-              <span className="text-xs text-muted-foreground hidden sm:block">
-                {documents.length} doc{documents.length !== 1 ? "s" : ""}
-              </span>
-            </div>
           </div>
         </header>
 
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 border border-primary/20">
-                <Scale className="w-7 h-7 text-primary" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-5 border border-primary/20">
+                <Scale className="w-8 h-8 text-primary" />
               </div>
-              <h2 className="text-lg font-semibold text-foreground mb-1">LexConc-MA</h2>
-              <p className="text-sm text-muted-foreground max-w-md mb-2">
-                Assistant juridique spécialisé en droit de la concurrence marocain.
+              <h2 className="text-xl font-semibold text-foreground mb-2">LexConc-MA</h2>
+              <p className="text-sm text-muted-foreground max-w-md mb-6">
+                Assistant juridique interne spécialisé en droit de la concurrence marocain.
+                <br />
                 Toutes les réponses sont fondées exclusivement sur les textes officiels indexés.
               </p>
-              {documents.length === 0 && (
-                <div className="mb-5 flex items-center gap-2 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 rounded-lg px-3 py-2 text-xs">
-                  <BookOpen className="w-3.5 h-3.5 flex-shrink-0" />
-                  Importez les textes juridiques via le panneau "Documents" pour commencer
-                </div>
-              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg w-full">
                 {EXAMPLE_QUESTIONS.map((q) => (
                   <button
@@ -297,7 +243,7 @@ export default function ChatPage() {
             </button>
           </div>
           <div className="mt-2 text-[10px] text-muted-foreground text-center">
-            Les réponses sont fondées exclusivement sur les documents juridiques indexés. Ne constituent pas un conseil juridique.
+            Les réponses sont fondées exclusivement sur les textes juridiques officiels indexés. Ne constituent pas un conseil juridique.
           </div>
         </div>
       </div>
