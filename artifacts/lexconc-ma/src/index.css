@@ -1,0 +1,282 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-primary-border: var(--sidebar-primary-border);
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-accent-border: var(--sidebar-accent-border);
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+
+  --background: 210 20% 98%;
+  --foreground: 220 25% 15%;
+  --border: 215 20% 88%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 25% 15%;
+  --card-border: 215 20% 88%;
+  --sidebar: 220 25% 14%;
+  --sidebar-foreground: 210 15% 85%;
+  --sidebar-border: 220 20% 22%;
+  --sidebar-primary: 215 85% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 20% 22%;
+  --sidebar-accent-foreground: 210 15% 90%;
+  --sidebar-ring: 215 85% 55%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 25% 15%;
+  --popover-border: 215 20% 88%;
+  --primary: 215 85% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 15% 92%;
+  --secondary-foreground: 220 25% 25%;
+  --muted: 210 15% 94%;
+  --muted-foreground: 215 15% 50%;
+  --accent: 210 15% 90%;
+  --accent-foreground: 220 25% 20%;
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 215 20% 88%;
+  --ring: 215 85% 45%;
+  --chart-1: 215 85% 45%;
+  --chart-2: 160 60% 40%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 55%;
+  --chart-5: 340 75% 55%;
+
+  --app-font-sans: 'Inter', 'Noto Sans Arabic', sans-serif;
+  --app-font-serif: Georgia, serif;
+  --app-font-mono: Menlo, monospace;
+  --radius: .5rem;
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.06);
+  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.08);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.08), 0px 1px 2px -1px rgba(0,0,0,0.06);
+  --shadow: 0px 4px 6px 0px rgba(0,0,0,0.07), 0px 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-md: 0px 8px 12px 0px rgba(0,0,0,0.08), 0px 4px 6px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0px 16px 24px 0px rgba(0,0,0,0.08), 0px 8px 10px -4px rgba(0,0,0,0.04);
+  --shadow-xl: 0px 24px 32px 0px rgba(0,0,0,0.08), 0px 12px 16px -6px rgba(0,0,0,0.04);
+  --shadow-2xl: 0px 32px 48px 0px rgba(0,0,0,0.1);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --primary-border: hsl(var(--primary));
+  --secondary-border: hsl(var(--secondary));
+  --muted-border: hsl(var(--muted));
+  --accent-border: hsl(var(--accent));
+  --destructive-border: hsl(var(--destructive));
+}
+
+.dark {
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+
+  --background: 220 25% 10%;
+  --foreground: 210 15% 92%;
+  --border: 220 20% 22%;
+  --card: 220 25% 13%;
+  --card-foreground: 210 15% 92%;
+  --card-border: 220 20% 22%;
+  --sidebar: 220 28% 8%;
+  --sidebar-foreground: 210 15% 80%;
+  --sidebar-border: 220 20% 18%;
+  --sidebar-primary: 215 80% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 20% 18%;
+  --sidebar-accent-foreground: 210 15% 85%;
+  --sidebar-ring: 215 80% 60%;
+  --popover: 220 25% 13%;
+  --popover-foreground: 210 15% 92%;
+  --popover-border: 220 20% 22%;
+  --primary: 215 80% 60%;
+  --primary-foreground: 220 28% 8%;
+  --secondary: 220 20% 18%;
+  --secondary-foreground: 210 15% 85%;
+  --muted: 220 20% 16%;
+  --muted-foreground: 215 15% 55%;
+  --accent: 220 20% 20%;
+  --accent-foreground: 210 15% 85%;
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 220 20% 22%;
+  --ring: 215 80% 60%;
+  --chart-1: 215 80% 60%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 60%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 60%;
+
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.3);
+  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.35);
+  --shadow-sm: 0px 2px 4px 0px rgba(0,0,0,0.35), 0px 1px 2px -1px rgba(0,0,0,0.3);
+  --shadow: 0px 4px 6px 0px rgba(0,0,0,0.3), 0px 2px 4px -1px rgba(0,0,0,0.25);
+  --shadow-md: 0px 8px 12px 0px rgba(0,0,0,0.32), 0px 4px 6px -2px rgba(0,0,0,0.2);
+  --shadow-lg: 0px 16px 24px 0px rgba(0,0,0,0.32), 0px 8px 10px -4px rgba(0,0,0,0.18);
+  --shadow-xl: 0px 24px 32px 0px rgba(0,0,0,0.32), 0px 12px 16px -6px rgba(0,0,0,0.16);
+  --shadow-2xl: 0px 32px 48px 0px rgba(0,0,0,0.36);
+
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --primary-border: hsl(var(--primary));
+  --secondary-border: hsl(var(--secondary));
+  --muted-border: hsl(var(--muted));
+  --accent-border: hsl(var(--accent));
+  --destructive-border: hsl(var(--destructive));
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+.prose {
+  max-width: none;
+}
+
+.prose h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--foreground));
+}
+
+.prose h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  color: hsl(var(--foreground));
+}
+
+.prose p {
+  margin-bottom: 0.75rem;
+  line-height: 1.65;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose blockquote {
+  border-left: 3px solid hsl(var(--primary));
+  padding-left: 1rem;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+  margin: 0.75rem 0;
+}
+
+.prose hr {
+  border-color: hsl(var(--border));
+  margin: 1rem 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 0.75rem 0;
+}
+
+.prose th {
+  background: hsl(var(--muted));
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid hsl(var(--border));
+}
+
+.prose td {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid hsl(var(--border));
+}
+
+.prose code {
+  background: hsl(var(--muted));
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-family: var(--app-font-mono);
+}
