@@ -1,0 +1,30 @@
+[
+  {
+    "filename": "guidelines_concentration.pdf",
+    "source_type": "ligne_directrice",
+    "source_name": "Lignes directrices — Concentrations",
+    "chunks": 345,
+    "pages": 102
+  },
+  {
+    "filename": "guidelines_transaction.pdf",
+    "source_type": "ligne_directrice",
+    "source_name": "Lignes directrices — Procédure de transaction",
+    "chunks": 44,
+    "pages": 15
+  },
+  {
+    "filename": "loi_104_12.docx",
+    "source_type": "loi",
+    "source_name": "Loi 104-12",
+    "chunks": 213,
+    "pages": 1
+  },
+  {
+    "filename": "loi_20_13.pdf",
+    "source_type": "loi",
+    "source_name": "Loi 20-13",
+    "chunks": 44,
+    "pages": 20
+  }
+]

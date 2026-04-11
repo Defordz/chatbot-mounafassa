@@ -1,0 +1,110 @@
+You are a senior full-stack engineer.
+
+## 🎯 OBJECTIVE
+
+Fix the error:
+
+"Failed to execute 'json' on 'Response': Unexpected token 'I', 'Internal Server Error' is not valid JSON"
+
+This means the frontend expects JSON but the backend is returning plain text (likely an error).
+
+---
+
+## 🔴 BACKEND FIX (CRITICAL)
+
+Ensure that ALL API responses ALWAYS return valid JSON, even in case of error.
+
+1. Wrap all endpoints in try/catch (or try/except)
+
+2. Replace any raw error response with structured JSON:
+
+Example (FastAPI):
+
+```python
+from fastapi.responses import JSONResponse
+
+@app.post("/chat")
+async def chat(request: Request):
+    try:
+        result = process_chat(request)
+        return {"answer": result}
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": str(e),
+                "type": "internal_error"
+            }
+        )
+```
+
+3. NEVER return:
+
+* plain text
+* "Internal Server Error"
+* HTML error pages
+
+---
+
+## 🟢 FRONTEND FIX (MANDATORY)
+
+Update fetch logic to safely handle non-JSON responses:
+
+```javascript
+const response = await fetch("/chat", {...});
+
+let data;
+
+if (!response.ok) {
+  const text = await response.text();
+  console.error("Backend error:", text);
+  throw new Error("Server returned an error");
+}
+
+try {
+  data = await response.json();
+} catch (e) {
+  const text = await response.text();
+  console.error("Invalid JSON:", text);
+  throw new Error("Invalid JSON response from server");
+}
+```
+
+---
+
+## 🧪 DEBUG IMPROVEMENT
+
+Log backend errors clearly:
+
+* print full stack trace in backend logs
+* include error message in JSON response
+
+---
+
+## ⚠️ SPECIAL CASE (OPENAI / RAG)
+
+Handle API errors explicitly:
+
+* insufficient_quota
+* invalid_api_key
+* timeout
+
+Return structured JSON like:
+
+```json
+{
+  "error": "OpenAI quota exceeded",
+  "type": "api_error"
+}
+```
+
+---
+
+## 🎯 FINAL GOAL
+
+* Frontend NEVER crashes on .json()
+* Backend ALWAYS returns valid JSON
+* Errors are visible, readable, and debuggable
+
+Refactor the entire request/response flow accordingly.

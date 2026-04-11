@@ -53,26 +53,67 @@ export const SOURCE_TYPE_LABELS: Record<string, string> = {
   autre: "Autre",
 };
 
+async function safeJson(res: Response): Promise<any> {
+  const text = await res.text();
+  if (!text || text.trim() === "") {
+    throw new Error("Le serveur n'a renvoyé aucune réponse.");
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    console.error("[API] Non-JSON response:", text.slice(0, 500));
+    throw new Error("Réponse invalide du serveur. Veuillez réessayer.");
+  }
+}
+
 export async function sendChatMessage(
   question: string,
   conversationHistory: Array<{ role: string; content: string }>,
   sourceFilter: string | null
 ): Promise<ChatResponse> {
-  const res = await fetch(`${PYTHON_API_BASE}/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      question,
-      conversation_history: conversationHistory,
-      source_filter: sourceFilter,
-    }),
-  });
+  let res: Response;
+
+  try {
+    res = await fetch(`${PYTHON_API_BASE}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question,
+        conversation_history: conversationHistory,
+        source_filter: sourceFilter,
+      }),
+    });
+  } catch (networkErr: any) {
+    console.error("[API] Network error:", networkErr);
+    throw new Error("Impossible de joindre le serveur. Vérifiez votre connexion.");
+  }
+
+  const data = await safeJson(res);
 
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.detail || "Erreur de traitement");
+    // The backend always returns JSON with an "answer" field even on error
+    // so we can show it nicely in the UI if present
+    if (data?.answer) {
+      return {
+        answer: data.answer,
+        sources: data.sources ?? [],
+        confidence_score: data.confidence_score ?? 0,
+        retrieved_chunks: data.retrieved_chunks ?? [],
+      };
+    }
+    const msg =
+      data?.error ||
+      data?.detail ||
+      `Erreur ${res.status} : ${res.statusText}`;
+    throw new Error(msg);
   }
-  return res.json();
+
+  return {
+    answer: data.answer ?? "",
+    sources: data.sources ?? [],
+    confidence_score: data.confidence_score ?? 0,
+    retrieved_chunks: data.retrieved_chunks ?? [],
+  };
 }
 
 export async function fetchStats(): Promise<{
@@ -80,7 +121,28 @@ export async function fetchStats(): Promise<{
   total_chunks: number;
   has_vector_store: boolean;
 }> {
-  const res = await fetch(`${PYTHON_API_BASE}/stats`);
-  if (!res.ok) throw new Error("Erreur de chargement des statistiques");
-  return res.json();
+  let res: Response;
+  try {
+    res = await fetch(`${PYTHON_API_BASE}/stats`);
+  } catch {
+    throw new Error("Impossible de joindre le serveur.");
+  }
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data?.error || "Erreur de chargement des statistiques");
+  return data;
+}
+
+export async function checkHealth(): Promise<{
+  status: string;
+  documents_indexed: boolean;
+  total_chunks: number;
+  error?: string;
+}> {
+  try {
+    const res = await fetch(`${PYTHON_API_BASE}/health`);
+    const data = await safeJson(res);
+    return data;
+  } catch {
+    return { status: "error", documents_indexed: false, total_chunks: 0 };
+  }
 }
