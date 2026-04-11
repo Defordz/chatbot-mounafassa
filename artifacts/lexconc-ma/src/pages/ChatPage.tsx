@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Loader2, BookOpen, Scale, ChevronDown, RotateCcw, Filter } from "lucide-react";
+import { Send, Loader2, BookOpen, ChevronDown, RotateCcw, Filter } from "lucide-react";
+import councillogo from "@assets/image_1775927493944.png";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessage } from "@/lib/api";
@@ -102,11 +103,9 @@ export default function ChatPage() {
     <div className="flex h-screen bg-background overflow-hidden">
       <div className="flex-1 flex flex-col min-w-0">
         <header className="flex-shrink-0 flex items-center gap-3 px-5 py-3 border-b border-border bg-card/80 backdrop-blur-sm">
-          <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center border border-primary/20">
-            <Scale className="w-4 h-4 text-primary" />
-          </div>
+          <img src={councillogo} alt="Conseil de la Concurrence" className="h-8 w-auto object-contain" />
           <div className="flex items-center gap-2 flex-1">
-            <span className="text-sm font-bold text-foreground">LexConc-MA</span>
+            <span className="text-sm font-bold text-foreground">Chatbot IA Monafassa</span>
             <span className="text-xs text-muted-foreground hidden sm:block">
               — Assistant juridique · Droit de la concurrence marocain
             </span>
@@ -154,10 +153,8 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-5 border border-primary/20">
-                <Scale className="w-8 h-8 text-primary" />
-              </div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">LexConc-MA</h2>
+              <img src={councillogo} alt="Conseil de la Concurrence" className="h-16 w-auto object-contain mb-5" />
+              <h2 className="text-xl font-semibold text-foreground mb-2">Chatbot IA Monafassa</h2>
               <p className="text-sm text-muted-foreground max-w-md mb-6">
                 Assistant juridique interne spécialisé en droit de la concurrence marocain.
                 <br />
