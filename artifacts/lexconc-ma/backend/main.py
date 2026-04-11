@@ -135,7 +135,8 @@ async def chat(request: ChatRequest):
             request.conversation_history,
             request.source_filter,
         )
-        return result
+        # Return via JSONResponse to avoid FastAPI's encoder touching numpy types
+        return JSONResponse(content=result)
 
     except Exception as e:
         err_str = str(e)

@@ -5,12 +5,28 @@ import zipfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional
+import numpy as np
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
+
+
+def _to_python(val):
+    """Recursively convert numpy scalars and arrays to native Python types."""
+    if isinstance(val, dict):
+        return {k: _to_python(v) for k, v in val.items()}
+    if isinstance(val, list):
+        return [_to_python(v) for v in val]
+    if isinstance(val, (np.floating,)):
+        return float(val)
+    if isinstance(val, (np.integer,)):
+        return int(val)
+    if isinstance(val, np.ndarray):
+        return val.tolist()
+    return val
 
 
 def load_docx(path: str) -> list[Document]:
@@ -293,11 +309,14 @@ class LexConcRAG:
                 "retrieved_chunks": [],
             }
 
+        # Convert FAISS numpy.float32 scores to plain Python floats immediately
+        docs_with_scores = [(doc, float(score)) for doc, score in docs_with_scores]
+
         max_score = max(score for _, score in docs_with_scores) if docs_with_scores else 1.0
         if max_score == 0:
             max_score = 1.0
-        normalized_scores = [(doc, 1 - (score / max_score)) for doc, score in docs_with_scores]
-        avg_confidence = sum(s for _, s in normalized_scores) / len(normalized_scores)
+        normalized_scores = [(doc, float(1.0 - (score / max_score))) for doc, score in docs_with_scores]
+        avg_confidence = float(sum(s for _, s in normalized_scores) / len(normalized_scores))
 
         retrieved_chunks = []
         context_parts = []
@@ -321,15 +340,15 @@ class LexConcRAG:
             )
 
             retrieved_chunks.append({
-                "content": doc.page_content,
-                "source_name": source_name,
-                "source_type": m.get("source_type", "autre"),
-                "source_label": source_label,
-                "article_ref": article_ref,
-                "page": page,
-                "filename": m.get("filename", ""),
-                "confidence": round(conf_score, 3),
-                "citation": citation,
+                "content": str(doc.page_content),
+                "source_name": str(source_name),
+                "source_type": str(m.get("source_type", "autre")),
+                "source_label": str(source_label),
+                "article_ref": str(article_ref),
+                "page": str(page),
+                "filename": str(m.get("filename", "")),
+                "confidence": round(float(conf_score), 3),
+                "citation": str(citation),
             })
 
         context = "\n\n".join(context_parts)
@@ -364,9 +383,11 @@ class LexConcRAG:
             if chunk["article_ref"] and chunk["article_ref"] not in unique_sources[key]["articles"]:
                 unique_sources[key]["articles"].append(chunk["article_ref"])
 
-        return {
+        result = {
             "answer": answer,
             "sources": list(unique_sources.values()),
-            "confidence_score": round(avg_confidence, 3),
+            "confidence_score": round(float(avg_confidence), 3),
             "retrieved_chunks": retrieved_chunks,
         }
+        # Final safety pass: convert any remaining numpy types to Python natives
+        return _to_python(result)
