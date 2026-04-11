@@ -1,0 +1,156 @@
+You are building a professional AI legal assistant specialized in Moroccan competition law.
+
+## 🎯 OBJECTIVE
+Create an AI chatbot that answers user questions strictly based on the following legal sources:
+- Law 104-12 on freedom of prices and competition
+- Law 20-13 relating to the Competition Council
+- Guidelines on merger control procedures (contrôle des opérations de concentration économique)
+- Other official guidelines issued by the Competition Council
+- Official press releases (communiqués) published by the Moroccan Competition Council
+
+The chatbot must function as a HIGH-RELIABILITY LEGAL ASSISTANT for professional use.
+
+---
+
+## ⚙️ CORE ARCHITECTURE
+
+Implement a Retrieval-Augmented Generation (RAG) system:
+
+1. Load and process multiple PDF documents
+2. Split documents into structured chunks (by article, section, or paragraph)
+3. Generate embeddings for each chunk
+4. Store embeddings in a vector database (FAISS or Chroma)
+5. Retrieve relevant chunks for each user query
+6. Pass retrieved context into the LLM to generate grounded answers
+
+---
+
+## 📚 DOCUMENT HANDLING
+
+- Accept multiple PDFs
+- Preserve document structure (titles, articles, sections)
+- Tag each chunk with:
+  - Source (law, guideline, communiqué)
+  - Article number (if applicable)
+  - Section title
+- Prioritize semantic coherence over arbitrary chunk size
+
+---
+
+## 🧠 MODEL BEHAVIOR
+
+The AI must:
+
+1. Answer ONLY using retrieved documents
+2. NEVER invent legal rules or interpretations
+3. If information is missing → respond:
+   "The available documents do not provide sufficient information to answer this question."
+
+4. Always cite sources explicitly:
+   Example:
+   "According to Article 12 of Law 104-12..."
+   "As stated in the Merger Control Guidelines (Section X)..."
+
+5. When possible:
+   - Provide structured answers
+   - Distinguish between legal provisions and procedural practices
+   - Explain reasoning step-by-step
+
+---
+
+## ⚖️ LEGAL REASONING CAPABILITIES
+
+The assistant must be able to:
+
+- Identify whether a transaction qualifies as a concentration
+- Explain control (exclusive vs joint control)
+- Analyze thresholds (turnover thresholds)
+- Describe notification obligations
+- Explain procedural steps (phase 1, phase 2, commitments)
+- Interpret guidelines in light of the law
+- Compare legal provisions with practical enforcement (communiqués)
+
+---
+
+## 🧾 RESPONSE FORMAT
+
+Always structure answers as follows:
+
+1. **Short direct answer**
+2. **Detailed legal explanation**
+3. **References (with precise citations)**
+
+Example:
+
+Answer:
+Yes, the transaction qualifies as a concentration.
+
+Explanation:
+Under Article X of Law 104-12, a concentration occurs when...
+Additionally, the Guidelines specify that...
+
+Sources:
+- Law 104-12, Article X
+- Merger Control Guidelines, Section Y
+
+---
+
+## 🚫 STRICT RULES
+
+- No hallucinations
+- No generic answers
+- No external knowledge beyond uploaded documents
+- No assumptions
+
+---
+
+## 💬 USER INTERFACE
+
+Build a clean chat interface with:
+- Input box
+- Chat history
+- Source display (show retrieved excerpts)
+- Optional: highlight cited passages
+
+---
+
+## ⚙️ TECH STACK
+
+- Language: Python
+- Framework: LangChain or LlamaIndex
+- Embeddings: OpenAI or local embeddings
+- Vector DB: FAISS or Chroma
+- UI: Streamlit or simple web interface
+
+---
+
+## 📈 ADVANCED FEATURES (OPTIONAL BUT RECOMMENDED)
+
+- Ability to upload new documents dynamically
+- Filter answers by source (law vs guidelines)
+- Multi-language support (French / Arabic)
+- Conversation memory (short-term context)
+
+---
+
+## 🧪 TEST CASES
+
+Ensure the chatbot can answer:
+
+- "What is a concentration under Moroccan law?"
+- "When is notification mandatory?"
+- "What are the thresholds?"
+- "What is joint control?"
+- "Explain phase 2 procedure"
+- "Can the Council impose remedies?"
+
+---
+
+## 🎯 FINAL GOAL
+
+Deliver a reliable, professional legal AI assistant that could realistically be used by:
+- Lawyers
+- Economists
+- Competition authority staff
+
+The system must prioritize precision, traceability, and legal rigor over creativity.
