@@ -1,13 +1,33 @@
 import os
 import json
 import re
+import zipfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
+
+
+def load_docx(path: str) -> list[Document]:
+    """Extract text from a .docx file using built-in Python ZIP/XML parsing."""
+    ns = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    paragraphs = []
+    with zipfile.ZipFile(path, "r") as z:
+        with z.open("word/document.xml") as f:
+            tree = ET.parse(f)
+            root = tree.getroot()
+            for para in root.iter(f"{ns}p"):
+                texts = [node.text or "" for node in para.iter(f"{ns}t")]
+                line = "".join(texts).strip()
+                if line:
+                    paragraphs.append(line)
+    full_text = "\n".join(paragraphs)
+    return [Document(page_content=full_text, metadata={"page": 1, "source": path})]
 
 
 SYSTEM_PROMPT = """Tu es LexConc-MA, un assistant juridique IA de haute précision, spécialisé exclusivement en droit de la concurrence marocain.
@@ -79,11 +99,14 @@ SOURCE_TYPE_LABELS = {
 }
 
 FILENAME_METADATA = {
-    "loi_104_12.pdf": {"source_type": "loi", "source_name": "Loi 104-12"},
-    "loi_20_13.pdf": {"source_type": "loi", "source_name": "Loi 20-13"},
-    "guidelines_concentration.pdf": {"source_type": "ligne_directrice", "source_name": "Lignes directrices — Concentrations"},
-    "autres_guidelines.pdf": {"source_type": "ligne_directrice", "source_name": "Autres lignes directrices"},
-    "communiques.pdf": {"source_type": "communique", "source_name": "Communiqués du Conseil"},
+    "loi_104_12.pdf":   {"source_type": "loi", "source_name": "Loi 104-12"},
+    "loi_104_12.docx":  {"source_type": "loi", "source_name": "Loi 104-12"},
+    "loi_20_13.pdf":    {"source_type": "loi", "source_name": "Loi 20-13"},
+    "loi_20_13.docx":   {"source_type": "loi", "source_name": "Loi 20-13"},
+    "guidelines_concentration.pdf":  {"source_type": "ligne_directrice", "source_name": "Lignes directrices — Concentrations"},
+    "guidelines_transaction.pdf":    {"source_type": "ligne_directrice", "source_name": "Lignes directrices — Procédure de transaction"},
+    "autres_guidelines.pdf":         {"source_type": "ligne_directrice", "source_name": "Autres lignes directrices"},
+    "communiques.pdf":               {"source_type": "communique", "source_name": "Communiqués du Conseil"},
 }
 
 
@@ -129,7 +152,9 @@ class LexConcRAG:
     def _load_or_build_index(self):
         registry_path = self.vector_store_dir / "doc_registry.json"
 
-        pdfs_in_data = sorted(self.data_dir.glob("*.pdf"))
+        docs_in_data = sorted(
+            list(self.data_dir.glob("*.pdf")) + list(self.data_dir.glob("*.docx"))
+        )
 
         if (
             self.vector_store_dir.exists()
@@ -146,9 +171,10 @@ class LexConcRAG:
                     self._doc_registry = json.load(f)
 
                 indexed_files = {d["filename"] for d in self._doc_registry}
-                data_files = {p.name for p in pdfs_in_data}
+                data_files = {p.name for p in docs_in_data}
 
                 if indexed_files == data_files:
+                    print(f"[INFO] Loaded existing index: {len(self._doc_registry)} documents")
                     return
             except Exception:
                 pass
@@ -156,18 +182,22 @@ class LexConcRAG:
         self.vector_store = None
         self._doc_registry = []
 
-        for pdf in pdfs_in_data:
-            metadata = self._resolve_metadata(pdf.name)
+        for doc_path in docs_in_data:
+            metadata = self._resolve_metadata(doc_path.name)
             try:
-                self._ingest_pdf(str(pdf), metadata)
+                self._ingest_file(str(doc_path), metadata)
             except Exception as e:
-                print(f"[WARN] Failed to ingest {pdf.name}: {e}")
+                print(f"[WARN] Failed to ingest {doc_path.name}: {e}")
 
-    def _ingest_pdf(self, pdf_path: str, metadata: dict) -> int:
-        loader = PyPDFLoader(pdf_path)
-        pages = loader.load()
+    def _ingest_file(self, file_path: str, metadata: dict) -> int:
+        filename = Path(file_path).name
+        if filename.lower().endswith(".docx"):
+            pages = load_docx(file_path)
+        else:
+            loader = PyPDFLoader(file_path)
+            pages = loader.load()
 
-        filename = Path(pdf_path).name
+        print(f"[INFO] Ingesting {filename}: {len(pages)} page(s)")
         source_type = metadata.get("source_type", "autre")
         source_name = metadata.get("source_name", filename)
 
