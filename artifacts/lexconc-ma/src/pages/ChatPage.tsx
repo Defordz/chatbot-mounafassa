@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2 } from "lucide-react";
+import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessage } from "@/lib/api";
@@ -119,6 +119,7 @@ const SpeechRecognitionAPI =
 export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>(() => loadConversations());
   const [activeId, setActiveId] = useState<string | null>(() => loadActiveId());
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [input, setInput] = useState("");
   const [pendingCount, setPendingCount] = useState(0);
   const [listening, setListening] = useState(false);
@@ -307,9 +308,17 @@ export default function ChatPage() {
   }, [conversations]);
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${sidebarOpen ? "" : "sidebar-collapsed"}`}>
       {/* ─── SIDEBAR ─── */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? "" : "collapsed"}`}>
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarOpen(false)}
+          title="Réduire la barre latérale"
+        >
+          <PanelLeftClose size={18} />
+        </button>
+
         <div className="sidebar-logo">
           <img src={councillogo} alt="Conseil de la Concurrence" className="sidebar-logo-img" />
           <div className="sidebar-logo-text">
@@ -367,6 +376,15 @@ export default function ChatPage() {
       <main className="main-area">
         <header className="main-header">
           <div className="header-left">
+            {!sidebarOpen && (
+              <button
+                className="sidebar-expand"
+                onClick={() => setSidebarOpen(true)}
+                title="Afficher la barre latérale"
+              >
+                <PanelLeftOpen size={20} />
+              </button>
+            )}
             <div className="header-avatar">{SVG_BOT}</div>
             <div>
               <div className="header-title">
