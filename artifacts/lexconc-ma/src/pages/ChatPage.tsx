@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Send, Loader2, Plus, BookOpen } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Send, Loader2, Plus, Mic, MicOff } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessage } from "@/lib/api";
@@ -31,25 +31,30 @@ const SVG_BOT = (
 let msgIdCounter = 0;
 function newId() { return String(++msgIdCounter); }
 
+const SpeechRecognitionAPI =
+  typeof window !== "undefined"
+    ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    : null;
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [listening, setListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
 
+  const isLoading = pendingCount > 0;
   const questionCount = messages.filter(m => m.role === "user").length;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, pendingCount]);
 
-  const getConversationHistory = () =>
-    messages.slice(-8).map((m) => ({ role: m.role, content: m.content }));
-
-  const handleSend = async (question?: string) => {
+  const handleSend = useCallback(async (question?: string) => {
     const q = (question ?? input).trim();
-    if (!q || loading) return;
+    if (!q) return;
 
     const userMsg: ChatMessage = {
       id: newId(),
@@ -63,11 +68,15 @@ export default function ChatPage() {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
-    setLoading(true);
+    setPendingCount((c) => c + 1);
 
     try {
-      const history = getConversationHistory();
-      const res = await sendChatMessage(q, history, null);
+      const recentHistory = messages
+        .slice(-8)
+        .map((m) => ({ role: m.role, content: m.content }));
+      recentHistory.push({ role: "user", content: q });
+
+      const res = await sendChatMessage(q, recentHistory, null);
 
       const assistantMsg: ChatMessage = {
         id: newId(),
@@ -91,9 +100,9 @@ export default function ChatPage() {
         },
       ]);
     } finally {
-      setLoading(false);
+      setPendingCount((c) => Math.max(0, c - 1));
     }
-  };
+  }, [input, messages]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -102,7 +111,53 @@ export default function ChatPage() {
     }
   };
 
-  const clearConversation = () => setMessages([]);
+  const toggleMic = useCallback(() => {
+    if (!SpeechRecognitionAPI) {
+      alert("La reconnaissance vocale n'est pas supportée par votre navigateur. Utilisez Chrome ou Edge.");
+      return;
+    }
+
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.lang = "fr-FR";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    recognitionRef.current = recognition;
+
+    recognition.onstart = () => setListening(true);
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+      recognitionRef.current = null;
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setListening(false);
+      recognitionRef.current = null;
+    };
+
+    recognition.start();
+  }, [listening]);
+
+  const clearConversation = () => {
+    setMessages([]);
+    setPendingCount(0);
+  };
 
   return (
     <div className="app-container">
@@ -208,7 +263,7 @@ export default function ChatPage() {
                 {messages.map((msg) => (
                   <ChatMessageComponent key={msg.id} message={msg} />
                 ))}
-                {loading && (
+                {isLoading && (
                   <div className="typing-row">
                     <div className="msg-avatar">{SVG_BOT}</div>
                     <div className="typing-bubble">
@@ -236,7 +291,7 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Posez votre question en droit de la concurrence marocain..."
+                placeholder={listening ? "Parlez maintenant..." : "Posez votre question en droit de la concurrence marocain..."}
                 rows={1}
                 onInput={(e) => {
                   const t = e.target as HTMLTextAreaElement;
@@ -245,11 +300,20 @@ export default function ChatPage() {
                 }}
               />
               <button
-                className={`btn-send ${input.trim() && !loading ? "active" : "inactive"}`}
-                onClick={() => handleSend()}
-                disabled={!input.trim() || loading}
+                className={`btn-mic ${listening ? "listening" : ""}`}
+                onClick={toggleMic}
+                type="button"
+                title={listening ? "Arrêter l'écoute" : "Dicter un message"}
               >
-                {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                {listening ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
+              <button
+                className={`btn-send ${input.trim() ? "active" : "inactive"}`}
+                onClick={() => handleSend()}
+                disabled={!input.trim()}
+                type="button"
+              >
+                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
               </button>
             </div>
             <div className="input-disclaimer">
