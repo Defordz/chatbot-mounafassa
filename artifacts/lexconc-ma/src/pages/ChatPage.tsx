@@ -355,26 +355,8 @@ export default function ChatPage() {
           })}
         </div>
 
-        {/* Document list */}
-        <div className="sidebar-docs">
-          <div className="sidebar-section-title">Base documentaire</div>
-          {DOCS.map((doc, i) => (
-            <div key={doc.name} className="doc-item" style={{ animation: `slideInLeft 0.3s ease ${0.05 + i * 0.05}s both` }}>
-              <div className="doc-dot" />
-              <div>
-                <div className="doc-name">{doc.name}</div>
-                <div className="doc-desc">{doc.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
         <div className="sidebar-footer">
           <div className="sidebar-divider" />
-          <div className="rag-status">
-            <div className="rag-dot" />
-            <span className="rag-label">Système RAG actif</span>
-          </div>
           <div className="sidebar-credit">
             Conseil de la Concurrence<br />du Royaume du Maroc
           </div>
