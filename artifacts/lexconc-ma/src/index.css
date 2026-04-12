@@ -933,15 +933,18 @@ html, body, #root {
   cursor: default;
 }
 
-.input-disclaimer {
+.welcome-disclaimer {
   text-align: center;
-  margin-top: 8px;
-  margin-bottom: 6px;
-  font-size: 9.5px;
+  margin-top: 24px;
+  font-size: 10px;
   color: #999;
   letter-spacing: 0.01em;
-  line-height: 1.55;
-  padding: 0 8px;
+  line-height: 1.6;
+  padding: 0 16px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  font-style: italic;
 }
 
 /* ═══════════════════════════════════════════
@@ -951,8 +954,8 @@ html, body, #root {
   .sidebar { display: none; }
   .chat-messages { padding: 20px 16px; }
   .main-header { padding: 0 16px; }
-  .input-area { padding: 8px 12px 4px; }
-  .input-disclaimer { font-size: 8.5px; margin-top: 6px; margin-bottom: 4px; padding: 0 4px; line-height: 1.5; }
+  .input-area { padding: 8px 12px 8px; }
+  .welcome-disclaimer { font-size: 9px; margin-top: 16px; padding: 0 8px; }
   .msg-wrapper { max-width: 92%; }
   .suggestions-grid { grid-template-columns: 1fr; }
   .welcome-screen { padding-top: 32px; }
@@ -960,11 +963,11 @@ html, body, #root {
 }
 
 @media (max-width: 480px) {
-  .input-area { padding: 6px 8px 2px; }
+  .input-area { padding: 6px 8px 6px; }
   .input-box { padding: 4px 4px 4px 14px; gap: 4px; }
   .btn-mic, .btn-send { width: 38px; height: 38px; }
   .input-box textarea { font-size: 16px; }
-  .input-disclaimer { font-size: 8px; margin-top: 5px; margin-bottom: 3px; padding: 0 2px; line-height: 1.45; }
+  .welcome-disclaimer { font-size: 8.5px; margin-top: 14px; padding: 0 4px; }
   .welcome-title { font-size: 24px; }
   .welcome-desc { font-size: 13px; }
   .header-badge { display: none; }
@@ -973,8 +976,8 @@ html, body, #root {
 @media (max-height: 500px) {
   .main-header { height: 50px; }
   .chat-messages { padding: 12px 16px; }
-  .input-area { padding: 6px 16px 2px; }
-  .input-disclaimer { font-size: 8px; margin-top: 4px; margin-bottom: 2px; line-height: 1.4; }
+  .input-area { padding: 6px 16px 6px; }
+  .welcome-disclaimer { font-size: 8px; margin-top: 10px; line-height: 1.4; }
   .welcome-screen { padding-top: 16px; }
   .welcome-logo { height: 48px; }
   .welcome-title { font-size: 22px; }
@@ -986,5 +989,6 @@ html, body, #root {
   .sidebar { display: none; }
   .welcome-screen { padding-top: 8px; }
   .welcome-logo { height: 40px; margin-bottom: 10px; }
-  .welcome-desc { margin-bottom: 20px; }
+  .welcome-desc { margin-bottom: 10px; }
+  .welcome-disclaimer { font-size: 7.5px; margin-top: 8px; }
 }

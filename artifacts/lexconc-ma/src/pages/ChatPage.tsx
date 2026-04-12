@@ -423,6 +423,9 @@ export default function ChatPage() {
                     </button>
                   ))}
                 </div>
+                <div className="welcome-disclaimer">
+                  Les informations délivrées par le Chatbot IA Monafassa sont fournies à titre indicatif et ne peuvent être assimilées à une prise de position officielle du Conseil de la concurrence, ni engager sa responsabilité. Le Conseil de la concurrence se réserve le droit d'apprécier souverainement toute situation au regard des dispositions légales et réglementaires en vigueur.
+                </div>
               </div>
             ) : (
               <>
@@ -480,9 +483,6 @@ export default function ChatPage() {
               >
                 {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
               </button>
-            </div>
-            <div className="input-disclaimer">
-              Les informations délivrées par le Chatbot IA Monafassa sont fournies à titre indicatif et ne peuvent être assimilées à une prise de position officielle du Conseil de la concurrence, ni engager sa responsabilité. Le Conseil de la concurrence se réserve le droit d'apprécier souverainement toute situation au regard des dispositions légales et réglementaires en vigueur.
             </div>
           </div>
         </div>
