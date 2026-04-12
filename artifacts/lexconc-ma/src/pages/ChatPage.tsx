@@ -4,6 +4,7 @@ import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessage } from "@/lib/api";
 import councillogo from "@assets/image_1775927493944.png";
+import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
 
 interface Conversation {
   id: string;
@@ -310,7 +311,7 @@ export default function ChatPage() {
   return (
     <div className={`app-container ${sidebarOpen ? "" : "sidebar-collapsed"}`}>
       {/* ─── SIDEBAR ─── */}
-      <aside className={`sidebar ${sidebarOpen ? "" : "collapsed"}`}>
+      <aside className={`sidebar ${sidebarOpen ? "" : "collapsed"}`} style={{ backgroundImage: `url(${sidebarBg})`, backgroundSize: "cover", backgroundPosition: "center" }}>
         <button
           className="sidebar-toggle"
           onClick={() => setSidebarOpen(false)}
