@@ -481,7 +481,7 @@ export default function ChatPage() {
               </button>
             </div>
             <div className="input-disclaimer">
-              Les réponses sont fondées exclusivement sur les textes officiels indexés · Ne constituent pas un conseil juridique
+              Les informations délivrées par le Chatbot IA Monafassa sont fournies à titre indicatif et ne peuvent être assimilées à une prise de position officielle du Conseil de la concurrence, ni engager sa responsabilité. Le Conseil de la concurrence se réserve le droit d'apprécier souverainement toute situation au regard des dispositions légales et réglementaires en vigueur.
             </div>
           </div>
         </div>
