@@ -777,11 +777,13 @@ html, body, #root {
    INPUT AREA
    ═══════════════════════════════════════════ */
 .input-area {
-  padding: 16px 32px 26px;
+  padding: 16px 32px 18px;
+  padding-bottom: max(18px, env(safe-area-inset-bottom));
   background: linear-gradient(to top, var(--bg-main) 85%, transparent);
   flex-shrink: 0;
   position: sticky;
   bottom: 0;
+  margin-bottom: 10px;
   z-index: 5;
 }
 
@@ -886,10 +888,11 @@ html, body, #root {
 
 .input-disclaimer {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 10.5px;
   color: var(--text-300);
   letter-spacing: 0.02em;
+  line-height: 1.5;
 }
 
 /* ═══════════════════════════════════════════
