@@ -115,7 +115,8 @@ html, body, #root {
   padding: 28px 20px;
   flex-shrink: 0;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   z-index: 10;
 }
 
@@ -263,10 +264,105 @@ html, body, #root {
   margin-top: 2px;
 }
 
+/* Conversation History */
+.sidebar-history {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.sidebar-history::-webkit-scrollbar { width: 3px; }
+.sidebar-history::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2px;
+}
+
+.conv-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.conv-item.active {
+  background: rgba(255,255,255,0.1);
+  border-left: 2px solid var(--green-500);
+  padding-left: 8px;
+}
+
+.conv-icon {
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.35);
+}
+
+.conv-item.active .conv-icon {
+  color: var(--green-400);
+}
+
+.conv-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.3;
+}
+
+.conv-item.active .conv-title {
+  color: rgba(255,255,255,0.9);
+}
+
+.conv-delete {
+  flex-shrink: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: rgba(255,255,255,0.25);
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.conv-item:hover .conv-delete {
+  display: flex;
+}
+
+.conv-delete:hover {
+  color: #e74c3c;
+  background: rgba(231,76,60,0.15);
+}
+
+/* Document list */
+.sidebar-docs {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
 .sidebar-footer {
   margin-top: auto;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .rag-status {

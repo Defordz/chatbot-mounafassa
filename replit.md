@@ -16,38 +16,60 @@ pnpm workspace monorepo using TypeScript + Python. Each package manages its own 
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
-## LexConc-MA Artifact
+## LexConc-MA Artifact — Chatbot IA Monafassa
 
-A professional AI legal assistant specialized in Moroccan competition law.
+A professional AI legal assistant (RAG chatbot) for the Conseil de la Concurrence du Maroc, specialized in Moroccan competition law (Law 104-12, Law 20-13, merger guidelines, transaction procedure guidelines).
 
 ### Architecture
 - **Frontend**: React + Vite (artifacts/lexconc-ma) — served at `/`
 - **Python RAG Backend**: FastAPI + LangChain + FAISS (artifacts/lexconc-ma/backend) — served at `/lexconc-api`
+- **Design**: Custom CSS design system (DM Sans + Playfair Display fonts, green palette #0d2818–#52b788)
+
+### Frontend Features
+- **Conversation history**: Conversations persisted in localStorage, grouped by date (today/yesterday/this week/this month/older)
+- **Auto-titling**: Conversations auto-named from first message
+- **Voice input**: Web Speech API microphone button (French, works in Chrome/Edge)
+- **Concurrent messages**: Users can send multiple questions without waiting
+- **Responsive**: Works on desktop, mobile, and landscape orientations
+- **Markdown rendering**: ReactMarkdown for assistant responses with source citations
 
 ### Python Backend
-- **File**: `artifacts/lexconc-ma/backend/main.py` — FastAPI app
-- **RAG Engine**: `artifacts/lexconc-ma/backend/rag.py` — LangChain + FAISS vector search
-- **Documents**: `artifacts/lexconc-ma/backend/documents/` — uploaded PDFs
+- **File**: `artifacts/lexconc-ma/backend/main.py` — FastAPI app with global error handling
+- **RAG Engine**: `artifacts/lexconc-ma/backend/rag.py` — LangChain + FAISS vector search + numpy type safety
+- **Documents**: `artifacts/lexconc-ma/backend/data/` — auto-indexed PDFs and DOCX files
 - **Vector Store**: `artifacts/lexconc-ma/backend/vector_store/` — FAISS index (auto-generated)
 - **Port**: 8765
+- **All API errors return JSON** — never plain text or HTML
 
 ### Python Dependencies
 - `fastapi`, `uvicorn` — web server
 - `langchain`, `langchain-openai`, `langchain-community`, `langchain-text-splitters` — RAG orchestration
 - `faiss-cpu` — vector store
 - `pypdf` — PDF parsing
+- `numpy` — vector handling (with explicit float conversion to avoid serialization errors)
 - `openai` — LLM + embeddings
 - **Requires**: `OPENAI_API_KEY` environment secret
 
 ### Internal Knowledge Base
-- Place PDF files in `artifacts/lexconc-ma/backend/data/` — they are auto-indexed at startup
-- Expected filenames (auto-detect metadata): `loi_104_12.pdf`, `loi_20_13.pdf`, `guidelines_concentration.pdf`, `autres_guidelines.pdf`, `communiques.pdf`
-- Users cannot upload or delete documents — the knowledge base is private and controlled by the administrator
+- Place PDF/DOCX files in `artifacts/lexconc-ma/backend/data/` — auto-indexed at startup
+- DOCX support via built-in Python zipfile/XML parsing (no external packages needed)
+- Expected filenames: `loi_104_12.docx`, `loi_20_13.pdf`, `guidelines_concentration.pdf`, `guidelines_transaction.pdf`
+- Knowledge base is private — no user upload/delete capabilities
 
 ### Key API Endpoints (all under /lexconc-api/api/)
 - `GET /health` — health check (includes indexing status)
-- `POST /chat` — RAG-powered Q&A
+- `POST /chat` — RAG-powered Q&A (returns JSONResponse to avoid numpy serialization issues)
 - `GET /stats` — index statistics
+
+### Key Frontend Files
+- `src/pages/ChatPage.tsx` — main page with sidebar, conversation history, chat, voice input
+- `src/components/ChatMessage.tsx` — message bubble with Markdown rendering and source tags
+- `src/lib/api.ts` — API client with safe JSON parsing (never crashes on non-JSON responses)
+- `src/index.css` — full design system (CSS variables, animations, responsive breakpoints)
+
+### Important Assets
+- `attached_assets/image_1775927493944.png` — Conseil de la Concurrence logo (used in sidebar + welcome screen)
+- `attached_assets/chatbot-ia-monafassa_1775928088645.html` — original HTML design reference
 
 ## Key Commands
 
