@@ -130,25 +130,25 @@ html, body, #root {
 }
 
 .sidebar-toggle {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+  align-self: center;
   z-index: 3;
-  background: none;
-  border: none;
-  color: rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
   cursor: pointer;
-  padding: 6px;
+  padding: 6px 14px;
   border-radius: var(--radius-sm);
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 6px;
+  position: relative;
 }
 
 .sidebar-toggle:hover {
-  color: rgba(255,255,255,0.8);
-  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  background: rgba(0,0,0,0.35);
 }
 
 .sidebar-expand {

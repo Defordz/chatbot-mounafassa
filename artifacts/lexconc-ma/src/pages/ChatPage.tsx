@@ -312,14 +312,6 @@ export default function ChatPage() {
     <div className={`app-container ${sidebarOpen ? "" : "sidebar-collapsed"}`}>
       {/* ─── SIDEBAR ─── */}
       <aside className={`sidebar ${sidebarOpen ? "" : "collapsed"}`} style={{ backgroundImage: `url(${sidebarBg})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-        <button
-          className="sidebar-toggle"
-          onClick={() => setSidebarOpen(false)}
-          title="Réduire la barre latérale"
-        >
-          <PanelLeftClose size={18} />
-        </button>
-
         <div className="sidebar-logo">
           <img src={councillogo} alt="Conseil de la Concurrence" className="sidebar-logo-img" />
           <div className="sidebar-logo-text">
@@ -327,6 +319,14 @@ export default function ChatPage() {
             <span>Assistant juridique IA</span>
           </div>
         </div>
+
+        <button
+          className="sidebar-toggle"
+          onClick={() => setSidebarOpen(false)}
+          title="Réduire la barre latérale"
+        >
+          <PanelLeftClose size={18} />
+        </button>
 
         <div className="sidebar-divider" />
 
