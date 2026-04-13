@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi import FastAPI, Request, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.responses import StreamingResponse
 from pydantic import BaseModel
 import uvicorn
 
@@ -194,6 +195,64 @@ async def chat(request: ChatRequest):
                 "retrieved_chunks": [],
             },
         )
+
+
+@router.post("/chat/stream")
+async def chat_stream(request: ChatRequest):
+    import json as _json
+
+    rag = get_rag()
+
+    if rag is None:
+        msg = rag_error or "Le système RAG est en cours d'initialisation."
+        async def error_gen():
+            yield f"data: {_json.dumps({'type': 'error', 'content': msg})}\n\n"
+            yield "data: [DONE]\n\n"
+        return StreamingResponse(error_gen(), media_type="text/event-stream", headers={
+            "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no",
+        })
+
+    if not rag.has_documents():
+        async def error_gen():
+            yield f"data: {_json.dumps({'type': 'error', 'content': 'La base de connaissances n est pas encore disponible.'})}\n\n"
+            yield "data: [DONE]\n\n"
+        return StreamingResponse(error_gen(), media_type="text/event-stream", headers={
+            "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no",
+        })
+
+    async def stream_gen():
+        import queue
+        import threading
+
+        q = queue.Queue()
+
+        def _run():
+            try:
+                for event in rag.query_stream(
+                    request.question,
+                    request.conversation_history,
+                    request.source_filter,
+                ):
+                    q.put(event)
+                q.put(None)
+            except Exception as e:
+                traceback.print_exc()
+                q.put({"type": "error", "content": str(e)})
+                q.put(None)
+
+        thread = threading.Thread(target=_run, daemon=True)
+        thread.start()
+
+        while True:
+            event = await asyncio.to_thread(q.get)
+            if event is None:
+                break
+            yield f"data: {_json.dumps(event, ensure_ascii=False)}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(stream_gen(), media_type="text/event-stream", headers={
+        "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no",
+    })
 
 
 @router.get("/stats")

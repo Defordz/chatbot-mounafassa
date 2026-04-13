@@ -59,12 +59,18 @@ A professional AI legal assistant (RAG chatbot) for the Conseil de la Concurrenc
 ### Key API Endpoints (all under /lexconc-api/api/)
 - `GET /health` — health check (includes indexing status)
 - `POST /chat` — RAG-powered Q&A (returns JSONResponse to avoid numpy serialization issues)
+- `POST /chat/stream` — SSE streaming endpoint: yields `meta` event (sources/confidence/chunks), then `chunk` events (text tokens), then `[DONE]`
 - `GET /stats` — index statistics
 
+### Streaming Implementation
+- **Backend**: `rag.py` has `query_stream()` generator that yields meta + text chunks via LangChain streaming LLM. `main.py` wraps it in a thread-bridged async generator to avoid blocking the event loop.
+- **Frontend**: `api.ts` has `sendChatMessageStream()` using `ReadableStream` reader + `TextDecoder` to parse SSE lines. Supports `AbortSignal` for cancellation.
+- **UI**: Text appears word-by-word with a blinking green cursor (`▌`) during streaming. Cursor disappears when done. Sources appear as soon as the `meta` event arrives.
+
 ### Key Frontend Files
-- `src/pages/ChatPage.tsx` — main page with sidebar, conversation history, chat, voice input
-- `src/components/ChatMessage.tsx` — message bubble with Markdown rendering and source tags
-- `src/lib/api.ts` — API client with safe JSON parsing (never crashes on non-JSON responses)
+- `src/pages/ChatPage.tsx` — main page with sidebar, conversation history, streaming chat, voice input
+- `src/components/ChatMessage.tsx` — message bubble with Markdown rendering, source tags, and streaming cursor
+- `src/lib/api.ts` — API client with streaming SSE support and AbortController cancellation
 - `src/index.css` — full design system (CSS variables, animations, responsive breakpoints)
 
 ### Important Assets

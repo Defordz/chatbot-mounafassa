@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
-import { sendChatMessage } from "@/lib/api";
+import { sendChatMessageStream } from "@/lib/api";
+
+let activeAbortController: AbortController | null = null;
 import councillogo from "@assets/image_1775927493944.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
 
@@ -123,6 +125,7 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [input, setInput] = useState("");
   const [pendingCount, setPendingCount] = useState(0);
+  const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -216,45 +219,80 @@ export default function ChatPage() {
       setPendingCount((c) => c + 1);
 
       const currentConvId = convId;
+      const assistantId = newId();
+
+      const assistantMsg: ChatMessage = {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+        timestamp: new Date(),
+      };
+
+      updateConversation(currentConvId, (c) => ({
+        ...c,
+        messages: [...c.messages, assistantMsg],
+        updatedAt: Date.now(),
+      }));
+
+      setStreamingMsgId(assistantId);
+
+      if (activeAbortController) {
+        activeAbortController.abort();
+      }
+      const abortController = new AbortController();
+      activeAbortController = abortController;
+
+      const currentConv = conversations.find((c) => c.id === currentConvId);
+      const historyMsgs = currentConv ? currentConv.messages : [];
+      const recentHistory = [...historyMsgs, userMsg]
+        .slice(-10)
+        .map((m) => ({ role: m.role, content: m.content }));
 
       try {
-        const currentConv = conversations.find((c) => c.id === currentConvId);
-        const historyMsgs = currentConv ? currentConv.messages : [];
-        const recentHistory = [...historyMsgs, userMsg]
-          .slice(-10)
-          .map((m) => ({ role: m.role, content: m.content }));
-
-        const res = await sendChatMessage(q, recentHistory, null);
-
-        const assistantMsg: ChatMessage = {
-          id: newId(),
-          role: "assistant",
-          content: res.answer,
-          sources: res.sources,
-          confidence_score: res.confidence_score,
-          retrieved_chunks: res.retrieved_chunks,
-          timestamp: new Date(),
-        };
-
-        updateConversation(currentConvId, (c) => ({
-          ...c,
-          messages: [...c.messages, assistantMsg],
-          updatedAt: Date.now(),
-        }));
-      } catch (err: any) {
-        const errorMsg: ChatMessage = {
-          id: newId(),
-          role: "assistant",
-          content: err.message || "Erreur de connexion au service.",
-          timestamp: new Date(),
-          isError: true,
-        };
-        updateConversation(currentConvId, (c) => ({
-          ...c,
-          messages: [...c.messages, errorMsg],
-          updatedAt: Date.now(),
-        }));
+      await sendChatMessageStream(q, recentHistory, null, {
+        onMeta: (data) => {
+          updateConversation(currentConvId, (c) => ({
+            ...c,
+            messages: c.messages.map((m) =>
+              m.id === assistantId
+                ? { ...m, sources: data.sources, confidence_score: data.confidence_score, retrieved_chunks: data.retrieved_chunks }
+                : m
+            ),
+          }));
+        },
+        onChunk: (text) => {
+          updateConversation(currentConvId, (c) => ({
+            ...c,
+            messages: c.messages.map((m) =>
+              m.id === assistantId
+                ? { ...m, content: m.content + text }
+                : m
+            ),
+          }));
+        },
+        onDone: () => {
+          setStreamingMsgId(null);
+          setPendingCount((c) => Math.max(0, c - 1));
+        },
+        onError: (error) => {
+          updateConversation(currentConvId, (c) => ({
+            ...c,
+            messages: c.messages.map((m) =>
+              m.id === assistantId
+                ? { ...m, content: error, isError: true }
+                : m
+            ),
+            updatedAt: Date.now(),
+          }));
+          setStreamingMsgId(null);
+          setPendingCount((c) => Math.max(0, c - 1));
+        },
+      }, abortController.signal);
       } finally {
+        if (activeAbortController === abortController) {
+          activeAbortController = null;
+        }
+        setStreamingMsgId((prev) => prev === assistantId ? null : prev);
         setPendingCount((c) => Math.max(0, c - 1));
       }
     },
@@ -430,9 +468,13 @@ export default function ChatPage() {
             ) : (
               <>
                 {messages.map((msg) => (
-                  <ChatMessageComponent key={msg.id} message={msg} />
+                  <ChatMessageComponent
+                    key={msg.id}
+                    message={msg}
+                    isStreaming={msg.id === streamingMsgId}
+                  />
                 ))}
-                {isLoading && (
+                {isLoading && !streamingMsgId && (
                   <div className="typing-row">
                     <div className="msg-avatar">{SVG_BOT}</div>
                     <div className="typing-bubble">

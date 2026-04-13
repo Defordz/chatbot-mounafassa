@@ -370,6 +370,17 @@ class LexConcRAG:
         response = chain.invoke({"context": context, "question": question})
         answer = response.content
 
+        unique_sources = self._extract_sources(retrieved_chunks)
+
+        result = {
+            "answer": answer,
+            "sources": list(unique_sources.values()),
+            "confidence_score": round(float(avg_confidence), 3),
+            "retrieved_chunks": retrieved_chunks,
+        }
+        return _to_python(result)
+
+    def _extract_sources(self, retrieved_chunks: list) -> dict:
         unique_sources = {}
         for chunk in retrieved_chunks:
             key = chunk["source_name"]
@@ -382,12 +393,105 @@ class LexConcRAG:
                 }
             if chunk["article_ref"] and chunk["article_ref"] not in unique_sources[key]["articles"]:
                 unique_sources[key]["articles"].append(chunk["article_ref"])
+        return unique_sources
 
-        result = {
-            "answer": answer,
-            "sources": list(unique_sources.values()),
+    def query_stream(
+        self,
+        question: str,
+        conversation_history: list = [],
+        source_filter: Optional[str] = None,
+    ):
+        if not self.has_documents():
+            yield {"type": "error", "content": "La base de connaissances juridiques n'est pas encore disponible."}
+            return
+
+        k = 8
+        if source_filter and source_filter != "all":
+            all_docs_with_scores = self.vector_store.similarity_search_with_score(question, k=20)
+            docs_with_scores = [
+                (doc, score) for doc, score in all_docs_with_scores
+                if doc.metadata.get("source_type") == source_filter
+            ][:k]
+        else:
+            docs_with_scores = self.vector_store.similarity_search_with_score(question, k=k)
+
+        if not docs_with_scores:
+            yield {"type": "error", "content": "Les documents disponibles ne permettent pas de répondre à cette question."}
+            return
+
+        docs_with_scores = [(doc, float(score)) for doc, score in docs_with_scores]
+        max_score = max(score for _, score in docs_with_scores) if docs_with_scores else 1.0
+        if max_score == 0:
+            max_score = 1.0
+        normalized_scores = [(doc, float(1.0 - (score / max_score))) for doc, score in docs_with_scores]
+        avg_confidence = float(sum(s for _, s in normalized_scores) / len(normalized_scores))
+
+        retrieved_chunks = []
+        context_parts = []
+
+        for doc, conf_score in normalized_scores:
+            m = doc.metadata
+            source_label = SOURCE_TYPE_LABELS.get(m.get("source_type", "autre"), "Document")
+            source_name = m.get("source_name", m.get("filename", "Document"))
+            article_ref = m.get("article_ref", "")
+            page = m.get("page", "")
+
+            citation = f"[{source_name}"
+            if article_ref:
+                citation += f", {article_ref}"
+            if page:
+                citation += f", p.{page}"
+            citation += "]"
+
+            context_parts.append(
+                f"--- Source: {source_name} | Type: {source_label} | {article_ref} | Page {page} ---\n{doc.page_content}\n"
+            )
+
+            retrieved_chunks.append({
+                "content": str(doc.page_content),
+                "source_name": str(source_name),
+                "source_type": str(m.get("source_type", "autre")),
+                "source_label": str(source_label),
+                "article_ref": str(article_ref),
+                "page": str(page),
+                "filename": str(m.get("filename", "")),
+                "confidence": round(float(conf_score), 3),
+                "citation": str(citation),
+            })
+
+        context = "\n\n".join(context_parts)
+
+        unique_sources = self._extract_sources(retrieved_chunks)
+
+        yield {
+            "type": "meta",
+            "sources": _to_python(list(unique_sources.values())),
             "confidence_score": round(float(avg_confidence), 3),
-            "retrieved_chunks": retrieved_chunks,
+            "retrieved_chunks": _to_python(retrieved_chunks),
         }
-        # Final safety pass: convert any remaining numpy types to Python natives
-        return _to_python(result)
+
+        messages_list = []
+        for turn in conversation_history[-4:]:
+            if turn.get("role") == "user":
+                messages_list.append(("human", turn["content"]))
+            elif turn.get("role") == "assistant":
+                messages_list.append(("ai", turn["content"]))
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", SYSTEM_PROMPT),
+            *messages_list,
+            ("human", HUMAN_PROMPT),
+        ])
+
+        streaming_llm = ChatOpenAI(
+            model="gpt-4o",
+            temperature=0,
+            openai_api_key=os.environ.get("OPENAI_API_KEY"),
+            streaming=True,
+        )
+
+        chain = prompt | streaming_llm
+        for chunk in chain.stream({"context": context, "question": question}):
+            text = chunk.content if hasattr(chunk, 'content') else str(chunk)
+            if text:
+                yield {"type": "chunk", "content": text}

@@ -116,6 +116,104 @@ export async function sendChatMessage(
   };
 }
 
+export interface StreamCallbacks {
+  onMeta: (data: { sources: Source[]; confidence_score: number; retrieved_chunks: RetrievedChunk[] }) => void;
+  onChunk: (text: string) => void;
+  onDone: () => void;
+  onError: (error: string) => void;
+}
+
+export async function sendChatMessageStream(
+  question: string,
+  conversationHistory: Array<{ role: string; content: string }>,
+  sourceFilter: string | null,
+  callbacks: StreamCallbacks,
+  signal?: AbortSignal,
+): Promise<void> {
+  let terminated = false;
+  const finish = () => { if (!terminated) { terminated = true; callbacks.onDone(); } };
+  const fail = (msg: string) => { if (!terminated) { terminated = true; callbacks.onError(msg); } };
+
+  try {
+    const res = await fetch(`${PYTHON_API_BASE}/chat/stream`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question,
+        conversation_history: conversationHistory,
+        source_filter: sourceFilter,
+      }),
+      signal,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      fail(`Erreur ${res.status}: ${text.slice(0, 200)}`);
+      return;
+    }
+
+    const reader = res.body?.getReader();
+    if (!reader) {
+      fail("Le navigateur ne supporte pas le streaming.");
+      return;
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (terminated) return;
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith("data: ")) continue;
+
+          const payload = trimmed.slice(6);
+          if (payload === "[DONE]") {
+            finish();
+            return;
+          }
+
+          try {
+            const data = JSON.parse(payload);
+            if (data.type === "meta") {
+              callbacks.onMeta({
+                sources: data.sources ?? [],
+                confidence_score: data.confidence_score ?? 0,
+                retrieved_chunks: data.retrieved_chunks ?? [],
+              });
+            } else if (data.type === "chunk") {
+              callbacks.onChunk(data.content);
+            } else if (data.type === "error") {
+              fail(data.content);
+              return;
+            }
+          } catch {
+          }
+        }
+      }
+    } finally {
+      try { reader.cancel(); } catch {}
+    }
+
+    finish();
+  } catch (err: any) {
+    if (err?.name === "AbortError") {
+      finish();
+    } else {
+      fail(err?.message || "Impossible de joindre le serveur. Vérifiez votre connexion.");
+    }
+  }
+}
+
 export async function fetchStats(): Promise<{
   total_documents: number;
   total_chunks: number;

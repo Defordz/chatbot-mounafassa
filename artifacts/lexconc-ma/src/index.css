@@ -992,3 +992,16 @@ html, body, #root {
   .welcome-desc { margin-bottom: 10px; }
   .welcome-disclaimer { font-size: 7.5px; margin-top: 8px; }
 }
+
+.streaming-cursor {
+  display: inline-block;
+  color: var(--green-500);
+  font-weight: 700;
+  animation: cursorBlink 0.8s ease-in-out infinite;
+  margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

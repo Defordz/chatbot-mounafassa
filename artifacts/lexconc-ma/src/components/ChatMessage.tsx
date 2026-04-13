@@ -5,6 +5,7 @@ import type { ChatMessage as ChatMessageType } from "@/lib/api";
 
 interface Props {
   message: ChatMessageType;
+  isStreaming?: boolean;
 }
 
 const SVG_BOT = (
@@ -23,7 +24,7 @@ const SVG_BOOK = (
   </svg>
 );
 
-export default function ChatMessage({ message }: Props) {
+export default function ChatMessage({ message, isStreaming }: Props) {
   const [showChunks, setShowChunks] = useState(false);
   const isUser = message.role === "user";
 
@@ -79,6 +80,7 @@ export default function ChatMessage({ message }: Props) {
             >
               {message.content}
             </ReactMarkdown>
+            {isStreaming && <span className="streaming-cursor">▌</span>}
           </div>
 
           {uniqueSources.length > 0 && (
