@@ -573,8 +573,8 @@ button.header-home-btn:focus-visible {
 }
 
 .welcome-chatbot-logo {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
   margin: 0 auto 18px;
   display: block;
