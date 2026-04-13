@@ -129,6 +129,10 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 
 .welcome-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:56px;text-align:center;animation:fadeInUp .6s ease}
 .welcome-logo{height:72px;width:auto;object-fit:contain;margin:0 auto 22px;display:block;filter:drop-shadow(0 4px 16px rgba(45,106,79,.18))}
+
+.welcome-chatbot-animated{position:relative;width:220px;height:220px;margin:0 auto -4px}
+.welcome-chatbot-logo{width:220px;height:220px;object-fit:contain;display:block}
+
 .welcome-title{font-family:var(--font-display);font-size:30px;color:var(--text-900);margin-bottom:10px;font-weight:700;letter-spacing:-0.02em}
 .welcome-desc{font-size:14px;color:var(--text-400);max-width:460px;line-height:1.75;margin-bottom:44px}
 
@@ -195,6 +199,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
   color:var(--text-900);background:transparent;line-height:1.6;max-height:130px;min-height:24px;padding:11px 0;
 }
 .input-box textarea::placeholder{color:var(--text-300)}
+
+.btn-mic{
+  width:44px;height:44px;border-radius:var(--radius-md);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;
+  background:rgba(45,106,79,.06);color:var(--green-700);
+}
+.btn-mic:hover{background:rgba(45,106,79,.12)}
+.btn-mic.listening{background:rgba(231,76,60,.1);color:#e74c3c;animation:pulse 1.5s infinite}
+
 .btn-send{
   width:44px;height:44px;border-radius:var(--radius-md);border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;
@@ -222,6 +235,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
   .suggestion-card{padding:14px 16px}
   .welcome-screen{padding-top:24px}
   .welcome-logo{height:56px;margin-bottom:14px}
+  .welcome-chatbot-animated{width:160px;height:160px}
+  .welcome-chatbot-logo{width:160px;height:160px}
   .welcome-title{font-size:22px}
   .welcome-desc{font-size:13px;margin-bottom:28px}
   .input-box textarea{font-size:16px}
@@ -232,12 +247,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
   .input-area{padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
   .input-box{padding:4px 4px 4px 14px;gap:4px;border-radius:26px}
   .btn-send{width:40px;height:40px;border-radius:50%}
+  .btn-mic{width:40px;height:40px;border-radius:50%}
   .suggestion-card{padding:12px 14px}
   .suggestion-icon{font-size:18px;margin-bottom:6px}
   .suggestion-label{font-size:12px}
   .suggestion-text{font-size:10.5px}
   .welcome-title{font-size:20px}
   .welcome-desc{font-size:12px}
+  .welcome-chatbot-animated{width:130px;height:130px}
+  .welcome-chatbot-logo{width:130px;height:130px}
 }
 </style>
 </head>
@@ -305,6 +323,9 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
       <div class="input-inner">
         <div class="input-box">
           <textarea id="input" rows="1" placeholder="Posez votre question en droit de la concurrence marocain..." oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+          <button class="btn-mic" id="btn-mic" onclick="toggleMic()" title="Dicter un message">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
           <button class="btn-send inactive" id="btn-send" onclick="sendMessage()" disabled>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
@@ -320,6 +341,10 @@ var BOT_AVATAR_HTML = '<img src="' + BOT_AVATAR_URL + '" alt="Monafassa" class="
 var SVG_USER = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
 var SVG_MSG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
 var SVG_TRASH = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+var SVG_MIC = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+var SVG_MIC_OFF = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2c0 .76-.13 1.5-.36 2.18"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+
+var COUNCIL_LOGO_URL = 'https://www.conseil-concurrence.ma/assets/img/logo.png';
 
 var SUGGESTIONS = [
   {icon:"\u2696\uFE0F",label:"Concentrations",text:"Qu'est-ce qu'une op\u00e9ration de concentration \u00e9conomique ?"},
@@ -332,6 +357,8 @@ var conversations = [];
 var activeId = null;
 var sidebarOpen = false;
 var isLoading = false;
+var isListening = false;
+var recognition = null;
 var msgCounter = Date.now();
 
 function init() {
@@ -441,139 +468,242 @@ function render() {
   var inner = document.getElementById('chat-inner');
 
   if (msgs.length === 0) {
-    var html = '<div class="welcome-screen">'
-      + '<img src="https://www.conseil-concurrence.ma/assets/img/logo.png" class="welcome-logo" onerror="this.style.display=\'none\'">'
-      + '<h2 class="welcome-title">Chatbot IA Monafassa</h2>'
-      + '<p class="welcome-desc">Assistant juridique intelligent sp\u00e9cialis\u00e9 en droit marocain de la concurrence, bas\u00e9 sur les textes officiels du Conseil de la Concurrence.</p>'
-      + '<div class="suggestions-grid">';
-    SUGGESTIONS.forEach(function(s,i) {
-      html += '<button class="suggestion-card" onclick="sendMessage(\'' + s.text.replace(/'/g,"\\'") + '\')" style="animation:fadeInUp .4s ease ' + (0.1+i*0.07) + 's both">'
+    var suggestionsHtml = '';
+    SUGGESTIONS.forEach(function(s, i) {
+      suggestionsHtml += '<button class="suggestion-card" onclick="sendSuggestion(\'' + escapeHtml(s.text).replace(/'/g, "\\'") + '\')" style="animation:fadeInUp .4s ease ' + (0.1 + i * 0.07) + 's both">'
         + '<span class="suggestion-icon">' + s.icon + '</span>'
         + '<div class="suggestion-label">' + s.label + '</div>'
-        + '<div class="suggestion-text">' + s.text + '</div></button>';
+        + '<div class="suggestion-text">' + s.text + '</div>'
+        + '</button>';
     });
-    html += '</div>'
-      + '<div class="welcome-disclaimer">Les informations d\u00e9livr\u00e9es par le Chatbot IA Monafassa sont fournies \u00e0 titre indicatif et ne peuvent \u00eatre assimil\u00e9es \u00e0 une prise de position officielle du Conseil de la concurrence, ni engager sa responsabilit\u00e9. Le Conseil de la concurrence se r\u00e9serve le droit d\'appr\u00e9cier souverainement toute situation au regard des dispositions l\u00e9gales et r\u00e9glementaires en vigueur.</div>'
+
+    inner.innerHTML = '<div class="welcome-screen">'
+      + '<img src="' + COUNCIL_LOGO_URL + '" alt="Conseil de la Concurrence" class="welcome-logo" onerror="this.style.display=\'none\'">'
+      + '<div class="welcome-chatbot-animated"><img src="' + BOT_AVATAR_URL + '" alt="Chatbot Monafassa" class="welcome-chatbot-logo"></div>'
+      + '<h2 class="welcome-title">Chatbot IA Monafassa</h2>'
+      + '<p class="welcome-desc">Assistant juridique intelligent sp\u00e9cialis\u00e9 en droit marocain de la concurrence, bas\u00e9 sur les textes officiels du Conseil de la Concurrence.</p>'
+      + '<div class="suggestions-grid">' + suggestionsHtml + '</div>'
+      + '<div class="welcome-disclaimer">Les informations d\u00e9livr\u00e9es par le Chatbot IA Monafassa sont fournies \u00e0 titre indicatif et ne peuvent \u00eatre assimil\u00e9es \u00e0 une prise de position officielle du Conseil de la concurrence, ni engager sa responsabilit\u00e9.</div>'
       + '</div>';
-    inner.innerHTML = html;
   } else {
     var html = '';
-    msgs.forEach(function(m) {
-      var isUser = m.role === 'user';
-      var bubbleClass = m.isError ? 'error' : (isUser ? 'user' : 'assistant');
-      html += '<div class="msg-row ' + (isUser ? 'user' : 'assistant') + '" style="animation:fadeInUp .35s ease both">'
-        + '<div class="msg-wrapper">';
-      if (!isUser) {
-        html += '<div class="msg-avatar">' + BOT_AVATAR_HTML + '</div>';
+    for (var i = 0; i < msgs.length; i++) {
+      var m = msgs[i];
+      var time = formatTime(m.timestamp);
+      if (m.role === 'user') {
+        html += '<div class="msg-row user"><div class="msg-wrapper"><div><div class="msg-bubble user">' + escapeHtml(m.content) + '</div><div class="msg-time">' + time + '</div></div><div class="msg-avatar">' + SVG_USER + '</div></div></div>';
+      } else {
+        var content = simpleMarkdown(m.content);
+        var sourcesHtml = '';
+        if (m.sources && m.sources.length > 0) {
+          sourcesHtml = '<div class="msg-sources">';
+          m.sources.forEach(function(s) {
+            sourcesHtml += '<span class="source-tag">\uD83D\uDCC4 ' + escapeHtml(s) + '</span>';
+          });
+          sourcesHtml += '</div>';
+        }
+        html += '<div class="msg-row assistant"><div class="msg-wrapper"><div class="msg-avatar">' + BOT_AVATAR_HTML + '</div><div><div class="msg-bubble assistant">' + content + sourcesHtml + '</div><div class="msg-time">' + time + '</div></div></div></div>';
       }
-      html += '<div style="min-width:0">'
-        + '<div class="msg-bubble ' + bubbleClass + '">' + (isUser ? escapeHtml(m.content) : simpleMarkdown(m.content)) + '</div>';
-      if (m.sources && m.sources.length > 0) {
-        html += '<div class="msg-sources">';
-        m.sources.forEach(function(s) {
-          html += '<span class="source-tag">\uD83D\uDCC4 ' + escapeHtml(s) + '</span>';
-        });
-        html += '</div>';
-      }
-      html += '<div class="msg-time">' + formatTime(m.timestamp) + '</div>'
-        + '</div></div></div>';
-    });
-    if (isLoading) {
-      html += '<div class="typing-row"><div class="msg-avatar">' + BOT_AVATAR_HTML + '</div>'
-        + '<div class="typing-bubble"><div class="typing-label">Recherche dans la base documentaire...</div>'
-        + '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>'
-        + '</div></div>';
     }
-    html += '<div id="messages-end"></div>';
     inner.innerHTML = html;
-    var end = document.getElementById('messages-end');
-    if (end) end.scrollIntoView({behavior:'smooth'});
   }
+  scrollBottom();
 }
 
-function sendMessage(text) {
-  var q = text || document.getElementById('input').value.trim();
-  if (!q || isLoading) return;
+function scrollBottom() {
+  var el = document.getElementById('chat-messages');
+  setTimeout(function() { el.scrollTop = el.scrollHeight; }, 50);
+}
 
-  var userMsg = {id:String(++msgCounter),role:'user',content:q,timestamp:Date.now()};
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  var sb = document.getElementById('sidebar');
+  sb.classList.toggle('collapsed', !sidebarOpen);
+  render();
+}
 
-  if (!activeId) {
-    var conv = {id:genId(),title:genTitle(q),messages:[userMsg],createdAt:Date.now(),updatedAt:Date.now()};
-    activeId = conv.id;
-    conversations.unshift(conv);
-  } else {
-    var conv = getActive();
-    conv.messages.push(userMsg);
-    conv.updatedAt = Date.now();
-  }
-
-  document.getElementById('input').value = '';
-  document.getElementById('input').style.height = 'auto';
-  updateSendBtn();
-  isLoading = true;
+function newConversation() {
+  activeId = null;
   save();
   render();
   renderSidebar();
+  document.getElementById('input').value = '';
+  document.getElementById('input').focus();
+}
 
-  var conv = getActive();
-  var history = conv.messages.slice(-10).map(function(m) { return {role:m.role,content:m.content}; });
+function switchConv(id) {
+  activeId = id;
+  save();
+  render();
+  renderSidebar();
+}
+
+function deleteConv(id) {
+  conversations = conversations.filter(function(c) { return c.id !== id; });
+  if (activeId === id) activeId = null;
+  save();
+  render();
+  renderSidebar();
+}
+
+function sendSuggestion(text) {
+  document.getElementById('input').value = text;
+  sendMessage();
+}
+
+function toggleMic() {
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("La reconnaissance vocale n'est pas supportée par votre navigateur. Utilisez Chrome ou Edge.");
+    return;
+  }
+  var btn = document.getElementById('btn-mic');
+  if (isListening && recognition) {
+    recognition.stop();
+    isListening = false;
+    btn.classList.remove('listening');
+    btn.innerHTML = SVG_MIC;
+    btn.title = 'Dicter un message';
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.lang = 'fr-FR';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = function() {
+    isListening = true;
+    btn.classList.add('listening');
+    btn.innerHTML = SVG_MIC_OFF;
+    btn.title = "Arrêter l'écoute";
+    document.getElementById('input').placeholder = 'Parlez maintenant...';
+  };
+  recognition.onresult = function(event) {
+    var transcript = '';
+    for (var i = 0; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    document.getElementById('input').value = transcript;
+    updateSendBtn();
+  };
+  recognition.onend = function() {
+    isListening = false;
+    recognition = null;
+    btn.classList.remove('listening');
+    btn.innerHTML = SVG_MIC;
+    btn.title = 'Dicter un message';
+    document.getElementById('input').placeholder = 'Posez votre question en droit de la concurrence marocain...';
+  };
+  recognition.onerror = function() {
+    isListening = false;
+    recognition = null;
+    btn.classList.remove('listening');
+    btn.innerHTML = SVG_MIC;
+    btn.title = 'Dicter un message';
+    document.getElementById('input').placeholder = 'Posez votre question en droit de la concurrence marocain...';
+  };
+  recognition.start();
+}
+
+function sendMessage() {
+  var inp = document.getElementById('input');
+  var q = inp.value.trim();
+  if (!q || isLoading) return;
+
+  var now = Date.now();
+
+  if (!activeId) {
+    var conv = { id: genId(), title: genTitle(q), messages: [], createdAt: now, updatedAt: now };
+    conversations.unshift(conv);
+    activeId = conv.id;
+  }
+
+  var c = getActive();
+  c.messages.push({ role: 'user', content: q, timestamp: now });
+  c.updatedAt = now;
+  save();
+  render();
+  renderSidebar();
+  inp.value = '';
+  inp.style.height = 'auto';
+  updateSendBtn();
+
+  isLoading = true;
+  showTyping();
+
+  var history = c.messages.map(function(m) { return { role: m.role, content: m.content }; });
 
   google.script.run
     .withSuccessHandler(function(res) {
       isLoading = false;
-      var c = getActive();
-      if (!c) return;
+      hideTyping();
+      var ac = getActive();
+      if (!ac) return;
       if (res.success) {
-        c.messages.push({id:String(++msgCounter),role:'assistant',content:res.answer,sources:res.sources||[],timestamp:Date.now()});
+        ac.messages.push({ role: 'assistant', content: res.answer, sources: res.sources, timestamp: Date.now() });
       } else {
-        c.messages.push({id:String(++msgCounter),role:'assistant',content:'Erreur : ' + (res.error||'Service indisponible'),timestamp:Date.now(),isError:true});
+        ac.messages.push({ role: 'assistant', content: 'Erreur : ' + (res.error || 'Une erreur est survenue.'), timestamp: Date.now(), isError: true });
       }
-      c.updatedAt = Date.now();
+      ac.updatedAt = Date.now();
       save();
       render();
       renderSidebar();
     })
     .withFailureHandler(function(err) {
       isLoading = false;
-      var c = getActive();
-      if (c) {
-        c.messages.push({id:String(++msgCounter),role:'assistant',content:'Erreur de connexion au service.',timestamp:Date.now(),isError:true});
-        c.updatedAt = Date.now();
-        save();
-      }
+      hideTyping();
+      var ac = getActive();
+      if (!ac) return;
+      ac.messages.push({ role: 'assistant', content: 'Erreur de connexion : ' + err.message, timestamp: Date.now(), isError: true });
+      ac.updatedAt = Date.now();
+      save();
       render();
       renderSidebar();
     })
     .chat(q, history);
 }
 
-function newConversation() { activeId = null; save(); render(); renderSidebar(); }
-function switchConv(id) { activeId = id; save(); render(); renderSidebar(); }
-function deleteConv(id) {
-  conversations = conversations.filter(function(c) { return c.id !== id; });
-  if (activeId === id) activeId = null;
-  save(); render(); renderSidebar();
+function showTyping() {
+  var el = document.getElementById('chat-inner');
+  var div = document.createElement('div');
+  div.id = 'typing-indicator';
+  div.className = 'typing-row';
+  div.innerHTML = '<div class="msg-avatar">' + BOT_AVATAR_HTML + '</div>'
+    + '<div class="typing-bubble">'
+    + '<div class="typing-label">Recherche dans la base documentaire...</div>'
+    + '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>'
+    + '</div>';
+  el.appendChild(div);
+  scrollBottom();
 }
 
-function toggleSidebar() {
-  sidebarOpen = !sidebarOpen;
-  var sb = document.getElementById('sidebar');
-  if (sidebarOpen) { sb.classList.remove('collapsed'); }
-  else { sb.classList.add('collapsed'); }
-  render();
+function hideTyping() {
+  var el = document.getElementById('typing-indicator');
+  if (el) el.remove();
 }
 
-function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
-function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 130) + 'px'; updateSendBtn(); }
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 130) + 'px';
+  updateSendBtn();
+}
+
 function updateSendBtn() {
   var btn = document.getElementById('btn-send');
-  var val = document.getElementById('input').value.trim();
-  btn.disabled = !val;
-  btn.className = 'btn-send ' + (val ? 'active' : 'inactive');
+  var hasText = document.getElementById('input').value.trim().length > 0;
+  btn.disabled = !hasText;
+  btn.className = 'btn-send ' + (hasText ? 'active' : 'inactive');
 }
 
-document.getElementById('input').addEventListener('input', function() { updateSendBtn(); });
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
 init();
 </script>
+
 </body>
 </html>
