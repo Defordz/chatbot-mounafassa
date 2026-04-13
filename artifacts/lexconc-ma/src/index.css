@@ -575,57 +575,10 @@ button.header-home-btn:focus-visible {
 .welcome-chatbot-animated {
   position: relative;
   width: 150px;
-  height: 150px;
   margin: 0 auto 8px;
-  animation: botIdle 8s ease-in-out infinite;
-}
-
-.welcome-chatbot-logo {
-  width: 150px;
-  height: 150px;
-  object-fit: contain;
-  display: block;
-  animation: botBlink 4s ease-in-out infinite;
-  transform-origin: center 62%;
-}
-
-@keyframes botBlink {
-  0%, 38%, 42%, 85%, 89%, 100% {
-    transform: scaleY(1);
-  }
-  40%, 87% {
-    transform: scaleY(0.92);
-  }
-}
-
-@keyframes botIdle {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  12% {
-    transform: translateY(-2px) rotate(4deg);
-  }
-  24% {
-    transform: translateY(0) rotate(0deg);
-  }
-  36% {
-    transform: translateY(-2px) rotate(-4deg);
-  }
-  48% {
-    transform: translateY(0) rotate(0deg);
-  }
-  60% {
-    transform: translateY(-3px) rotate(3deg);
-  }
-  72% {
-    transform: translateY(0) rotate(0deg);
-  }
-  84% {
-    transform: translateY(-2px) rotate(-3deg);
-  }
-  96% {
-    transform: translateY(0) rotate(0deg);
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .welcome-title {

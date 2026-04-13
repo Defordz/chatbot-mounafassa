@@ -7,6 +7,7 @@ import { sendChatMessageStream } from "@/lib/api";
 let activeAbortController: AbortController | null = null;
 import councillogo from "@assets/image_1775927493944.png";
 import chatbotLogo from "@assets/IMG_0521_green_transparent.png";
+import AnimatedChatbotLogo from "../components/AnimatedChatbotLogo";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
 
 interface Conversation {
@@ -450,7 +451,7 @@ export default function ChatPage() {
               <div className="welcome-screen">
                 <img src={councillogo} alt="Conseil de la Concurrence" className="welcome-logo" />
                 <div className="welcome-chatbot-animated">
-                  <img src={chatbotLogo} alt="Chatbot Monafassa" className="welcome-chatbot-logo" />
+                  <AnimatedChatbotLogo size={150} />
                 </div>
                 <h2 className="welcome-title">Chatbot IA Monafassa</h2>
                 <p className="welcome-desc">
