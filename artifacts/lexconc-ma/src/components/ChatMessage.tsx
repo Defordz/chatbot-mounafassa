@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { ChatMessage as ChatMessageType } from "@/lib/api";
-import chatbotLogo from "@assets/IMG_0521_green_transparent.png";
+import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 
 interface Props {
   message: ChatMessageType;

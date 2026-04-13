@@ -575,10 +575,15 @@ button.header-home-btn:focus-visible {
 .welcome-chatbot-animated {
   position: relative;
   width: 150px;
+  height: 150px;
   margin: 0 auto 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+
+.welcome-chatbot-logo {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  display: block;
 }
 
 .welcome-title {
