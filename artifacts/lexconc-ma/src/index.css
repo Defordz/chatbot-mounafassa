@@ -576,7 +576,7 @@ button.header-home-btn:focus-visible {
   position: relative;
   width: 220px;
   height: 220px;
-  margin: 0 auto 8px;
+  margin: 0 auto -4px;
 }
 
 .welcome-chatbot-logo {
