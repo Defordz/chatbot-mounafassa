@@ -2,20 +2,14 @@ import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { ChatMessage as ChatMessageType } from "@/lib/api";
+import chatbotLogo from "@assets/IMG_0521_1776045268194.png";
 
 interface Props {
   message: ChatMessageType;
   isStreaming?: boolean;
 }
 
-const SVG_BOT = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="8" width="18" height="12" rx="3"/>
-    <circle cx="9" cy="14" r="1.5" fill="currentColor"/>
-    <circle cx="15" cy="14" r="1.5" fill="currentColor"/>
-    <path d="M12 2v6"/><circle cx="12" cy="2" r="1" fill="currentColor"/>
-  </svg>
-);
+const BOT_AVATAR = <img src={chatbotLogo} alt="Monafassa" className="bot-avatar-img" />;
 
 const SVG_BOOK = (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -47,7 +41,7 @@ export default function ChatMessage({ message, isStreaming }: Props) {
     return (
       <div className="msg-row assistant">
         <div className="msg-wrapper">
-          <div className="msg-avatar">{SVG_BOT}</div>
+          <div className="msg-avatar">{BOT_AVATAR}</div>
           <div className="msg-content-wrap">
             <div className="msg-bubble error">{message.content}</div>
             <div className="msg-timestamp">{timeStr}</div>
@@ -62,7 +56,7 @@ export default function ChatMessage({ message, isStreaming }: Props) {
   return (
     <div className="msg-row assistant">
       <div className="msg-wrapper">
-        <div className="msg-avatar">{SVG_BOT}</div>
+        <div className="msg-avatar">{BOT_AVATAR}</div>
         <div className="msg-content-wrap">
           <div className="msg-bubble assistant">
             <ReactMarkdown

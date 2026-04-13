@@ -6,6 +6,7 @@ import { sendChatMessageStream } from "@/lib/api";
 
 let activeAbortController: AbortController | null = null;
 import councillogo from "@assets/image_1775927493944.png";
+import chatbotLogo from "@assets/IMG_0521_1776045268194.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
 
 interface Conversation {
@@ -102,14 +103,7 @@ const SUGGESTIONS = [
   { icon: "\uD83D\uDEE1\uFE0F", label: "Pratiques", text: "Quelles sont les pratiques anticoncurrentielles prohibées ?" },
 ];
 
-const SVG_BOT = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="8" width="18" height="12" rx="3"/>
-    <circle cx="9" cy="14" r="1.5" fill="currentColor"/>
-    <circle cx="15" cy="14" r="1.5" fill="currentColor"/>
-    <path d="M12 2v6"/><circle cx="12" cy="2" r="1" fill="currentColor"/>
-  </svg>
-);
+const BOT_AVATAR = <img src={chatbotLogo} alt="Monafassa" className="bot-avatar-img" />;
 
 let msgIdCounter = Date.now();
 function newId() { return String(++msgIdCounter); }
@@ -424,7 +418,7 @@ export default function ChatPage() {
                 <PanelLeftOpen size={20} />
               </button>
             )}
-            <div className="header-avatar">{SVG_BOT}</div>
+            <div className="header-avatar header-home-btn" onClick={startNewConversation} title="Retour à l'accueil">{BOT_AVATAR}</div>
             <div>
               <div className="header-title">
                 {activeConv ? activeConv.title : "Chatbot IA Monafassa"}
@@ -476,7 +470,7 @@ export default function ChatPage() {
                 ))}
                 {isLoading && !streamingMsgId && (
                   <div className="typing-row">
-                    <div className="msg-avatar">{SVG_BOT}</div>
+                    <div className="msg-avatar">{BOT_AVATAR}</div>
                     <div className="typing-bubble">
                       <div className="typing-label">Recherche dans la base documentaire...</div>
                       <div className="typing-dots">
