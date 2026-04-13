@@ -574,14 +574,14 @@ button.header-home-btn:focus-visible {
 
 .welcome-chatbot-animated {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 220px;
+  height: 220px;
   margin: 0 auto 8px;
 }
 
 .welcome-chatbot-logo {
-  width: 150px;
-  height: 150px;
+  width: 220px;
+  height: 220px;
   object-fit: contain;
   display: block;
 }
