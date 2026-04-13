@@ -501,7 +501,7 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={listening ? "Parlez maintenant..." : "Posez votre question en droit de la concurrence marocain..."}
+                placeholder={listening ? "Parlez maintenant..." : (window.innerWidth <= 480 ? "Posez votre question..." : "Posez votre question en droit de la concurrence marocain...")}
                 rows={1}
                 onInput={(e) => {
                   const t = e.target as HTMLTextAreaElement;
