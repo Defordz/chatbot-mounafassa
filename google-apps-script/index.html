@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Chatbot IA Monafassa</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -10,34 +10,31 @@
 :root{
   --green-900:#0d2818;--green-800:#1b4332;--green-700:#2d6a4f;
   --green-600:#40916c;--green-500:#52b788;--green-400:#74c69d;
-  --green-300:#95d5b2;--green-200:#b7e4c7;
-  --bg-main:#f0f4f1;--bg-white:#ffffff;
-  --text-900:#1a1a2e;--text-700:#2d2d44;--text-400:#6b7280;--text-300:#9ca3af;
+  --green-300:#95d5b2;--green-200:#b7e4c7;--green-100:#d8f3dc;
+  --bg-main:#f4f7f2;--bg-white:#ffffff;
+  --text-900:#1b4332;--text-700:#344e41;--text-400:#7c9a82;--text-300:#95a88e;
   --border:rgba(45,106,79,0.08);
   --radius-sm:8px;--radius-md:12px;--radius-lg:16px;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.04);
-  --shadow-md:0 4px 16px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 16px rgba(45,106,79,0.08);
   --font-body:'DM Sans',system-ui,sans-serif;
   --font-display:'Playfair Display',Georgia,serif;
   --sidebar-width:270px;
+  --header-height:64px;
 }
-html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:var(--bg-main);color:var(--text-900)}
+html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:var(--bg-main);color:var(--text-700)}
 
-.app-container{display:flex;height:100vh;width:100vw;overflow:hidden}
+.app-container{display:flex;height:100vh;height:100dvh;width:100vw;overflow:hidden}
 
 /* SIDEBAR */
 .sidebar{
   width:var(--sidebar-width);background-color:var(--green-900);
-  background-image:url('https://i.imgur.com/placeholder.png');
-  background-size:cover;background-position:center;
   display:flex;flex-direction:column;padding:28px 20px;flex-shrink:0;
   position:relative;overflow-x:hidden;overflow-y:auto;z-index:10;
   transition:width .3s ease,padding .3s ease,opacity .3s ease;
 }
-.sidebar::before{content:'';position:absolute;inset:0;background:rgba(0,40,20,0.7);pointer-events:none}
-.sidebar::after{content:'';position:absolute;inset:0;opacity:.06;
-  background-image:radial-gradient(circle at 30% 30%,rgba(255,255,255,.8) 1px,transparent 1px);
-  background-size:22px 22px;pointer-events:none}
+.sidebar::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.25);pointer-events:none}
+.sidebar::after{content:'';position:absolute;bottom:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(82,183,136,0.08) 0%,transparent 70%);pointer-events:none}
 .sidebar.collapsed{width:0;padding:0;overflow:hidden;opacity:0;pointer-events:none}
 
 .sidebar-logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:8px;position:relative;z-index:1}
@@ -66,14 +63,14 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .btn-new-chat{
   display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--radius-md);
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
-  color:rgba(255,255,255,.8);font-size:13px;font-weight:600;cursor:pointer;
-  transition:all .25s;position:relative;z-index:1;width:100%;
+  color:rgba(255,255,255,.8);font-size:13px;font-weight:500;cursor:pointer;
+  transition:all .25s;position:relative;z-index:1;width:100%;font-family:var(--font-body);
 }
 .btn-new-chat:hover{background:rgba(255,255,255,.12);color:white;border-color:rgba(255,255,255,.15)}
 
 .sidebar-section-title{
   font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;
-  letter-spacing:.1em;padding:16px 4px 8px;position:relative;z-index:1;
+  letter-spacing:.14em;margin-bottom:14px;margin-top:28px;position:relative;z-index:1;
 }
 
 .sidebar-history{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;position:relative;z-index:1;margin-top:6px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
@@ -93,137 +90,154 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 .conv-delete svg{width:13px;height:13px}
 
 .sidebar-footer{margin-top:auto;position:relative;z-index:1;flex-shrink:0}
-.sidebar-credit{color:rgba(255,255,255,.25);font-size:10px;text-align:center;line-height:1.5;position:relative;z-index:1}
+.sidebar-credit{color:rgba(255,255,255,.18);font-size:10px;text-align:center;line-height:1.6;position:relative;z-index:1}
 
 /* MAIN AREA */
-.main-area{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg-main);position:relative}
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg-main);position:relative;height:100%}
+
+.welcome-top-bar{position:absolute;top:12px;left:16px;z-index:5}
 
 .main-header{
-  height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;
-  background:rgba(255,255,255,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  height:var(--header-height);display:flex;align-items:center;justify-content:space-between;padding:0 32px;
+  background:rgba(255,255,255,.65);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);flex-shrink:0;z-index:5;
 }
+.main-header.hidden{display:none}
 .header-left{display:flex;align-items:center;gap:12px}
-.header-avatar{width:36px;height:36px;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--green-600),var(--green-700));display:flex;align-items:center;justify-content:center;color:white}
-.header-title{font-size:15px;font-weight:700;color:var(--text-900)}
-.header-subtitle{font-size:12px;color:var(--green-600);font-weight:500}
-.header-badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;color:var(--green-700);background:rgba(82,183,136,.08);border:1px solid rgba(82,183,136,.15)}
+
+.header-avatar{
+  width:38px;height:38px;border-radius:50%;background:var(--bg-white);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  overflow:hidden;border:1.5px solid rgba(45,106,79,0.1);
+}
+.header-home-btn{
+  cursor:pointer;transition:all .2s ease;padding:0;outline:none;
+}
+.header-home-btn:hover{transform:scale(1.08);box-shadow:0 2px 10px rgba(45,106,79,.15);border-color:var(--green-400)}
+.header-home-btn:active{transform:scale(0.96)}
+.header-home-btn:focus-visible{box-shadow:0 0 0 2px var(--green-500)}
+
+.bot-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+
+.header-title{font-size:14px;font-weight:650;color:var(--text-900);letter-spacing:-0.01em}
+.header-subtitle{font-size:11px;color:var(--green-500);font-weight:500;margin-top:1px}
+.header-badge{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;color:var(--green-700);background:rgba(82,183,136,.08);border:1px solid rgba(82,183,136,.12)}
 
 /* CHAT MESSAGES */
-.chat-messages{flex:1;overflow-y:auto;padding:28px 32px;scroll-behavior:smooth}
+.chat-messages{flex:1;overflow-y:auto;padding:28px 32px;min-height:0;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .chat-inner{max-width:800px;margin:0 auto;width:100%}
 
-.welcome-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:48px;text-align:center}
-.welcome-logo{height:80px;margin-bottom:20px}
-.welcome-title{font-family:var(--font-display);font-size:32px;color:var(--text-900);margin-bottom:12px;font-weight:700}
-.welcome-desc{font-size:15px;color:var(--text-400);max-width:520px;line-height:1.6;margin-bottom:36px}
+.welcome-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:56px;text-align:center;animation:fadeInUp .6s ease}
+.welcome-logo{height:72px;width:auto;object-fit:contain;margin:0 auto 22px;display:block;filter:drop-shadow(0 4px 16px rgba(45,106,79,.18))}
+.welcome-title{font-family:var(--font-display);font-size:30px;color:var(--text-900);margin-bottom:10px;font-weight:700;letter-spacing:-0.02em}
+.welcome-desc{font-size:14px;color:var(--text-400);max-width:460px;line-height:1.75;margin-bottom:44px}
 
-.suggestions-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:600px}
+.suggestions-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:540px;margin:0 auto;width:100%}
 .suggestion-card{
-  background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-md);
-  padding:18px 20px;text-align:left;cursor:pointer;transition:all .25s;
+  background:var(--bg-white);border:1px solid var(--border);border-radius:14px;
+  padding:18px 20px;text-align:left;cursor:pointer;transition:all .25s;box-shadow:var(--shadow-sm);font-family:var(--font-body);
 }
-.suggestion-card:hover{border-color:var(--green-300);box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.suggestion-icon{font-size:24px;margin-bottom:10px;display:block}
-.suggestion-label{font-size:13px;font-weight:700;color:var(--text-900);margin-bottom:4px}
-.suggestion-text{font-size:12px;color:var(--text-400);line-height:1.4}
+.suggestion-card:hover{border-color:rgba(45,106,79,.22);box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.suggestion-icon{font-size:22px;margin-bottom:10px;display:block}
+.suggestion-label{font-size:13px;font-weight:650;color:var(--text-900);margin-bottom:4px}
+.suggestion-text{font-size:11.5px;color:var(--text-400);line-height:1.55}
 
 .welcome-disclaimer{text-align:center;margin-top:24px;font-size:10px;color:#999;letter-spacing:.01em;line-height:1.6;padding:0 16px;max-width:700px;margin-left:auto;margin-right:auto;font-style:italic}
 
 /* MESSAGE BUBBLES */
-.msg-row{display:flex;gap:12px;margin-bottom:20px;animation:fadeInUp .35s ease both}
-.msg-row.user{flex-direction:row-reverse}
-.msg-avatar{width:32px;height:32px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
-.msg-row:not(.user) .msg-avatar{background:linear-gradient(135deg,var(--green-600),var(--green-700));color:white}
-.msg-row.user .msg-avatar{background:linear-gradient(135deg,#6366f1,#818cf8);color:white}
-.msg-wrapper{max-width:78%}
-.msg-bubble{padding:14px 18px;border-radius:var(--radius-lg);font-size:14px;line-height:1.65;word-wrap:break-word}
-.msg-row:not(.user) .msg-bubble{background:var(--bg-white);color:var(--text-700);border:1px solid var(--border);border-top-left-radius:4px}
-.msg-row.user .msg-bubble{background:linear-gradient(135deg,var(--green-700),var(--green-600));color:white;border-top-right-radius:4px}
-.msg-time{font-size:10px;color:var(--text-300);margin-top:6px;padding:0 4px}
+.msg-row{display:flex;margin-bottom:22px;animation:fadeInUp .35s ease both}
+.msg-row.user{justify-content:flex-end}
+.msg-row.assistant{justify-content:flex-start}
+.msg-wrapper{display:flex;gap:12px;max-width:82%;align-items:flex-start}
+.msg-avatar{
+  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:2px;overflow:hidden;
+  background:var(--bg-white);border:1px solid rgba(45,106,79,0.08);
+}
+.msg-bubble{line-height:1.75;word-break:break-word}
+.msg-bubble.user{padding:13px 20px;border-radius:20px 20px 5px 20px;background:linear-gradient(135deg,var(--green-700),var(--green-600));color:white;font-size:13.5px;box-shadow:0 3px 10px rgba(45,106,79,.2)}
+.msg-bubble.assistant{padding:20px 24px;border-radius:20px 20px 20px 5px;background:var(--bg-white);color:var(--text-700);font-size:13.5px;border:1px solid rgba(45,106,79,.06);box-shadow:var(--shadow-sm)}
+.msg-bubble.assistant strong{color:var(--text-900);font-weight:600}
+.msg-bubble.assistant h2{font-weight:700;font-size:14px;color:var(--text-900);margin-top:16px;margin-bottom:6px}
+.msg-bubble.assistant h3{font-weight:600;font-size:13.5px;color:var(--text-900);margin-top:12px;margin-bottom:4px}
+.msg-bubble.assistant h4{font-size:13px;font-weight:600;color:var(--green-800);margin:12px 0 6px}
+.msg-bubble.assistant ul,.msg-bubble.assistant ol{margin:5px 0;padding-left:20px}
+.msg-bubble.assistant li{font-size:13.5px;line-height:1.75;color:var(--text-700);margin-bottom:3px}
+.msg-bubble.error{padding:16px 20px;border-radius:20px 20px 20px 5px;background:#fff5f5;color:#c0392b;font-size:13.5px;border:1px solid rgba(192,57,43,.15);box-shadow:var(--shadow-sm)}
+
+.msg-time{font-size:10.5px;color:var(--text-300);margin-top:6px;padding:0 4px}
 .msg-row.user .msg-time{text-align:right}
-.msg-sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.source-tag{font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(82,183,136,.08);color:var(--green-700);border:1px solid rgba(82,183,136,.12);font-weight:600}
-.msg-error .msg-bubble{background:#fef2f2 !important;color:#dc2626 !important;border-color:#fecaca !important}
+.msg-sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;animation:fadeIn .4s ease .2s both}
+.source-tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:5px 12px;border-radius:var(--radius-sm);background:rgba(45,106,79,.06);color:var(--green-700);border:1px solid rgba(45,106,79,.1);font-weight:550;transition:all .2s}
+.source-tag:hover{background:rgba(45,106,79,.1);border-color:rgba(45,106,79,.18)}
 
 /* TYPING */
-.typing-row{display:flex;gap:12px;margin-bottom:20px}
-.typing-bubble{background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;border-top-left-radius:4px}
-.typing-label{font-size:12px;color:var(--text-400);margin-bottom:8px;font-style:italic}
-.typing-dots{display:flex;gap:5px}
-.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--green-400);animation:typingBounce 1.4s ease infinite}
-.typing-dot:nth-child(2){animation-delay:.2s}
-.typing-dot:nth-child(3){animation-delay:.4s}
+.typing-row{display:flex;gap:12px;margin-bottom:22px;animation:fadeIn .3s ease;align-items:flex-start}
+.typing-bubble{padding:18px 24px;border-radius:20px 20px 20px 5px;background:var(--bg-white);border:1px solid rgba(45,106,79,.06);box-shadow:var(--shadow-sm)}
+.typing-label{font-size:11px;color:var(--green-500);font-weight:550;margin-bottom:8px;letter-spacing:.02em}
+.typing-dots{display:flex;gap:5px;align-items:center;padding:2px 0}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--green-700)}
+.typing-dot:nth-child(1){animation:typingBounce 1.2s ease-in-out 0s infinite}
+.typing-dot:nth-child(2){animation:typingBounce 1.2s ease-in-out .15s infinite}
+.typing-dot:nth-child(3){animation:typingBounce 1.2s ease-in-out .3s infinite}
 
 /* INPUT AREA */
-.input-area{padding:12px 32px 8px;background:var(--bg-main);flex-shrink:0;position:sticky;bottom:0;z-index:5}
+.input-area{padding:12px 32px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg-main) 85%,transparent);flex-shrink:0;position:relative;z-index:5}
 .input-inner{max-width:800px;margin:0 auto;width:100%}
 .input-box{
   display:flex;align-items:flex-end;gap:8px;background:var(--bg-white);
   border-radius:var(--radius-lg);border:1.5px solid rgba(45,106,79,.1);
   padding:6px 6px 6px 20px;box-shadow:var(--shadow-sm);transition:all .25s;
 }
-.input-box:focus-within{border-color:var(--green-400);box-shadow:0 0 0 3px rgba(82,183,136,.1)}
+.input-box:focus-within{border-color:rgba(45,106,79,.28);box-shadow:0 4px 24px rgba(45,106,79,.08)}
 .input-box textarea{
   flex:1;border:none;outline:none;resize:none;font-size:14px;font-family:var(--font-body);
-  color:var(--text-900);background:transparent;line-height:1.5;max-height:130px;min-height:24px;padding:8px 0;
+  color:var(--text-900);background:transparent;line-height:1.6;max-height:130px;min-height:24px;padding:11px 0;
 }
 .input-box textarea::placeholder{color:var(--text-300)}
-.btn-send,.btn-mic{
-  width:40px;height:40px;border-radius:var(--radius-md);border:none;cursor:pointer;
+.btn-send{
+  width:44px;height:44px;border-radius:var(--radius-md);border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;
 }
 .btn-send.active{background:linear-gradient(135deg,var(--green-600),var(--green-700));color:white}
 .btn-send.active:hover{transform:scale(1.05)}
 .btn-send.inactive{background:rgba(45,106,79,.06);color:rgba(45,106,79,.2);cursor:default}
-.btn-mic{background:rgba(45,106,79,.06);color:var(--green-700)}
-.btn-mic:hover{background:rgba(45,106,79,.12)}
-.btn-mic.listening{background:#e74c3c;color:white;animation:pulse 1.5s ease infinite}
 
 /* ANIMATIONS */
-@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-7px);opacity:1}}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,.3)}50%{box-shadow:0 0 0 8px rgba(231,76,60,0)}}
 @keyframes slideInLeft{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
 
 /* RESPONSIVE */
 @media(max-width:768px){
-  .sidebar{display:none}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;z-index:100;width:270px}
+  .sidebar.collapsed{width:0}
   .chat-messages{padding:20px 16px}
-  .main-header{padding:0 16px}
-  .input-area{padding:8px 12px 8px}
+  .main-header{padding:0 16px;height:54px}
+  .input-area{padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
   .welcome-disclaimer{font-size:9px;margin-top:16px;padding:0 8px}
-  .suggestions-grid{grid-template-columns:1fr}
-  .welcome-screen{padding-top:32px}
+  .suggestions-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .suggestion-card{padding:14px 16px}
+  .welcome-screen{padding-top:24px}
+  .welcome-logo{height:56px;margin-bottom:14px}
+  .welcome-title{font-size:22px}
+  .welcome-desc{font-size:13px;margin-bottom:28px}
   .input-box textarea{font-size:16px}
-}
-@media(max-width:480px){
-  .input-area{padding:6px 8px 6px}
-  .input-box{padding:4px 4px 4px 14px;gap:4px}
-  .btn-mic,.btn-send{width:38px;height:38px}
-  .input-box textarea{font-size:16px}
-  .welcome-disclaimer{font-size:8.5px;margin-top:14px;padding:0 4px}
-  .welcome-title{font-size:24px}
-  .welcome-desc{font-size:13px}
+  .input-box textarea::placeholder{font-size:13px}
   .header-badge{display:none}
 }
-@media(max-height:500px){
-  .main-header{height:50px}
-  .chat-messages{padding:12px 16px}
-  .input-area{padding:6px 16px 6px}
-  .welcome-disclaimer{font-size:8px;margin-top:10px;line-height:1.4}
-  .welcome-screen{padding-top:16px}
-  .welcome-logo{height:48px}
-  .welcome-title{font-size:22px}
-  .suggestions-grid{gap:8px}
+@media(max-width:400px){
+  .input-area{padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+  .input-box{padding:4px 4px 4px 14px;gap:4px;border-radius:26px}
+  .btn-send{width:40px;height:40px;border-radius:50%}
   .suggestion-card{padding:12px 14px}
-}
-@media(orientation:landscape) and (max-height:500px){
-  .sidebar{display:none}
-  .welcome-screen{padding-top:8px}
-  .welcome-logo{height:40px;margin-bottom:10px}
-  .welcome-desc{margin-bottom:10px}
-  .welcome-disclaimer{font-size:7.5px;margin-top:8px}
+  .suggestion-icon{font-size:18px;margin-bottom:6px}
+  .suggestion-label{font-size:12px}
+  .suggestion-text{font-size:10.5px}
+  .welcome-title{font-size:20px}
+  .welcome-desc{font-size:12px}
 }
 </style>
 </head>
@@ -231,7 +245,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 
 <div class="app-container" id="app">
   <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar collapsed" id="sidebar">
     <div class="sidebar-logo">
       <img src="https://www.conseil-concurrence.ma/assets/img/logo.png" alt="Conseil de la Concurrence" class="sidebar-logo-img" onerror="this.style.display='none'">
       <div class="sidebar-logo-text">
@@ -261,14 +275,20 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 
   <!-- MAIN -->
   <main class="main-area">
-    <header class="main-header">
+    <div class="welcome-top-bar" id="welcome-top-bar" style="display:none">
+      <button class="sidebar-expand" onclick="toggleSidebar()" title="Afficher la barre latérale">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><polyline points="13 9 16 12 13 15"/></svg>
+      </button>
+    </div>
+
+    <header class="main-header hidden" id="main-header">
       <div class="header-left">
         <button class="sidebar-expand" id="btn-expand" style="display:none" onclick="toggleSidebar()" title="Afficher la barre latérale">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><polyline points="13 9 16 12 13 15"/></svg>
         </button>
-        <div class="header-avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="3"/><circle cx="9" cy="14" r="1.5" fill="currentColor"/><circle cx="15" cy="14" r="1.5" fill="currentColor"/><path d="M12 2v6"/><circle cx="12" cy="2" r="1" fill="currentColor"/></svg>
-        </div>
+        <button class="header-avatar header-home-btn" onclick="newConversation()" title="Retour à l'accueil" aria-label="Retour à l'accueil">
+          <img src="https://i.ibb.co/JFH5Jrwb/IMG-0521.png" alt="Monafassa" class="bot-avatar-img">
+        </button>
         <div>
           <div class="header-title" id="header-title">Chatbot IA Monafassa</div>
           <div class="header-subtitle">Assistant juridique · Droit de la concurrence</div>
@@ -295,21 +315,22 @@ html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:va
 </div>
 
 <script>
-var SVG_BOT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="3"/><circle cx="9" cy="14" r="1.5" fill="currentColor"/><circle cx="15" cy="14" r="1.5" fill="currentColor"/><path d="M12 2v6"/><circle cx="12" cy="2" r="1" fill="currentColor"/></svg>';
+var BOT_AVATAR_URL = 'https://i.ibb.co/JFH5Jrwb/IMG-0521.png';
+var BOT_AVATAR_HTML = '<img src="' + BOT_AVATAR_URL + '" alt="Monafassa" class="bot-avatar-img">';
 var SVG_USER = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
 var SVG_MSG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
 var SVG_TRASH = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
 
 var SUGGESTIONS = [
-  {icon:"⚖️",label:"Concentrations",text:"Qu'est-ce qu'une opération de concentration économique ?"},
-  {icon:"📊",label:"Seuils",text:"Quels sont les seuils de notification obligatoire ?"},
-  {icon:"🔄",label:"Procédures",text:"Comment se déroule la procédure Phase I et Phase II ?"},
-  {icon:"🛡️",label:"Pratiques",text:"Quelles sont les pratiques anticoncurrentielles prohibées ?"}
+  {icon:"\u2696\uFE0F",label:"Concentrations",text:"Qu'est-ce qu'une op\u00e9ration de concentration \u00e9conomique ?"},
+  {icon:"\uD83D\uDCCA",label:"Seuils",text:"Quels sont les seuils de notification obligatoire ?"},
+  {icon:"\uD83D\uDD04",label:"Proc\u00e9dures",text:"Comment se d\u00e9roule la proc\u00e9dure Phase I et Phase II ?"},
+  {icon:"\uD83D\uDEE1\uFE0F",label:"Pratiques",text:"Quelles sont les pratiques anticoncurrentielles prohib\u00e9es ?"}
 ];
 
 var conversations = [];
 var activeId = null;
-var sidebarOpen = true;
+var sidebarOpen = false;
 var isLoading = false;
 var msgCounter = Date.now();
 
@@ -366,10 +387,10 @@ function simpleMarkdown(text) {
   var html = escapeHtml(text);
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  html = html.replace(/^### (.+)$/gm, '<h4 style="margin:12px 0 6px;font-size:14px;color:var(--green-800)">$1</h4>');
-  html = html.replace(/^## (.+)$/gm, '<h3 style="margin:14px 0 8px;font-size:15px;color:var(--green-800)">$1</h3>');
-  html = html.replace(/^# (.+)$/gm, '<h2 style="margin:16px 0 10px;font-size:16px;color:var(--green-800)">$1</h2>');
-  html = html.replace(/^- (.+)$/gm, '<li style="margin-left:16px;margin-bottom:4px">$1</li>');
+  html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
   html = html.replace(/\n/g, '<br>');
   return html;
 }
@@ -404,13 +425,26 @@ function render() {
   document.getElementById('header-badge').textContent = qCount + ' question' + (qCount !== 1 ? 's' : '');
   document.getElementById('header-title').textContent = conv ? conv.title : 'Chatbot IA Monafassa';
 
+  var header = document.getElementById('main-header');
+  var welcomeBar = document.getElementById('welcome-top-bar');
+  var btnExpand = document.getElementById('btn-expand');
+
+  if (msgs.length > 0) {
+    header.classList.remove('hidden');
+    welcomeBar.style.display = 'none';
+    btnExpand.style.display = sidebarOpen ? 'none' : 'flex';
+  } else {
+    header.classList.add('hidden');
+    welcomeBar.style.display = sidebarOpen ? 'none' : 'block';
+  }
+
   var inner = document.getElementById('chat-inner');
 
   if (msgs.length === 0) {
     var html = '<div class="welcome-screen">'
       + '<img src="https://www.conseil-concurrence.ma/assets/img/logo.png" class="welcome-logo" onerror="this.style.display=\'none\'">'
       + '<h2 class="welcome-title">Chatbot IA Monafassa</h2>'
-      + '<p class="welcome-desc">Assistant juridique intelligent spécialisé en droit marocain de la concurrence, basé sur les textes officiels du Conseil de la Concurrence.</p>'
+      + '<p class="welcome-desc">Assistant juridique intelligent sp\u00e9cialis\u00e9 en droit marocain de la concurrence, bas\u00e9 sur les textes officiels du Conseil de la Concurrence.</p>'
       + '<div class="suggestions-grid">';
     SUGGESTIONS.forEach(function(s,i) {
       html += '<button class="suggestion-card" onclick="sendMessage(\'' + s.text.replace(/'/g,"\\'") + '\')" style="animation:fadeInUp .4s ease ' + (0.1+i*0.07) + 's both">'
@@ -419,30 +453,33 @@ function render() {
         + '<div class="suggestion-text">' + s.text + '</div></button>';
     });
     html += '</div>'
-      + '<div class="welcome-disclaimer">Les informations délivrées par le Chatbot IA Monafassa sont fournies à titre indicatif et ne peuvent être assimilées à une prise de position officielle du Conseil de la concurrence, ni engager sa responsabilité. Le Conseil de la concurrence se réserve le droit d\'apprécier souverainement toute situation au regard des dispositions légales et réglementaires en vigueur.</div>'
+      + '<div class="welcome-disclaimer">Les informations d\u00e9livr\u00e9es par le Chatbot IA Monafassa sont fournies \u00e0 titre indicatif et ne peuvent \u00eatre assimil\u00e9es \u00e0 une prise de position officielle du Conseil de la concurrence, ni engager sa responsabilit\u00e9. Le Conseil de la concurrence se r\u00e9serve le droit d\'appr\u00e9cier souverainement toute situation au regard des dispositions l\u00e9gales et r\u00e9glementaires en vigueur.</div>'
       + '</div>';
     inner.innerHTML = html;
   } else {
     var html = '';
     msgs.forEach(function(m) {
       var isUser = m.role === 'user';
-      var errClass = m.isError ? ' msg-error' : '';
-      html += '<div class="msg-row' + (isUser ? ' user' : '') + errClass + '" style="animation:fadeInUp .35s ease both">'
-        + '<div class="msg-avatar">' + (isUser ? SVG_USER : SVG_BOT) + '</div>'
-        + '<div class="msg-wrapper">'
-        + '<div class="msg-bubble">' + (isUser ? escapeHtml(m.content) : simpleMarkdown(m.content)) + '</div>';
+      var bubbleClass = m.isError ? 'error' : (isUser ? 'user' : 'assistant');
+      html += '<div class="msg-row ' + (isUser ? 'user' : 'assistant') + '" style="animation:fadeInUp .35s ease both">'
+        + '<div class="msg-wrapper">';
+      if (!isUser) {
+        html += '<div class="msg-avatar">' + BOT_AVATAR_HTML + '</div>';
+      }
+      html += '<div style="min-width:0">'
+        + '<div class="msg-bubble ' + bubbleClass + '">' + (isUser ? escapeHtml(m.content) : simpleMarkdown(m.content)) + '</div>';
       if (m.sources && m.sources.length > 0) {
         html += '<div class="msg-sources">';
         m.sources.forEach(function(s) {
-          html += '<span class="source-tag">📄 ' + escapeHtml(s) + '</span>';
+          html += '<span class="source-tag">\uD83D\uDCC4 ' + escapeHtml(s) + '</span>';
         });
         html += '</div>';
       }
       html += '<div class="msg-time">' + formatTime(m.timestamp) + '</div>'
-        + '</div></div>';
+        + '</div></div></div>';
     });
     if (isLoading) {
-      html += '<div class="typing-row"><div class="msg-avatar">' + SVG_BOT + '</div>'
+      html += '<div class="typing-row"><div class="msg-avatar">' + BOT_AVATAR_HTML + '</div>'
         + '<div class="typing-bubble"><div class="typing-label">Recherche dans la base documentaire...</div>'
         + '<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>'
         + '</div></div>';
@@ -521,9 +558,9 @@ function deleteConv(id) {
 function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
   var sb = document.getElementById('sidebar');
-  var btn = document.getElementById('btn-expand');
-  if (sidebarOpen) { sb.classList.remove('collapsed'); btn.style.display = 'none'; }
-  else { sb.classList.add('collapsed'); btn.style.display = 'flex'; }
+  if (sidebarOpen) { sb.classList.remove('collapsed'); }
+  else { sb.classList.add('collapsed'); }
+  render();
 }
 
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
@@ -536,7 +573,6 @@ function updateSendBtn() {
 }
 
 document.getElementById('input').addEventListener('input', function() { updateSendBtn(); });
-
 init();
 </script>
 </body>
