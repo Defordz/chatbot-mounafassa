@@ -418,7 +418,7 @@ export default function ChatPage() {
                 <PanelLeftOpen size={20} />
               </button>
             )}
-            <div className="header-avatar header-home-btn" onClick={startNewConversation} title="Retour à l'accueil">{BOT_AVATAR}</div>
+            <button className="header-avatar header-home-btn" onClick={startNewConversation} title="Retour à l'accueil" aria-label="Retour à l'accueil">{BOT_AVATAR}</button>
             <div>
               <div className="header-title">
                 {activeConv ? activeConv.title : "Chatbot IA Monafassa"}
