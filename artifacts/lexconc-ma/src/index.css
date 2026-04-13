@@ -572,12 +572,51 @@ button.header-home-btn:focus-visible {
   filter: drop-shadow(0 4px 16px rgba(45,106,79,0.18));
 }
 
+.welcome-chatbot-animated {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 8px;
+  animation: botIdle 8s ease-in-out infinite;
+}
+
 .welcome-chatbot-logo {
   width: 150px;
   height: 150px;
   object-fit: contain;
-  margin: 0 auto 8px;
   display: block;
+  animation: botBlink 4s ease-in-out infinite;
+  transform-origin: center 62%;
+}
+
+@keyframes botBlink {
+  0%, 38%, 42%, 85%, 89%, 100% {
+    transform: scaleY(1);
+  }
+  40%, 87% {
+    transform: scaleY(0.92);
+  }
+}
+
+@keyframes botIdle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  15% {
+    transform: translateY(-3px) rotate(1.5deg);
+  }
+  30% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+  65% {
+    transform: translateY(0) rotate(0deg);
+  }
+  80% {
+    transform: translateY(-4px) rotate(0.5deg);
+  }
 }
 
 .welcome-title {

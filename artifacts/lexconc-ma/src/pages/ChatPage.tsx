@@ -449,7 +449,9 @@ export default function ChatPage() {
             {messages.length === 0 ? (
               <div className="welcome-screen">
                 <img src={councillogo} alt="Conseil de la Concurrence" className="welcome-logo" />
-                <img src={chatbotLogo} alt="Chatbot Monafassa" className="welcome-chatbot-logo" />
+                <div className="welcome-chatbot-animated">
+                  <img src={chatbotLogo} alt="Chatbot Monafassa" className="welcome-chatbot-logo" />
+                </div>
                 <h2 className="welcome-title">Chatbot IA Monafassa</h2>
                 <p className="welcome-desc">
                   Assistant juridique intelligent spécialisé en droit marocain de la
