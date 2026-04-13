@@ -6,7 +6,7 @@ import { sendChatMessageStream } from "@/lib/api";
 
 let activeAbortController: AbortController | null = null;
 import councillogo from "@assets/image_1775927493944.png";
-import chatbotLogo from "@assets/IMG_0521_1776048222858.png";
+import chatbotLogo from "@assets/IMG_0521_transparent.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
 
 interface Conversation {
