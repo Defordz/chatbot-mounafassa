@@ -407,34 +407,53 @@ export default function ChatPage() {
 
       {/* ─── MAIN AREA ─── */}
       <main className="main-area">
-        <header className="main-header">
-          <div className="header-left">
-            {!sidebarOpen && (
-              <button
-                className="sidebar-expand"
-                onClick={() => setSidebarOpen(true)}
-                title="Afficher la barre latérale"
-              >
-                <PanelLeftOpen size={20} />
-              </button>
-            )}
-            <button className="header-avatar header-home-btn" onClick={startNewConversation} title="Retour à l'accueil" aria-label="Retour à l'accueil">{BOT_AVATAR}</button>
-            <div>
-              <div className="header-title">
-                {activeConv ? activeConv.title : "Chatbot IA Monafassa"}
+        {messages.length > 0 && (
+          <header className="main-header">
+            <div className="header-left">
+              {!sidebarOpen && (
+                <button
+                  className="sidebar-expand"
+                  onClick={() => setSidebarOpen(true)}
+                  title="Afficher la barre latérale"
+                >
+                  <PanelLeftOpen size={20} />
+                </button>
+              )}
+              <button className="header-avatar header-home-btn" onClick={startNewConversation} title="Retour à l'accueil" aria-label="Retour à l'accueil">{BOT_AVATAR}</button>
+              <div>
+                <div className="header-title">
+                  {activeConv ? activeConv.title : "Chatbot IA Monafassa"}
+                </div>
+                <div className="header-subtitle">Assistant juridique · Droit de la concurrence</div>
               </div>
-              <div className="header-subtitle">Assistant juridique · Droit de la concurrence</div>
             </div>
+            <div className="header-badge">
+              {questionCount} question{questionCount !== 1 ? "s" : ""}
+            </div>
+          </header>
+        )}
+        {messages.length === 0 && !sidebarOpen && (
+          <div className="welcome-top-bar">
+            <button
+              className="sidebar-expand"
+              onClick={() => setSidebarOpen(true)}
+              title="Afficher la barre latérale"
+            >
+              <PanelLeftOpen size={20} />
+            </button>
           </div>
-          <div className="header-badge">
-            {questionCount} question{questionCount !== 1 ? "s" : ""}
-          </div>
-        </header>
+        )}
 
         <div className="chat-messages">
           <div className="chat-inner">
             {messages.length === 0 ? (
               <div className="welcome-screen">
+                <img src={councillogo} alt="Conseil de la Concurrence" className="welcome-logo" />
+                <h2 className="welcome-title">Chatbot IA Monafassa</h2>
+                <p className="welcome-desc">
+                  Assistant juridique intelligent spécialisé en droit marocain de la
+                  concurrence, basé sur les textes officiels du Conseil de la Concurrence.
+                </p>
                 <div className="suggestions-grid">
                   {SUGGESTIONS.map((s, i) => (
                     <button
