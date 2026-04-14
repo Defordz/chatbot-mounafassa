@@ -14,6 +14,13 @@
     "pages": 160
   },
   {
+    "filename": "avis_distribution_produits_alimentaires.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Circuits de distribution des produits alimentaires (A/1/25)",
+    "chunks": 481,
+    "pages": 160
+  },
+  {
     "filename": "avis_electricite.pdf",
     "source_type": "avis",
     "source_name": "Avis — Électricité et perspectives",
@@ -49,6 +56,13 @@
     "pages": 75
   },
   {
+    "filename": "avis_marche_ciment.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Marché du ciment (A/3/25)",
+    "chunks": 463,
+    "pages": 148
+  },
+  {
     "filename": "avis_marche_meunier.pdf",
     "source_type": "avis",
     "source_name": "Avis — Marché meunier",
@@ -68,6 +82,13 @@
     "source_name": "Avis — Paiement en ligne par carte bancaire",
     "chunks": 232,
     "pages": 96
+  },
+  {
+    "filename": "avis_rond_a_beton.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Marché du rond à béton (A/4/25)",
+    "chunks": 483,
+    "pages": 137
   },
   {
     "filename": "avis_soins_medicaux_cliniques.pdf",

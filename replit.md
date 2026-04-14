@@ -54,12 +54,18 @@ A professional AI legal assistant (RAG chatbot) for the Conseil de la Concurrenc
 - Place PDF/DOCX files in `artifacts/lexconc-ma/backend/data/` — auto-indexed at startup
 - DOCX support via built-in Python zipfile/XML parsing (no external packages needed)
 - Knowledge base is private — no user upload/delete capabilities
-- **15 documents indexed (4,620 chunks)**:
+- **18 documents indexed (6,047 chunks)**:
   - Laws: `loi_104_12.docx`, `loi_20_13.pdf`
   - Guidelines: `guidelines_concentration.pdf`, `guidelines_transaction.pdf`
-  - Avis (11): `avis_soins_medicaux_cliniques.pdf`, `avis_gestion_deleguee_transport.pdf`, `avis_medicament.pdf`, `avis_paiement_en_ligne.pdf`, `avis_electricite.pdf`, `avis_fruits_legumes.pdf`, `avis_livre_scolaire.pdf`, `avis_assurance.pdf`, `avis_marche_meunier.pdf`, `avis_circuits_distribution.pdf`, `avis_flambee_prix_intrants.pdf`
+  - Avis (14): `avis_soins_medicaux_cliniques.pdf`, `avis_gestion_deleguee_transport.pdf`, `avis_medicament.pdf`, `avis_paiement_en_ligne.pdf`, `avis_electricite.pdf`, `avis_fruits_legumes.pdf`, `avis_livre_scolaire.pdf`, `avis_assurance.pdf`, `avis_marche_meunier.pdf`, `avis_circuits_distribution.pdf`, `avis_flambee_prix_intrants.pdf`, `avis_marche_ciment.pdf`, `avis_rond_a_beton.pdf`, `avis_distribution_produits_alimentaires.pdf`
 - Source types: `loi`, `ligne_directrice`, `communique`, `decision`, `avis`, `autre`
-- To add new docs: place in `data/`, add entry to `FILENAME_METADATA` in `rag.py`, delete `vector_store/`, restart
+- **Smart Query Routing**: `_detect_query_intent()` analyzes each question to detect explicit document references and legal concepts, then `_smart_retrieve()` prioritizes chunks from the correct document(s) instead of blind vector search
+- To add new docs: place in `data/`, add entry to `FILENAME_METADATA` in `rag.py`, add routing rule to `QUERY_ROUTING_RULES`, delete `vector_store/`, restart
+
+### Google Apps Script Deployment
+- **Files**: `google-apps-script/Code.gs` + `google-apps-script/index.html`
+- **Setup**: Create new Google Apps Script project, paste both files, set `OPENAI_API_KEY` in Script Properties, deploy as Web App
+- **Model**: Uses GPT-4o directly via OpenAI API (no RAG — standalone prompt with knowledge base listing)
 
 ### Key API Endpoints (all under /lexconc-api/api/)
 - `GET /health` — health check (includes indexing status)
