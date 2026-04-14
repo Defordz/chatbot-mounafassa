@@ -62,11 +62,13 @@ RÈGLES FONDAMENTALES (non négociables) :
    - [Loi 20-13, Art. X]
    - [LG Concentration, Section X.Y]
    - [Communiqué CC, Date, Affaire n°XXX]
+   - [Avis CC, Titre de l'avis, Section/Page]
 
 4. Toujours distinguer explicitement :
    - Ce que PRÉVOIT LA LOI (disposition normative)
    - Ce que PRÉCISENT LES LIGNES DIRECTRICES (interprétation administrative)
    - Ce que RÉVÈLE LA PRATIQUE DÉCISIONNELLE (communiqués, décisions)
+   - Ce que CONSTATENT LES AVIS DU CONSEIL (analyses sectorielles, recommandations)
 
 5. INTERDICTIONS ABSOLUES :
    - Inventer un article ou une disposition
@@ -111,6 +113,7 @@ SOURCE_TYPE_LABELS = {
     "ligne_directrice": "Ligne directrice",
     "communique": "Communiqué",
     "decision": "Décision",
+    "avis": "Avis",
     "autre": "Autre",
 }
 
@@ -123,6 +126,17 @@ FILENAME_METADATA = {
     "guidelines_transaction.pdf":    {"source_type": "ligne_directrice", "source_name": "Lignes directrices — Procédure de transaction"},
     "autres_guidelines.pdf":         {"source_type": "ligne_directrice", "source_name": "Autres lignes directrices"},
     "communiques.pdf":               {"source_type": "communique", "source_name": "Communiqués du Conseil"},
+    "avis_soins_medicaux_cliniques.pdf":  {"source_type": "avis", "source_name": "Avis — Soins médicaux dispensés par les cliniques privées"},
+    "avis_gestion_deleguee_transport.pdf": {"source_type": "avis", "source_name": "Avis — Gestion déléguée du transport public urbain et interurbain"},
+    "avis_medicament.pdf":                {"source_type": "avis", "source_name": "Avis — Médicament"},
+    "avis_paiement_en_ligne.pdf":         {"source_type": "avis", "source_name": "Avis — Paiement en ligne par carte bancaire"},
+    "avis_electricite.pdf":               {"source_type": "avis", "source_name": "Avis — Électricité et perspectives"},
+    "avis_fruits_legumes.pdf":            {"source_type": "avis", "source_name": "Avis — Marchés des fruits et légumes"},
+    "avis_livre_scolaire.pdf":            {"source_type": "avis", "source_name": "Avis — Livre scolaire"},
+    "avis_assurance.pdf":                 {"source_type": "avis", "source_name": "Avis — Assurance"},
+    "avis_marche_meunier.pdf":            {"source_type": "avis", "source_name": "Avis — Marché meunier"},
+    "avis_circuits_distribution.pdf":     {"source_type": "avis", "source_name": "Avis — Circuits de distribution"},
+    "avis_flambee_prix_intrants.pdf":     {"source_type": "avis", "source_name": "Avis — Flambée des prix des intrants et matières premières"},
 }
 
 
@@ -163,6 +177,8 @@ class LexConcRAG:
             return {"source_type": "communique", "source_name": name}
         if "decision" in filename.lower() or "décision" in filename.lower():
             return {"source_type": "decision", "source_name": name}
+        if "avis" in filename.lower():
+            return {"source_type": "avis", "source_name": name}
         return {"source_type": "autre", "source_name": name}
 
     def _load_or_build_index(self):

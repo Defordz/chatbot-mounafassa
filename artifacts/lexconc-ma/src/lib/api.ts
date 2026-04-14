@@ -42,6 +42,7 @@ export const SOURCE_TYPE_COLORS: Record<string, string> = {
   ligne_directrice: "bg-green-100 text-green-800 border-green-200",
   communique: "bg-amber-100 text-amber-800 border-amber-200",
   decision: "bg-purple-100 text-purple-800 border-purple-200",
+  avis: "bg-teal-100 text-teal-800 border-teal-200",
   autre: "bg-gray-100 text-gray-800 border-gray-200",
 };
 
@@ -50,6 +51,7 @@ export const SOURCE_TYPE_LABELS: Record<string, string> = {
   ligne_directrice: "Ligne directrice",
   communique: "Communiqué",
   decision: "Décision",
+  avis: "Avis",
   autre: "Autre",
 };
 

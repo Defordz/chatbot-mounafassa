@@ -1,5 +1,82 @@
 [
   {
+    "filename": "avis_assurance.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Assurance",
+    "chunks": 239,
+    "pages": 95
+  },
+  {
+    "filename": "avis_circuits_distribution.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Circuits de distribution",
+    "chunks": 481,
+    "pages": 160
+  },
+  {
+    "filename": "avis_electricite.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Électricité et perspectives",
+    "chunks": 455,
+    "pages": 138
+  },
+  {
+    "filename": "avis_flambee_prix_intrants.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Flambée des prix des intrants et matières premières",
+    "chunks": 291,
+    "pages": 104
+  },
+  {
+    "filename": "avis_fruits_legumes.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Marchés des fruits et légumes",
+    "chunks": 510,
+    "pages": 156
+  },
+  {
+    "filename": "avis_gestion_deleguee_transport.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Gestion déléguée du transport public urbain et interurbain",
+    "chunks": 307,
+    "pages": 99
+  },
+  {
+    "filename": "avis_livre_scolaire.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Livre scolaire",
+    "chunks": 213,
+    "pages": 75
+  },
+  {
+    "filename": "avis_marche_meunier.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Marché meunier",
+    "chunks": 556,
+    "pages": 176
+  },
+  {
+    "filename": "avis_medicament.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Médicament",
+    "chunks": 331,
+    "pages": 140
+  },
+  {
+    "filename": "avis_paiement_en_ligne.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Paiement en ligne par carte bancaire",
+    "chunks": 232,
+    "pages": 96
+  },
+  {
+    "filename": "avis_soins_medicaux_cliniques.pdf",
+    "source_type": "avis",
+    "source_name": "Avis — Soins médicaux dispensés par les cliniques privées",
+    "chunks": 359,
+    "pages": 103
+  },
+  {
     "filename": "guidelines_concentration.pdf",
     "source_type": "ligne_directrice",
     "source_name": "Lignes directrices — Concentrations",

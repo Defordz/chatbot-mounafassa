@@ -53,8 +53,13 @@ A professional AI legal assistant (RAG chatbot) for the Conseil de la Concurrenc
 ### Internal Knowledge Base
 - Place PDF/DOCX files in `artifacts/lexconc-ma/backend/data/` — auto-indexed at startup
 - DOCX support via built-in Python zipfile/XML parsing (no external packages needed)
-- Expected filenames: `loi_104_12.docx`, `loi_20_13.pdf`, `guidelines_concentration.pdf`, `guidelines_transaction.pdf`
 - Knowledge base is private — no user upload/delete capabilities
+- **15 documents indexed (4,620 chunks)**:
+  - Laws: `loi_104_12.docx`, `loi_20_13.pdf`
+  - Guidelines: `guidelines_concentration.pdf`, `guidelines_transaction.pdf`
+  - Avis (11): `avis_soins_medicaux_cliniques.pdf`, `avis_gestion_deleguee_transport.pdf`, `avis_medicament.pdf`, `avis_paiement_en_ligne.pdf`, `avis_electricite.pdf`, `avis_fruits_legumes.pdf`, `avis_livre_scolaire.pdf`, `avis_assurance.pdf`, `avis_marche_meunier.pdf`, `avis_circuits_distribution.pdf`, `avis_flambee_prix_intrants.pdf`
+- Source types: `loi`, `ligne_directrice`, `communique`, `decision`, `avis`, `autre`
+- To add new docs: place in `data/`, add entry to `FILENAME_METADATA` in `rag.py`, delete `vector_store/`, restart
 
 ### Key API Endpoints (all under /lexconc-api/api/)
 - `GET /health` — health check (includes indexing status)
