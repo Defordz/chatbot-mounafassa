@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessageStream } from "@/lib/api";
@@ -94,6 +94,12 @@ const DOCS = [
   { name: "Loi 20-13", desc: "Conseil de la concurrence" },
   { name: "Lignes directrices", desc: "Contrôle des concentrations" },
   { name: "Guidelines transaction", desc: "Procédure de transaction" },
+];
+
+const QUICK_ACTIONS = [
+  "Qu'est-ce qu'une opération de concentration économique ?",
+  "Quels sont les seuils de notification obligatoire ?",
+  "Comment se déroule la procédure Phase I et Phase II ?",
 ];
 
 const SUGGESTIONS = [
@@ -427,8 +433,14 @@ export default function ChatPage() {
                 <div className="header-subtitle">Assistant juridique · Droit de la concurrence</div>
               </div>
             </div>
-            <div className="header-badge">
-              {questionCount} question{questionCount !== 1 ? "s" : ""}
+            <div className="topbar-actions">
+              <div className="status-pill" aria-label="Système actif">
+                <span className="status-dot" />
+                RAG actif
+              </div>
+              <div className="header-badge">
+                {questionCount} question{questionCount !== 1 ? "s" : ""}
+              </div>
             </div>
           </header>
         )}
@@ -457,6 +469,14 @@ export default function ChatPage() {
                   Assistant juridique intelligent spécialisé en droit marocain de la
                   concurrence, basé sur les textes officiels du Conseil de la Concurrence.
                 </p>
+                <div className="quick-actions">
+                  {QUICK_ACTIONS.map((action) => (
+                    <button key={action} className="quick-action" onClick={() => handleSend(action)} type="button">
+                      <Activity size={14} />
+                      {action}
+                    </button>
+                  ))}
+                </div>
                 <div className="suggestions-grid">
                   {SUGGESTIONS.map((s, i) => (
                     <button
