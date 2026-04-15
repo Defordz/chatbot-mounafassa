@@ -38,8 +38,10 @@ function formatConversationDate(ts: number): string {
     d.getMonth() === now.getMonth() &&
     d.getFullYear() === now.getFullYear();
   const time = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  if (isToday) return `Aujourd'hui ${time}`;
-  return `${d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} ${time}`;
+  if (isToday) return time;
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  return `${day}/${month} ${time}`;
 }
 
 function loadConversations(): Conversation[] {
