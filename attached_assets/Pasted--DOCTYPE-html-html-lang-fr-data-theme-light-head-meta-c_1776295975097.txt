@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monafassa — Chatbot IA · Conseil de la Concurrence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — 8px grid, authority palette
+   ============================================================ */
+:root {
+  --navy-950: #040E1F;
+  --navy-900: #071628;
+  --navy-800: #0D2545;
+  --navy-700: #143260;
+  --navy-600: #1B3F7A;
+  --navy-500: #2251A0;
+  --navy-400: #3668C5;
+  --navy-300: #5B89D9;
+  --navy-200: #93B4E8;
+  --navy-100: #C9D9F4;
+  --navy-50:  #EBF0FB;
+
+  --cyan-500: #0A8FCC;
+  --cyan-400: #14A8E8;
+  --cyan-300: #46BFED;
+  --cyan-200: #8BD8F4;
+  --cyan-100: #C4ECFA;
+  --cyan-50:  #EAF7FD;
+
+  --gray-950: #0A0B0D;
+  --gray-900: #111317;
+  --gray-800: #1C1F26;
+  --gray-700: #2B2F3A;
+  --gray-600: #3D4251;
+  --gray-500: #5A6070;
+  --gray-400: #7C8394;
+  --gray-300: #A4AABA;
+  --gray-200: #C8CDD8;
+  --gray-100: #E4E7EE;
+  --gray-50:  #F4F5F8;
+  --white:    #FFFFFF;
+
+  --gold-400: #C8993A;
+  --gold-300: #DDB256;
+  --gold-200: #EDD08A;
+  --gold-100: #F6E8BC;
+
+  /* Semantic light-mode */
+  --bg-base:        #F4F5F8;
+  --bg-surface:     #FFFFFF;
+  --bg-elevated:    #FFFFFF;
+  --bg-sidebar:     #F0F2F7;
+  --bg-input:       #F8F9FC;
+  --border-subtle:  rgba(30,40,80,0.07);
+  --border-default: rgba(30,40,80,0.12);
+  --border-strong:  rgba(30,40,80,0.22);
+  --text-primary:   #0D1424;
+  --text-secondary: #4A5368;
+  --text-muted:     #8A91A4;
+  --text-inverse:   #FFFFFF;
+  --accent-primary: var(--navy-600);
+  --accent-hover:   var(--navy-500);
+  --accent-light:   var(--navy-50);
+  --accent-grad:    linear-gradient(135deg, var(--navy-700) 0%, var(--navy-500) 55%, var(--cyan-500) 100%);
+  --user-bubble-bg: var(--navy-700);
+  --user-bubble-text: #FFFFFF;
+  --ai-bubble-bg:   var(--white);
+  --ai-bubble-border: var(--border-default);
+  --shadow-sm:  0 1px 3px rgba(10,20,60,0.06), 0 1px 2px rgba(10,20,60,0.04);
+  --shadow-md:  0 4px 12px rgba(10,20,60,0.08), 0 2px 6px rgba(10,20,60,0.05);
+  --shadow-lg:  0 12px 32px rgba(10,20,60,0.12), 0 4px 12px rgba(10,20,60,0.06);
+  --shadow-input: 0 0 0 3px rgba(27,63,122,0.15);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+  --transition-fast: 150ms cubic-bezier(0.2,0,0,1);
+  --transition-base: 220ms cubic-bezier(0.2,0,0,1);
+  --transition-slow: 350ms cubic-bezier(0.2,0,0,1);
+  --sidebar-w: 280px;
+  --input-max: 720px;
+  --chat-max: 760px;
+}
+
+[data-theme="dark"] {
+  --bg-base:        #0C0E14;
+  --bg-surface:     #131720;
+  --bg-elevated:    #1A1F2E;
+  --bg-sidebar:     #0F1219;
+  --bg-input:       #1A1F2E;
+  --border-subtle:  rgba(255,255,255,0.05);
+  --border-default: rgba(255,255,255,0.09);
+  --border-strong:  rgba(255,255,255,0.18);
+  --text-primary:   #EDF0F8;
+  --text-secondary: #8A93AA;
+  --text-muted:     #56607A;
+  --text-inverse:   #0D1424;
+  --accent-primary: var(--navy-300);
+  --accent-hover:   var(--navy-200);
+  --accent-light:   rgba(54,104,197,0.15);
+  --user-bubble-bg: var(--navy-600);
+  --user-bubble-text: #FFFFFF;
+  --ai-bubble-bg:   var(--bg-elevated);
+  --ai-bubble-border: var(--border-default);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
+  --shadow-lg:  0 12px 32px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25);
+  --shadow-input: 0 0 0 3px rgba(91,137,217,0.2);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.6;
+  height: 100dvh;
+  overflow: hidden;
+  transition: background var(--transition-slow), color var(--transition-slow);
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border-width: 0;
+}
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+.app-shell {
+  display: flex;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: transform var(--transition-slow), width var(--transition-slow), background var(--transition-slow);
+  position: relative;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 0;
+  transform: translateX(-100%);
+}
+
+.sidebar-header {
+  padding: 20px 20px 0;
+  flex-shrink: 0;
+}
+
+/* Logo lockup */
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  background: var(--white);
+  padding: 4px;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+/* Fallback SVG logo when no image provided */
+.brand-logo-svg {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--accent-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-logo-svg svg { width: 22px; height: 22px; }
+
+.brand-text { min-width: 0; }
+
+.brand-name {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-org {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  margin-top: 1px;
+}
+
+/* New chat button */
+.btn-new-chat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  margin-top: 16px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+  letter-spacing: 0.01em;
+}
+
+.btn-new-chat:hover { background: var(--accent-hover); box-shadow: var(--shadow-sm); }
+.btn-new-chat:active { transform: scale(0.98); }
+.btn-new-chat:focus-visible { box-shadow: var(--shadow-input); }
+
+.btn-new-chat svg { opacity: 0.9; flex-shrink: 0; }
+
+/* Conversation history */
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 16px 20px 8px;
+}
+
+.conv-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+}
+
+.conv-list::-webkit-scrollbar { width: 4px; }
+.conv-list::-webkit-scrollbar-track { background: transparent; }
+.conv-list::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 4px; }
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  margin-bottom: 2px;
+  position: relative;
+  group: true;
+}
+
+.conv-item:hover { background: var(--border-subtle); }
+.conv-item.active { background: var(--accent-light); }
+
+.conv-item-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.conv-item.active .conv-item-icon {
+  background: var(--accent-light);
+  color: var(--accent-primary);
+}
+
+.conv-item-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.conv-item-title {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.conv-item.active .conv-item-title { font-weight: 500; color: var(--accent-primary); }
+
+.conv-item-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.sidebar-footer-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-icon-sm {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.btn-icon-sm:hover { background: var(--border-subtle); border-color: var(--border-strong); color: var(--text-primary); }
+.btn-icon-sm:active { transform: scale(0.96); }
+.btn-icon-sm:focus-visible { box-shadow: var(--shadow-input); }
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--bg-surface);
+  transition: background var(--transition-slow);
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  gap: 8px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  transition: background var(--transition-slow);
+}
+
+.btn-sidebar-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.btn-sidebar-toggle:hover { background: var(--border-subtle); color: var(--text-primary); }
+.btn-sidebar-toggle:focus-visible { box-shadow: var(--shadow-input); border-radius: var(--radius-md); }
+
+.topbar-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-title span { color: var(--text-primary); }
+
+.topbar-actions { display: flex; align-items: center; gap: 6px; }
+
+/* Status pill */
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: var(--accent-light);
+  border-radius: var(--radius-pill);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--accent-primary);
+  letter-spacing: 0.01em;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse-dot 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* ============================================================
+   CHAT AREA
+   ============================================================ */
+.chat-viewport {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 32px 24px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+  scroll-behavior: smooth;
+}
+
+.chat-viewport::-webkit-scrollbar { width: 5px; }
+.chat-viewport::-webkit-scrollbar-track { background: transparent; }
+.chat-viewport::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 4px; }
+
+.chat-inner {
+  max-width: var(--chat-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  animation: fade-up 0.5s cubic-bezier(0.2,0,0,1) both;
+}
+
+.empty-state-emblem {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-xl);
+  background: var(--accent-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(27,63,122,0.25);
+  animation: emblem-float 4s ease-in-out infinite;
+}
+
+@keyframes emblem-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.empty-state-emblem svg { width: 36px; height: 36px; }
+
+.empty-state-title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.empty-state-subtitle {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  max-width: 420px;
+  line-height: 1.6;
+  margin-bottom: 40px;
+}
+
+/* Suggestion grid */
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+}
+
+@media (max-width: 520px) {
+  .suggestions-grid { grid-template-columns: 1fr; }
+}
+
+.suggestion-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  animation: fade-up 0.5s cubic-bezier(0.2,0,0,1) both;
+  outline: none;
+}
+
+.suggestion-card:nth-child(1) { animation-delay: 0.08s; }
+.suggestion-card:nth-child(2) { animation-delay: 0.14s; }
+.suggestion-card:nth-child(3) { animation-delay: 0.20s; }
+.suggestion-card:nth-child(4) { animation-delay: 0.26s; }
+
+.suggestion-card:hover {
+  background: var(--accent-light);
+  border-color: var(--navy-200);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.suggestion-card:active { transform: scale(0.98) translateY(0); box-shadow: var(--shadow-sm); }
+.suggestion-card:focus-visible { box-shadow: var(--shadow-input); }
+
+.suggestion-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent-primary);
+  margin-top: 1px;
+}
+
+.suggestion-text { min-width: 0; }
+
+.suggestion-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.suggestion-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   MESSAGE GROUPS
+   ============================================================ */
+.message-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: fade-up 0.3s cubic-bezier(0.2,0,0,1) both;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* User messages */
+.message-group.user {
+  align-items: flex-end;
+}
+
+.message-group.user .msg-bubble {
+  background: var(--user-bubble-bg);
+  color: var(--user-bubble-text);
+  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl);
+  padding: 12px 16px;
+  max-width: 80%;
+  font-size: 14.5px;
+  line-height: 1.6;
+  box-shadow: var(--shadow-sm);
+}
+
+/* AI messages */
+.message-group.ai {
+  align-items: flex-start;
+}
+
+.ai-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.ai-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--accent-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ai-avatar svg { width: 18px; height: 18px; }
+
+.ai-content { flex: 1; min-width: 0; }
+
+.ai-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin-bottom: 6px;
+}
+
+.msg-bubble.ai-bubble {
+  background: var(--ai-bubble-bg);
+  border: 1px solid var(--ai-bubble-border);
+  border-radius: var(--radius-sm) var(--radius-xl) var(--radius-xl) var(--radius-xl);
+  padding: 16px 18px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast);
+  position: relative;
+}
+
+.msg-bubble.ai-bubble:hover { box-shadow: var(--shadow-md); }
+
+/* Message actions (appear on hover) */
+.msg-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.ai-row:hover .msg-actions,
+.message-group.user:hover .msg-actions { opacity: 1; }
+
+.msg-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  outline: none;
+}
+
+.msg-action-btn:hover { background: var(--border-subtle); color: var(--text-secondary); }
+.msg-action-btn:focus-visible { box-shadow: 0 0 0 2px var(--accent-primary); }
+.msg-action-btn svg { flex-shrink: 0; }
+
+/* Message text formatting */
+.msg-bubble p { margin: 0 0 10px; }
+.msg-bubble p:last-child { margin-bottom: 0; }
+.msg-bubble strong { font-weight: 600; }
+.msg-bubble ul, .msg-bubble ol { padding-left: 20px; margin: 8px 0; }
+.msg-bubble li { margin-bottom: 4px; }
+.msg-bubble code {
+  font-family: 'DM Mono', 'SF Mono', monospace;
+  font-size: 13px;
+  background: var(--border-subtle);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--navy-600);
+}
+
+[data-theme="dark"] .msg-bubble code { color: var(--cyan-300); }
+
+/* Sources section */
+.sources-section { margin-top: 12px; }
+
+.sources-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color var(--transition-fast);
+  outline: none;
+}
+
+.sources-toggle:hover { color: var(--accent-primary); }
+.sources-toggle:focus-visible { box-shadow: 0 0 0 2px var(--accent-primary); border-radius: 4px; }
+
+.sources-toggle-chevron {
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.sources-toggle.open .sources-toggle-chevron { transform: rotate(90deg); }
+
+.sources-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s cubic-bezier(0.2,0,0,1), opacity 0.25s;
+  opacity: 0;
+}
+
+.sources-list.open { max-height: 400px; opacity: 1; }
+
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-base);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  border: 1px solid var(--border-subtle);
+}
+
+.source-item:hover { background: var(--accent-light); color: var(--accent-primary); border-color: var(--navy-100); }
+
+.source-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  background: var(--accent-light);
+  color: var(--accent-primary);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TYPING INDICATOR
+   ============================================================ */
+.typing-indicator-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  animation: fade-up 0.3s cubic-bezier(0.2,0,0,1) both;
+}
+
+.typing-bubble {
+  background: var(--ai-bubble-bg);
+  border: 1px solid var(--ai-bubble-border);
+  border-radius: var(--radius-sm) var(--radius-xl) var(--radius-xl) var(--radius-xl);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--navy-300);
+  animation: typing-bounce 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.18s; }
+.typing-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Loading skeleton */
+.skeleton-msg {
+  background: var(--ai-bubble-bg);
+  border: 1px solid var(--ai-bubble-border);
+  border-radius: var(--radius-sm) var(--radius-xl) var(--radius-xl) var(--radius-xl);
+  padding: 16px 18px;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border-subtle) 25%, var(--border-default) 50%, var(--border-subtle) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  margin-bottom: 8px;
+}
+
+.skeleton-line:last-child { width: 60%; margin-bottom: 0; }
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+   AREA EXPLORER (concept preserved)
+   ============================================================ */
+.area-explorer {
+  margin-top: 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.area-explorer-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.area-explorer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.area-explorer-item {
+  padding: 12px 14px;
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  outline: none;
+  background: none;
+  border-top: none;
+  border-left: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+.area-explorer-item:nth-child(3n) { border-right: none; }
+.area-explorer-item:hover { background: var(--accent-light); color: var(--accent-primary); }
+.area-explorer-item:focus-visible { box-shadow: inset 0 0 0 2px var(--accent-primary); }
+
+.area-explorer-item-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--navy-200);
+  flex-shrink: 0;
+}
+
+.area-explorer-item:hover .area-explorer-item-dot { background: var(--accent-primary); }
+
+/* ============================================================
+   INPUT ZONE
+   ============================================================ */
+.input-zone {
+  padding: 16px 24px 24px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  transition: background var(--transition-slow);
+}
+
+.input-wrapper {
+  max-width: var(--input-max);
+  margin: 0 auto;
+}
+
+.input-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: 10px 10px 10px 16px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-slow);
+}
+
+.input-box:focus-within {
+  border-color: var(--navy-400);
+  box-shadow: var(--shadow-input);
+  background: var(--bg-surface);
+}
+
+.input-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.6;
+  resize: none;
+  min-height: 24px;
+  max-height: 180px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+  padding: 2px 0;
+  caret-color: var(--accent-primary);
+}
+
+.input-textarea::placeholder { color: var(--text-muted); }
+
+.input-textarea::-webkit-scrollbar { width: 3px; }
+.input-textarea::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+
+.btn-send {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
+  outline: none;
+  flex-shrink: 0;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-send.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.btn-send:hover { background: var(--accent-hover); }
+.btn-send:active { transform: scale(0.94); }
+.btn-send:focus-visible { box-shadow: 0 0 0 3px rgba(27,63,122,0.3); }
+
+.input-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 0 4px;
+}
+
+.input-hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.input-hint kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 10.5px;
+  padding: 1px 5px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.input-disclaimer {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--gray-800);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 999;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .toast { background: var(--gray-100); color: var(--gray-900); }
+
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Mobile overlay for sidebar */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 15;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: 30;
+    transform: translateX(-100%);
+    transition: transform var(--transition-slow);
+    box-shadow: var(--shadow-lg);
+    width: var(--sidebar-w);
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.visible { display: block; opacity: 1; }
+  .main-content { width: 100%; }
+}
+
+/* ============================================================
+   DECORATIVE — thin gold rule
+   ============================================================ */
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+  opacity: 0.3;
+  margin: 0 -24px;
+}
+
+/* ============================================================
+   SCROLLBAR (global)
+   ============================================================ */
+* { scrollbar-width: thin; scrollbar-color: var(--border-default) transparent; }
+*::-webkit-scrollbar { width: 5px; height: 5px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 4px; }
+
+/* ============================================================
+   FOCUS (accessibility)
+   ============================================================ */
+:focus-visible { outline: 2px solid var(--accent-primary); outline-offset: 2px; }
+
+/* Removed once custom :focus-visible set */
+:focus:not(:focus-visible) { outline: none; }
+
+/* ============================================================
+   HIGH CONTRAST SUPPORT
+   ============================================================ */
+@media (forced-colors: active) {
+  .msg-bubble, .suggestion-card, .input-box { border: 2px solid ButtonText; }
+  .btn-send.active { background: Highlight; color: HighlightText; }
+}
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+@media print {
+  .sidebar, .topbar, .input-zone { display: none; }
+  .chat-viewport { overflow: visible; }
+}
+</style>
+</head>
+<body>
+
+<a href="#chat-input" class="sr-only">Aller à la zone de saisie</a>
+<div id="app-toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+<div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+<div class="app-shell" role="application" aria-label="Monafassa — Chatbot juridique IA">
+
+  <!-- =================== SIDEBAR =================== -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Historique des conversations">
+    <div class="sidebar-header">
+      <!-- Brand -->
+      <div class="brand-lockup">
+        <div class="brand-logo-svg" aria-hidden="true">
+          <!-- Scales of justice icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3L12 21M12 3L7 8M12 3L17 8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 10L2 16H8L5 10Z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.2)"/>
+            <path d="M19 10L16 16H22L19 10Z" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.2)"/>
+            <path d="M3 20H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">Monafassa</div>
+          <div class="brand-org">Conseil de la Concurrence</div>
+        </div>
+      </div>
+
+      <!-- New chat -->
+      <button class="btn-new-chat" id="btn-new-chat" aria-label="Nouvelle conversation">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+          <path d="M7.5 1v13M1 7.5h13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Nouvelle conversation
+      </button>
+    </div>
+
+    <!-- History -->
+    <div class="sidebar-section-label" aria-label="Conversations récentes">Récentes</div>
+
+    <div class="conv-list" role="list" id="conv-list">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-actions">
+        <button class="btn-icon-sm" id="btn-theme-toggle" aria-label="Basculer le mode sombre" title="Mode sombre / clair">
+          <!-- Moon icon, swapped in JS -->
+          <svg id="theme-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M14 10.5A6.5 6.5 0 0 1 5.5 2 .5.5 0 0 0 5 1.47a7 7 0 1 0 9.53 9.53A.5.5 0 0 0 14 10.5z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="btn-icon-sm" id="btn-clear-all" aria-label="Effacer toutes les conversations" title="Effacer l'historique">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 4h12M5 4V2.5A.5.5 0 0 1 5.5 2h5a.5.5 0 0 1 .5.5V4M6 7v5M10 7v5M3 4l.8 9.2A.8.8 0 0 0 3.8 14h8.4a.8.8 0 0 0 .8-.8L14 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="btn-icon-sm" id="btn-export" aria-label="Exporter la conversation" title="Exporter">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 2v9M5 8l3 3 3-3M2.5 11v1.5A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="btn-icon-sm" id="btn-area-explorer-toggle" aria-label="Explorateur de domaines" title="Domaines juridiques" style="margin-left:auto">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M8 2c0 0-3 2-3 6s3 6 3 6M8 2c0 0 3 2 3 6s-3 6-3 6M2 8h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =================== MAIN =================== -->
+  <main class="main-content" id="main-content">
+
+    <!-- Topbar -->
+    <div class="topbar" role="banner">
+      <button class="btn-sidebar-toggle" id="btn-sidebar-toggle" aria-label="Afficher/Masquer le panneau latéral" aria-expanded="true" aria-controls="sidebar">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <rect x="2" y="4" width="14" height="1.4" rx="0.7" fill="currentColor"/>
+          <rect x="2" y="8.3" width="14" height="1.4" rx="0.7" fill="currentColor"/>
+          <rect x="2" y="12.6" width="14" height="1.4" rx="0.7" fill="currentColor"/>
+        </svg>
+      </button>
+
+      <div class="topbar-title" id="topbar-title">
+        <span>Nouvelle conversation</span>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="status-pill" aria-label="Système actif">
+          <div class="status-dot" aria-hidden="true"></div>
+          En ligne
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat viewport -->
+    <div class="chat-viewport" id="chat-viewport" role="log" aria-live="polite" aria-label="Fil de conversation">
+      <div class="chat-inner" id="chat-inner">
+        <!-- Empty state shown by default -->
+        <div class="empty-state" id="empty-state" role="region" aria-label="État initial">
+          <div class="empty-state-emblem" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 4L18 32M18 4L10 12M18 4L26 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6 14L1.5 24H10.5L6 14Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.2)"/>
+              <path d="M30 14L25.5 24H34.5L30 14Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.2)"/>
+              <path d="M2.5 32H33.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h1 class="empty-state-title">Bienvenue sur Monafassa</h1>
+          <p class="empty-state-subtitle">
+            Votre assistant IA spécialisé en droit de la concurrence marocain. Posez vos questions sur les pratiques anticoncurrentielles, les concentrations, ou la réglementation en vigueur.
+          </p>
+          <div class="suggestions-grid" role="list" aria-label="Questions suggérées">
+
+            <button class="suggestion-card" role="listitem" aria-label="Suggéré: Pratiques anticoncurrentielles" data-query="Quelles sont les pratiques anticoncurrentielles interdites par la loi marocaine sur la concurrence ?">
+              <div class="suggestion-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1.5L1.5 5v3.5C1.5 12.3 4.3 14.9 8 15.5c3.7-.6 6.5-3.2 6.5-7V5L8 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                  <path d="M5.5 8l1.8 1.8L11 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="suggestion-text">
+                <div class="suggestion-label">Pratiques</div>
+                <div class="suggestion-title">Pratiques anticoncurrentielles interdites</div>
+              </div>
+            </button>
+
+            <button class="suggestion-card" role="listitem" aria-label="Suggéré: Contrôle des concentrations" data-query="Comment fonctionne le contrôle des concentrations économiques au Maroc ?">
+              <div class="suggestion-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+                  <circle cx="11" cy="11" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M7.2 6.5L9 8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="suggestion-text">
+                <div class="suggestion-label">Concentrations</div>
+                <div class="suggestion-title">Contrôle des concentrations économiques</div>
+              </div>
+            </button>
+
+            <button class="suggestion-card" role="listitem" aria-label="Suggéré: Saisir le Conseil" data-query="Comment saisir le Conseil de la Concurrence pour une plainte ?">
+              <div class="suggestion-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M13 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M5 8h6M5 5.5h4M5 10.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="suggestion-text">
+                <div class="suggestion-label">Procédure</div>
+                <div class="suggestion-title">Déposer une plainte ou saisir le Conseil</div>
+              </div>
+            </button>
+
+            <button class="suggestion-card" role="listitem" aria-label="Suggéré: Sanctions et amendes" data-query="Quelles sont les sanctions prévues pour les infractions au droit de la concurrence au Maroc ?">
+              <div class="suggestion-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2L2 13h12L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                  <path d="M8 7v3M8 11.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="suggestion-text">
+                <div class="suggestion-label">Sanctions</div>
+                <div class="suggestion-title">Amendes et sanctions applicables</div>
+              </div>
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input zone -->
+    <div class="input-zone" role="region" aria-label="Zone de saisie">
+      <div class="gold-rule" aria-hidden="true"></div>
+      <div class="input-wrapper">
+        <div class="input-box" id="input-box">
+          <textarea
+            id="chat-input"
+            class="input-textarea"
+            rows="1"
+            placeholder="Posez votre question juridique…"
+            aria-label="Message au chatbot Monafassa"
+            aria-multiline="true"
+            autocomplete="off"
+            spellcheck="true"
+            maxlength="4000"
+          ></textarea>
+          <button class="btn-send" id="btn-send" aria-label="Envoyer le message" disabled>
+            <!-- Paper plane -->
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M14.5 1.5L6.5 9.5M14.5 1.5L9.5 14.5L6.5 9.5M14.5 1.5L1.5 6.5L6.5 9.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="input-meta">
+          <span class="input-hint">
+            <kbd>Enter</kbd> pour envoyer · <kbd>Shift+Enter</kbd> pour un saut de ligne
+          </span>
+          <span class="input-hint" id="char-count" aria-live="polite" aria-atomic="true"></span>
+        </div>
+        <p class="input-disclaimer">
+          Monafassa peut faire des erreurs. Consultez toujours un professionnel du droit pour des conseils juridiques formels.
+        </p>
+      </div>
+    </div>
+  </main>
+
+</div><!-- /app-shell -->
+
+<script>
+/* ============================================================
+   MONAFASSA FRONTEND — Pure vanilla JS
+   UX decisions documented throughout
+   ============================================================ */
+
+/* ── State ─────────────────────────────────────────────────── */
+const state = {
+  sidebarOpen: window.innerWidth > 768,
+  darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
+  conversations: [],
+  activeConvId: null,
+  isTyping: false,
+  messageCounter: 0,
+};
+
+/* ── DOM references ────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const el = {
+  html:           document.documentElement,
+  sidebar:        $('sidebar'),
+  overlay:        $('sidebar-overlay'),
+  sidebarToggle:  $('btn-sidebar-toggle'),
+  themeToggle:    $('btn-theme-toggle'),
+  themeIcon:      $('theme-icon'),
+  newChat:        $('btn-new-chat'),
+  clearAll:       $('btn-clear-all'),
+  exportBtn:      $('btn-export'),
+  convList:       $('conv-list'),
+  chatViewport:   $('chat-viewport'),
+  chatInner:      $('chat-inner'),
+  emptyState:     $('empty-state'),
+  input:          $('chat-input'),
+  sendBtn:        $('btn-send'),
+  charCount:      $('char-count'),
+  topbarTitle:    $('topbar-title'),
+  toast:          $('app-toast'),
+};
+
+/* ── Theme ─────────────────────────────────────────────────── */
+function applyTheme(dark) {
+  state.darkMode = dark;
+  el.html.setAttribute('data-theme', dark ? 'dark' : 'light');
+  /* Swap icon: moon → sun */
+  el.themeIcon.innerHTML = dark
+    ? `<circle cx="8" cy="8" r="3.5" fill="currentColor"/><g stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><line x1="8" y1="1" x2="8" y2="3"/><line x1="8" y1="13" x2="8" y2="15"/><line x1="1" y1="8" x2="3" y2="8"/><line x1="13" y1="8" x2="15" y2="8"/><line x1="2.9" y1="2.9" x2="4.3" y2="4.3"/><line x1="11.7" y1="11.7" x2="13.1" y2="13.1"/><line x1="2.9" y1="13.1" x2="4.3" y2="11.7"/><line x1="11.7" y1="4.3" x2="13.1" y2="2.9"/></g>`
+    : `<path d="M14 10.5A6.5 6.5 0 0 1 5.5 2 .5.5 0 0 0 5 1.47a7 7 0 1 0 9.53 9.53A.5.5 0 0 0 14 10.5z" fill="currentColor"/>`;
+  el.themeToggle.setAttribute('aria-label', dark ? 'Passer en mode clair' : 'Passer en mode sombre');
+}
+
+el.themeToggle.addEventListener('click', () => applyTheme(!state.darkMode));
+
+/* Honour OS preference */
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => applyTheme(e.matches));
+applyTheme(state.darkMode);
+
+/* ── Sidebar toggle ────────────────────────────────────────── */
+function setSidebar(open) {
+  state.sidebarOpen = open;
+  if (window.innerWidth <= 768) {
+    el.sidebar.classList.toggle('mobile-open', open);
+    el.overlay.classList.toggle('visible', open);
+    el.overlay.setAttribute('aria-hidden', String(!open));
+  } else {
+    el.sidebar.classList.toggle('collapsed', !open);
+  }
+  el.sidebarToggle.setAttribute('aria-expanded', String(open));
+}
+
+el.sidebarToggle.addEventListener('click', () => setSidebar(!state.sidebarOpen));
+el.overlay.addEventListener('click', () => setSidebar(false));
+
+/* Keyboard: Escape closes sidebar on mobile */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && window.innerWidth <= 768 && state.sidebarOpen) setSidebar(false);
+});
+
+/* ── Toast notification ────────────────────────────────────── */
+let toastTimer = null;
+function showToast(msg) {
+  el.toast.textContent = msg;
+  el.toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.toast.classList.remove('show'), 2400);
+}
+
+/* ── Conversation history ──────────────────────────────────── */
+/* Seed sample history to demonstrate the concept */
+const SAMPLE_HISTORY = [
+  { id: 'c1', title: 'Abus de position dominante — secteur télécom', date: '14 avr.' },
+  { id: 'c2', title: 'Seuils de notification d\'une fusion', date: '12 avr.' },
+  { id: 'c3', title: 'Ententes horizontales dans la distribution', date: '10 avr.' },
+  { id: 'c4', title: 'Exemptions par catégorie (règl. 06-99)', date: '8 avr.' },
+];
+
+function renderConvList() {
+  el.convList.innerHTML = '';
+  const convs = [...state.conversations, ...SAMPLE_HISTORY];
+  convs.forEach(conv => {
+    const item = document.createElement('div');
+    item.className = 'conv-item' + (conv.id === state.activeConvId ? ' active' : '');
+    item.setAttribute('role', 'listitem');
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('aria-label', `Conversation: ${conv.title}`);
+    item.innerHTML = `
+      <div class="conv-item-icon" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M12 1H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2.5L7 12.5 9.5 10H12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="conv-item-text">
+        <div class="conv-item-title">${escapeHtml(conv.title)}</div>
+        <div class="conv-item-date">${conv.date || ''}</div>
+      </div>`;
+    item.addEventListener('click', () => showToast('Fonctionnalité d\'historique disponible avec le backend.'));
+    item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') item.click(); });
+    el.convList.appendChild(item);
+  });
+}
+
+renderConvList();
+
+/* ── Clear all ─────────────────────────────────────────────── */
+el.clearAll.addEventListener('click', () => {
+  if (confirm('Effacer toutes les conversations ? Cette action est irréversible.')) {
+    state.conversations = [];
+    renderConvList();
+    clearChat();
+    showToast('Historique effacé');
+  }
+});
+
+/* ── New chat ───────────────────────────────────────────────── */
+el.newChat.addEventListener('click', () => {
+  clearChat();
+  el.input.focus();
+  if (window.innerWidth <= 768) setSidebar(false);
+});
+
+function clearChat() {
+  el.chatInner.innerHTML = '';
+  el.chatInner.appendChild(el.emptyState);
+  el.emptyState.style.display = '';
+  el.topbarTitle.innerHTML = '<span>Nouvelle conversation</span>';
+  state.activeConvId = null;
+}
+
+/* ── Export ─────────────────────────────────────────────────── */
+el.exportBtn.addEventListener('click', () => {
+  const messages = el.chatInner.querySelectorAll('.msg-bubble');
+  if (!messages.length) { showToast('Aucun message à exporter'); return; }
+  let text = 'Export — Monafassa · Conseil de la Concurrence\n';
+  text += '='.repeat(55) + '\n\n';
+  el.chatInner.querySelectorAll('.message-group').forEach(group => {
+    const role = group.classList.contains('user') ? 'Vous' : 'Monafassa';
+    const bubble = group.querySelector('.msg-bubble');
+    if (bubble) text += `[${role}]\n${bubble.innerText.trim()}\n\n`;
+  });
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'monafassa-conversation.txt'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Conversation exportée');
+});
+
+/* ── Input auto-resize & validation ───────────────────────── */
+/* Textarea grows with content — pill shape maintained */
+el.input.addEventListener('input', () => {
+  el.input.style.height = 'auto';
+  el.input.style.height = Math.min(el.input.scrollHeight, 180) + 'px';
+
+  const val = el.input.value.trim();
+  el.sendBtn.disabled = !val;
+  el.sendBtn.classList.toggle('active', !!val);
+
+  /* Char count hint after 200 chars */
+  const len = el.input.value.length;
+  el.charCount.textContent = len > 200 ? `${len}/4000` : '';
+});
+
+/* ── Keyboard UX ────────────────────────────────────────────── */
+/* Enter = send | Shift+Enter = newline */
+el.input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (!el.sendBtn.disabled) sendMessage();
+  }
+});
+
+el.sendBtn.addEventListener('click', sendMessage);
+
+/* Suggestion cards */
+el.emptyState.querySelectorAll('.suggestion-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const query = card.getAttribute('data-query');
+    if (query) {
+      el.input.value = query;
+      el.input.dispatchEvent(new Event('input'));
+      sendMessage();
+    }
+  });
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') card.click(); });
+});
+
+/* ── Message rendering ──────────────────────────────────────── */
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function formatMsgText(text) {
+  /* Minimal markdown-like formatting for AI responses */
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+}
+
+function appendUserMessage(text) {
+  el.emptyState.style.display = 'none';
+
+  const group = document.createElement('div');
+  group.className = 'message-group user';
+  group.setAttribute('role', 'article');
+  group.setAttribute('aria-label', 'Votre message');
+  group.innerHTML = `
+    <div class="msg-bubble">${escapeHtml(text).replace(/\n/g,'<br>')}</div>
+    <div class="msg-actions" aria-hidden="true">
+      <button class="msg-action-btn copy-btn" aria-label="Copier ce message" title="Copier">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><rect x="1" y="4" width="8" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2.5A1.5 1.5 0 0 1 5.5 1H10.5A1.5 1.5 0 0 1 12 2.5V8a1.5 1.5 0 0 1-1.5 1.5H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Copier
+      </button>
+    </div>`;
+  group.querySelector('.copy-btn').addEventListener('click', () => {
+    navigator.clipboard.writeText(text).then(() => showToast('Copié !'));
+  });
+  el.chatInner.appendChild(group);
+  scrollToBottom();
+}
+
+function appendAiMessage(text, sources) {
+  const group = document.createElement('div');
+  group.className = 'message-group ai';
+  group.setAttribute('role', 'article');
+  group.setAttribute('aria-label', 'Réponse de Monafassa');
+
+  const sourcesHtml = sources && sources.length ? `
+    <div class="sources-section">
+      <button class="sources-toggle" aria-expanded="false" aria-label="Afficher les sources">
+        <svg class="sources-toggle-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        ${sources.length} source${sources.length > 1 ? 's' : ''}
+      </button>
+      <div class="sources-list" role="list" aria-label="Sources de la réponse">
+        ${sources.map(s => `
+          <a href="${escapeHtml(s.url || '#')}" class="source-item" target="_blank" rel="noopener noreferrer" role="listitem" aria-label="${escapeHtml(s.label)}">
+            <span class="source-tag">${escapeHtml(s.type || 'Réf.')}</span>
+            ${escapeHtml(s.label)}
+          </a>`).join('')}
+      </div>
+    </div>` : '';
+
+  group.innerHTML = `
+    <div class="ai-row">
+      <div class="ai-avatar" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <path d="M18 4L18 32M18 4L10 12M18 4L26 12" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 14L1.5 24H10.5L6 14Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.25)"/>
+          <path d="M30 14L25.5 24H34.5L30 14Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.25)"/>
+          <path d="M2.5 32H33.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ai-content">
+        <div class="ai-label" aria-hidden="true">Monafassa IA</div>
+        <div class="msg-bubble ai-bubble"><p>${formatMsgText(text)}</p></div>
+        ${sourcesHtml}
+        <div class="msg-actions" aria-hidden="true">
+          <button class="msg-action-btn copy-btn" aria-label="Copier cette réponse" title="Copier">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><rect x="1" y="4" width="8" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2.5A1.5 1.5 0 0 1 5.5 1H10.5A1.5 1.5 0 0 1 12 2.5V8a1.5 1.5 0 0 1-1.5 1.5H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Copier
+          </button>
+          <button class="msg-action-btn" aria-label="Évaluer positivement" title="Utile">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M2 7.5h1.5L5 3l2 7 1.5-4H11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Utile
+          </button>
+          <button class="msg-action-btn" aria-label="Évaluer négativement" title="Pas utile">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M6.5 2L6.5 10M3.5 5L6.5 2L9.5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Améliorer
+          </button>
+        </div>
+      </div>
+    </div>`;
+
+  /* Copy handler */
+  group.querySelector('.copy-btn').addEventListener('click', () => {
+    navigator.clipboard.writeText(text).then(() => showToast('Réponse copiée !'));
+  });
+
+  /* Sources expand/collapse */
+  const toggle = group.querySelector('.sources-toggle');
+  const list   = group.querySelector('.sources-list');
+  if (toggle && list) {
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.classList.toggle('open');
+      list.classList.toggle('open', isOpen);
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+  }
+
+  el.chatInner.appendChild(group);
+  scrollToBottom();
+}
+
+/* Typing indicator */
+function showTypingIndicator() {
+  removeTypingIndicator();
+  const row = document.createElement('div');
+  row.id = 'typing-indicator';
+  row.className = 'typing-indicator-row';
+  row.setAttribute('aria-live', 'polite');
+  row.setAttribute('aria-label', 'Monafassa est en train de répondre');
+  row.innerHTML = `
+    <div class="ai-avatar" aria-hidden="true">
+      <svg viewBox="0 0 36 36" fill="none" width="18" height="18">
+        <path d="M18 4L18 32M18 4L10 12M18 4L26 12" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6 14L1.5 24H10.5L6 14Z" stroke="white" stroke-width="1.8" fill="rgba(255,255,255,0.25)" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M30 14L25.5 24H34.5L30 14Z" stroke="white" stroke-width="1.8" fill="rgba(255,255,255,0.25)" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2.5 32H33.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="typing-bubble" aria-hidden="true">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>`;
+  el.chatInner.appendChild(row);
+  scrollToBottom();
+}
+
+function removeTypingIndicator() {
+  const ind = $('typing-indicator');
+  if (ind) ind.remove();
+}
+
+function scrollToBottom(smooth = true) {
+  el.chatViewport.scrollTo({ top: el.chatViewport.scrollHeight, behavior: smooth ? 'smooth' : 'instant' });
+}
+
+/* ── Area Explorer (concept preserved) ─────────────────────── */
+/* Appended to an AI message when the response includes domain areas */
+function buildAreaExplorer(areas) {
+  const div = document.createElement('div');
+  div.className = 'area-explorer';
+  div.setAttribute('role', 'region');
+  div.setAttribute('aria-label', 'Explorateur de domaines juridiques');
+  div.innerHTML = `
+    <div class="area-explorer-header" aria-hidden="true">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 1.5c0 0-2.5 1.5-2.5 5s2.5 5 2.5 5M6.5 1.5c0 0 2.5 1.5 2.5 5s-2.5 5-2.5 5M1.5 6.5h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Domaines connexes
+    </div>
+    <div class="area-explorer-grid" role="list">
+      ${areas.map(a => `
+        <button class="area-explorer-item" role="listitem" data-query="${escapeHtml(a.query)}" aria-label="Explorer: ${escapeHtml(a.label)}">
+          <span class="area-explorer-item-dot" aria-hidden="true"></span>
+          ${escapeHtml(a.label)}
+        </button>`).join('')}
+    </div>`;
+  div.querySelectorAll('.area-explorer-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = btn.getAttribute('data-query');
+      if (q) { el.input.value = q; el.input.dispatchEvent(new Event('input')); sendMessage(); }
+    });
+    btn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') btn.click(); });
+  });
+  return div;
+}
+
+/* ── Main send flow ─────────────────────────────────────────── */
+async function sendMessage() {
+  const text = el.input.value.trim();
+  if (!text || state.isTyping) return;
+
+  /* Reset input */
+  el.input.value = '';
+  el.input.style.height = 'auto';
+  el.sendBtn.disabled = true;
+  el.sendBtn.classList.remove('active');
+  el.charCount.textContent = '';
+
+  /* Update topbar title with first message */
+  if (!state.activeConvId) {
+    const short = text.length > 48 ? text.slice(0, 45) + '…' : text;
+    el.topbarTitle.innerHTML = `<span>${escapeHtml(short)}</span>`;
+    /* Add to conversation list */
+    const newConv = { id: 'new-' + Date.now(), title: short, date: 'Maintenant' };
+    state.conversations.unshift(newConv);
+    state.activeConvId = newConv.id;
+    renderConvList();
+  }
+
+  state.isTyping = true;
+  appendUserMessage(text);
+  showTypingIndicator();
+
+  /* ── BACKEND CALL (replace this block with real GAS endpoint) ── */
+  /*
+    To connect to your Google Apps Script backend:
+
+    const response = await fetch('YOUR_GAS_DEPLOYMENT_URL', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, conversationId: state.activeConvId })
+    });
+    const data = await response.json();
+    const aiText = data.reply;
+    const sources = data.sources || [];
+    const areas   = data.areas   || [];
+  */
+
+  /* ── Demo simulation (remove when connecting backend) ── */
+  await simulatedDelay(1200 + Math.random() * 800);
+  const { aiText, sources, areas } = getDemoResponse(text);
+  /* ── End demo simulation ── */
+
+  removeTypingIndicator();
+  appendAiMessage(aiText, sources);
+
+  /* Append Area Explorer if the response includes related domains */
+  if (areas && areas.length) {
+    const lastAiGroup = el.chatInner.querySelector('.message-group.ai:last-child');
+    if (lastAiGroup) {
+      const aiContent = lastAiGroup.querySelector('.ai-content');
+      if (aiContent) aiContent.appendChild(buildAreaExplorer(areas));
+    }
+  }
+
+  state.isTyping = false;
+  el.input.focus();
+}
+
+/* ── Demo response generator (replace with real API) ──────── */
+function getDemoResponse(query) {
+  const q = query.toLowerCase();
+
+  if (q.includes('anticoncurrentiel') || q.includes('interdit') || q.includes('entente')) {
+    return {
+      aiText: `Les pratiques anticoncurrentielles prohibées par la **loi n° 104-12 sur la liberté des prix et de la concurrence** comprennent principalement deux catégories :\n\n**1. Les ententes entre entreprises** — accord exprès ou tacite entre opérateurs économiques ayant pour objet ou pour effet d\'empêcher, restreindre ou fausser le jeu de la concurrence (art. 6). Sont notamment visées les ententes sur les prix, la répartition des marchés ou les quotas de production.\n\n**2. L\'abus de position dominante** — exploitation abusive par une entreprise ou un groupe d\'entreprises d\'une position dominante sur un marché national ou une partie substantielle de celui-ci (art. 7).\n\nLe Conseil de la Concurrence peut être saisi par le gouvernement, les entreprises ou les organisations professionnelles. Des amendes pouvant atteindre **10 % du chiffre d\'affaires mondial hors taxes** de l\'entreprise concernée sont applicables.`,
+      sources: [
+        { type: 'Loi', label: 'Loi n° 104-12 — art. 6 et 7', url: '#' },
+        { type: 'Jurisprudence', label: 'Décision n° 49/2020 — secteur des ciments', url: '#' },
+      ],
+      areas: [
+        { label: 'Abus de position dominante', query: 'Qu\'est-ce que l\'abus de position dominante ?' },
+        { label: 'Ententes horizontales', query: 'Différence entre entente horizontale et verticale ?' },
+        { label: 'Procédure d\'instruction', query: 'Comment se déroule l\'instruction d\'une affaire ?' },
+      ]
+    };
+  }
+
+  if (q.includes('concentration') || q.includes('fusion') || q.includes('acquisition')) {
+    return {
+      aiText: `Le contrôle des concentrations économiques au Maroc est régi par les **articles 11 à 27 de la loi 104-12**. Une opération de concentration doit être notifiée au Conseil de la Concurrence lorsque :\n\n- Le **chiffre d\'affaires total mondial hors taxes** de l\'ensemble des entreprises concernées est supérieur à **750 millions MAD**\n- Le **CA total réalisé au Maroc** par au moins deux des entreprises concernées est supérieur à **150 millions MAD** chacune\n\nLe Conseil dispose d\'un délai de **25 jours ouvrables** pour se prononcer en Phase I, et peut ouvrir une Phase II (4 mois) pour les opérations nécessitant une analyse approfondie. L\'autorisation peut être conditionnée à des engagements comportementaux ou structurels.`,
+      sources: [
+        { type: 'Loi', label: 'Loi 104-12 — art. 11 à 27', url: '#' },
+        { type: 'Formulaire', label: 'Formulaire de notification de concentration', url: '#' },
+      ],
+      areas: [
+        { label: 'Seuils de notification', query: 'Quels sont les seuils exacts de notification pour les concentrations ?' },
+        { label: 'Engagements structurels', query: 'Quels types d\'engagements peut imposer le Conseil ?' },
+        { label: 'Délais de procédure', query: 'Quels sont les délais de traitement d\'un dossier de concentration ?' },
+      ]
+    };
+  }
+
+  if (q.includes('saisir') || q.includes('plainte') || q.includes('recours') || q.includes('procédure')) {
+    return {
+      aiText: `Le **Conseil de la Concurrence** peut être saisi par plusieurs voies selon la qualité du requérant :\n\n**Saisines d\'office** — Le Conseil peut s\'autosaisir de toute pratique anticoncurrentielle dont il a connaissance.\n\n**Saisines par le gouvernement** — Le Chef du Gouvernement ou le ministre chargé de la concurrence.\n\n**Saisines par les entreprises et associations** — Toute entreprise, toute organisation professionnelle ou syndicale, toute association de consommateurs légalement constituée peut saisir le Conseil.\n\nLa saisine doit comprendre : une description précise des pratiques incriminées, les éléments de preuve disponibles, et l\'identification des parties en cause. Le dossier est transmis au **Secrétariat Général du Conseil** à Rabat.`,
+      sources: [
+        { type: 'Loi', label: 'Loi 104-12 — art. 13 à 17', url: '#' },
+        { type: 'Guide', label: 'Guide pratique de saisine — Conseil de la Concurrence', url: '#' },
+      ],
+      areas: [
+        { label: 'Composition du dossier', query: 'Quelles pièces faut-il joindre à une saisine ?' },
+        { label: 'Confidentialité', query: 'Le secret des affaires est-il protégé pendant l\'instruction ?' },
+        { label: 'Délais d\'instruction', query: 'Combien de temps dure l\'instruction d\'une plainte ?' },
+      ]
+    };
+  }
+
+  /* Default fallback */
+  return {
+    aiText: `Merci pour votre question. En tant qu\'assistant spécialisé du **Conseil de la Concurrence du Maroc**, je peux vous apporter des informations sur l\'ensemble des thématiques liées au droit de la concurrence : pratiques anticoncurrentielles, contrôle des concentrations, aides d\'État, droit de la distribution, et procédures devant le Conseil.\n\nPourriez-vous préciser votre question ou choisir l\'un des domaines suggérés ci-dessous pour que je puisse vous fournir une réponse plus ciblée ?`,
+    sources: [],
+    areas: [
+      { label: 'Pratiques anticoncurrentielles', query: 'Quelles sont les pratiques anticoncurrentielles interdites ?' },
+      { label: 'Concentrations économiques', query: 'Comment fonctionne le contrôle des concentrations au Maroc ?' },
+      { label: 'Procédures et saisines', query: 'Comment saisir le Conseil de la Concurrence ?' },
+      { label: 'Sanctions applicables', query: 'Quelles sanctions pour les infractions au droit de la concurrence ?' },
+      { label: 'Avis et recommandations', query: 'Quels types d\'avis rend le Conseil de la Concurrence ?' },
+      { label: 'Aide d\'État', query: 'Quel est le cadre des aides d\'État au Maroc ?' },
+    ]
+  };
+}
+
+function simulatedDelay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/* ── Responsive: handle window resize ─────────────────────── */
+let resizeDebounce;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeDebounce);
+  resizeDebounce = setTimeout(() => {
+    if (window.innerWidth > 768) {
+      el.sidebar.classList.remove('mobile-open');
+      el.overlay.classList.remove('visible');
+      el.overlay.setAttribute('aria-hidden', 'true');
+      if (!state.sidebarOpen) el.sidebar.classList.add('collapsed');
+    }
+  }, 100);
+});
+
+/* ── Init focus ─────────────────────────────────────────────── */
+window.addEventListener('load', () => {
+  el.input.focus();
+  /* Restore initial sidebar state based on viewport */
+  if (window.innerWidth <= 768) {
+    setSidebar(false);
+  }
+});
+
+/* ── Keyboard accessibility: Tab trap in modal-like elements ─ */
+document.addEventListener('keydown', e => {
+  /* Alt+N: new conversation */
+  if (e.altKey && e.key === 'n') { e.preventDefault(); el.newChat.click(); }
+  /* Alt+D: toggle dark mode */
+  if (e.altKey && e.key === 'd') { e.preventDefault(); el.themeToggle.click(); }
+  /* / focuses input */
+  if (e.key === '/' && document.activeElement !== el.input) {
+    e.preventDefault(); el.input.focus();
+  }
+});
+</script>
+</body>
+</html>
