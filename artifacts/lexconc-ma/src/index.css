@@ -815,6 +815,62 @@ button.header-home-btn:focus-visible {
   border-color: rgba(45,106,79,0.18);
 }
 
+.feedback-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.feedback-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(45,106,79,0.14);
+  background: rgba(45,106,79,0.04);
+  color: var(--green-700);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.feedback-btn.active {
+  background: rgba(82,183,136,0.16);
+  border-color: rgba(82,183,136,0.3);
+}
+
+.feedback-improve {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-improve textarea {
+  width: 100%;
+  border: 1px solid rgba(45,106,79,0.14);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-700);
+  resize: vertical;
+  min-height: 88px;
+}
+
+.feedback-submit {
+  align-self: flex-start;
+  border: none;
+  background: var(--green-700);
+  color: white;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .msg-timestamp {
   font-size: 10.5px;
   color: var(--text-300);

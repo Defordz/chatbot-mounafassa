@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, ThumbsUp, PencilLine } from "lucide-react";
 import type { ChatMessage as ChatMessageType } from "@/lib/api";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 
@@ -18,8 +18,33 @@ const SVG_BOOK = (
   </svg>
 );
 
+type FeedbackType = "useful" | "improve";
+
+function loadFeedback() {
+  try {
+    const raw = localStorage.getItem("lexconc-feedback");
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFeedback(items: Array<{ msgId: string; type: FeedbackType; comment: string; timestamp: number }>) {
+  try {
+    localStorage.setItem("lexconc-feedback", JSON.stringify(items));
+  } catch {}
+}
+
 export default function ChatMessage({ message, isStreaming }: Props) {
   const [showChunks, setShowChunks] = useState(false);
+  const [showImproveField, setShowImproveField] = useState(false);
+  const [improvementText, setImprovementText] = useState("");
+  const [feedbackType, setFeedbackType] = useState<FeedbackType | null>(() => {
+    const existing = loadFeedback().find((item: any) => item.msgId === message.id);
+    return existing?.type ?? null;
+  });
   const isUser = message.role === "user";
 
   const timeStr = message.timestamp.toLocaleTimeString("fr-FR", {
@@ -52,6 +77,33 @@ export default function ChatMessage({ message, isStreaming }: Props) {
   }
 
   const uniqueSources = message.sources?.map(s => s.source_name).filter(Boolean) ?? [];
+  const feedbackItems = loadFeedback();
+
+  const persistFeedback = (type: FeedbackType, comment = "") => {
+    const next = feedbackItems.filter((item: any) => item.msgId !== message.id);
+    next.push({ msgId: message.id, type, comment, timestamp: Date.now() });
+    saveFeedback(next);
+  };
+
+  const handleUseful = () => {
+    const nextType = feedbackType === "useful" ? null : "useful";
+    setFeedbackType(nextType);
+    if (!nextType) {
+      saveFeedback(feedbackItems.filter((item: any) => item.msgId !== message.id));
+      return;
+    }
+    setShowImproveField(false);
+    persistFeedback("useful");
+  };
+
+  const handleImprove = () => {
+    const nextOpen = !showImproveField;
+    setShowImproveField(nextOpen);
+    setFeedbackType("improve");
+    if (!nextOpen && !improvementText.trim()) return;
+    if (nextOpen) return;
+    persistFeedback("improve", improvementText.trim());
+  };
 
   return (
     <div className="msg-row assistant">
@@ -120,6 +172,38 @@ export default function ChatMessage({ message, isStreaming }: Props) {
                   {chunk.content}
                 </div>
               ))}
+            </div>
+          )}
+
+          <div className="feedback-row">
+            <button className={`feedback-btn ${feedbackType === "useful" ? "active" : ""}`} onClick={handleUseful} type="button">
+              <ThumbsUp size={13} />
+              Utile
+            </button>
+            <button className={`feedback-btn ${showImproveField ? "active" : ""}`} onClick={handleImprove} type="button">
+              <PencilLine size={13} />
+              Améliorer
+            </button>
+          </div>
+
+          {showImproveField && (
+            <div className="feedback-improve">
+              <textarea
+                value={improvementText}
+                onChange={(e) => setImprovementText(e.target.value)}
+                placeholder="Expliquez ce qui pourrait être amélioré..."
+                rows={3}
+              />
+              <button
+                className="feedback-submit"
+                type="button"
+                onClick={() => {
+                  persistFeedback("improve", improvementText.trim());
+                  setShowImproveField(false);
+                }}
+              >
+                Enregistrer
+              </button>
             </div>
           )}
 
