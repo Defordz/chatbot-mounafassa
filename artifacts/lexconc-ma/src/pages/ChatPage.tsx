@@ -30,20 +30,6 @@ function generateTitle(firstMessage: string): string {
   return cleaned.slice(0, 42) + "...";
 }
 
-function formatConversationDate(ts: number): string {
-  const d = new Date(ts);
-  const now = new Date();
-  const isToday =
-    d.getDate() === now.getDate() &&
-    d.getMonth() === now.getMonth() &&
-    d.getFullYear() === now.getFullYear();
-  const time = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  if (isToday) return time;
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  return `${day}/${month} ${time}`;
-}
-
 function loadConversations(): Conversation[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -462,10 +448,7 @@ export default function ChatPage() {
                     onClick={() => switchConversation(conv.id)}
                   >
                     <MessageSquare size={14} className="conv-icon" />
-                    <div className="conv-item-text">
-                      <span className="conv-title">{conv.title}</span>
-                      <div className="conv-date">{formatConversationDate(conv.updatedAt)}</div>
-                    </div>
+                    <span className="conv-title">{conv.title}</span>
                     <button
                       className="conv-delete"
                       onClick={(e) => deleteConversation(conv.id, e)}
