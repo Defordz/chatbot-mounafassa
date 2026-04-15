@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X } from "lucide-react";
+import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X, Globe } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessageStream } from "@/lib/api";
@@ -493,10 +493,17 @@ export default function ChatPage() {
         </div>
 
         <div className="sidebar-footer">
-          <div className="sidebar-divider" />
-          <button className="btn-clear-history" onClick={clearAllConversations} type="button">
-            Tout effacer
-          </button>
+          <div className="sidebar-actions">
+            <button className="sidebar-action" onClick={toggleTheme} type="button" aria-label="Changer le thème">
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button className="sidebar-action" onClick={clearAllConversations} type="button" aria-label="Supprimer tout">
+              <Trash2 size={16} />
+            </button>
+            <button className="sidebar-action" type="button" aria-label="Exporter">
+              <Globe size={16} />
+            </button>
+          </div>
           <div className="sidebar-credit">
             Conseil de la Concurrence<br />du Royaume du Maroc
           </div>
@@ -526,9 +533,6 @@ export default function ChatPage() {
               </div>
             </div>
             <div className="topbar-actions">
-              <button className="theme-toggle" onClick={toggleTheme} type="button" aria-label="Changer le thème">
-                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              </button>
               <div className="status-pill" aria-label="Système actif">
                 <span className="status-dot" />
                 RAG actif
