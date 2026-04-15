@@ -1,0 +1,73 @@
+Tu es un expert frontend. J'ai une application web de chatbot (HTML/CSS/JS vanilla) 
+connectée à un backend Google Apps Script + OpenAI API.
+
+Je veux que tu ajoutes les fonctionnalités suivantes à mon code existant, 
+SANS modifier la logique backend ni la structure des appels API.
+
+--- FONCTIONNALITÉS À INTÉGRER ---
+
+1. ENVOI PAR CLAVIER
+   - Enter = envoyer le message
+   - Shift+Enter = saut de ligne dans le textarea
+   - Le textarea doit s'auto-redimensionner verticalement selon le contenu
+
+2. STREAMING WORD BY WORD (priorité haute)
+   - La réponse de l'IA doit s'afficher mot par mot, comme ChatGPT
+   - Utilise l'API OpenAI en mode streaming (stream: true) côté backend 
+     OU simule le streaming côté frontend si le backend renvoie du texte complet :
+     * Découpe la réponse reçue en tokens (mots/morceaux)
+     * Affiche chaque token avec un délai de 18-30ms via setTimeout/requestAnimationFrame
+     * Le curseur clignotant (|) doit apparaître en fin de texte pendant le streaming
+     * Le scroll suit automatiquement le bas du chat pendant l'écriture
+
+3. INDICATEUR DE CHARGEMENT (avant le streaming)
+   - Pendant que la réponse arrive, afficher une animation "typing" :
+     3 points animés (••• bounce) dans une bulle IA
+   - Disparaît dès que le premier token commence à s'afficher
+
+4. HISTORIQUE DES CONVERSATIONS
+   - Dans la sidebar (ou un panneau dédié), afficher la liste des conversations passées
+   - Chaque entrée affiche : titre (premiers 40 chars du premier message) + date/heure
+   - Format de date : "Aujourd'hui 14:32" ou "12 avr. 09:15"
+   - Stocker dans localStorage sous la clé "monafassa_history"
+   - Charger l'historique au démarrage
+   - Cliquer sur une entrée recharge la conversation complète
+
+5. SUPPRIMER UNE CONVERSATION
+   - Bouton ✕ discret sur chaque entrée de l'historique (visible au hover)
+   - Confirmation simple avant suppression
+   - Bouton "Tout effacer" en bas du panneau historique
+
+6. MODE SOMBRE / MODE CLAIR
+   - Toggle button (icône lune/soleil) dans le header ou la sidebar
+   - Respecte la préférence système au chargement (prefers-color-scheme)
+   - Persistance dans localStorage sous la clé "monafassa_theme"
+   - Transition CSS douce sur tous les éléments (0.25s)
+   - Variables CSS pour tous les tokens de couleur (bg, surface, text, border, etc.)
+
+7. COPIER LA RÉPONSE
+   - Bouton "Copier" sous chaque bulle IA (icône clipboard)
+   - Utilise navigator.clipboard.writeText()
+   - Feedback visuel : l'icône devient ✓ pendant 2s puis revient
+
+8. BOUTONS DE FEEDBACK : UTILE / AMÉLIORER
+   - Sous chaque réponse IA : bouton 👍 "Utile" et bouton ✏️ "Améliorer"
+   - État toggle : cliquer sur "Utile" le surligne, recliquer annule
+   - Optionnel : "Améliorer" ouvre un petit champ texte inline pour saisir un commentaire
+   - Stocker le feedback localement (pas besoin d'API)
+
+9. EXPORTER LA RÉPONSE
+   - Bouton "Exporter" dans le header (ou sur chaque message IA)
+   - Exporte la conversation complète en .txt ou .md
+   - Format : [Vous] message\n[Monafassa] réponse\n...
+   - Déclenche un téléchargement automatique via un lien blob
+
+--- CONTRAINTES TECHNIQUES ---
+- Vanilla JS uniquement (pas de framework)
+- Aucune modification du backend
+- Compatible mobile (responsive)
+- Accessibilité : aria-labels sur tous les boutons interactifs
+- Toast notifications pour les confirmations (copie, export, suppression)
+
+--- MON CODE ACTUEL ---
+[COLLE TON CODE ICI]
