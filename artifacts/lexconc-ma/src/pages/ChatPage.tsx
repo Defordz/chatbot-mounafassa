@@ -17,7 +17,7 @@ interface Conversation {
   updatedAt: number;
 }
 
-const STORAGE_KEY = "lexconc-conversations";
+const STORAGE_KEY = "monafassa_history";
 const ACTIVE_KEY = "lexconc-active-conv";
 
 function generateId(): string {
@@ -28,6 +28,18 @@ function generateTitle(firstMessage: string): string {
   const cleaned = firstMessage.replace(/\s+/g, " ").trim();
   if (cleaned.length <= 45) return cleaned;
   return cleaned.slice(0, 42) + "...";
+}
+
+function formatConversationDate(ts: number): string {
+  const d = new Date(ts);
+  const now = new Date();
+  const isToday =
+    d.getDate() === now.getDate() &&
+    d.getMonth() === now.getMonth() &&
+    d.getFullYear() === now.getFullYear();
+  const time = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  if (isToday) return `Aujourd'hui ${time}`;
+  return `${d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} ${time}`;
 }
 
 function loadConversations(): Conversation[] {
@@ -434,7 +446,7 @@ export default function ChatPage() {
         </button>
 
         {/* Conversation History */}
-        <div className="sidebar-history">
+          <div className="sidebar-history">
           {GROUP_ORDER.map((group) => {
             const convs = groupedConversations[group];
             if (convs.length === 0) return null;
@@ -448,7 +460,10 @@ export default function ChatPage() {
                     onClick={() => switchConversation(conv.id)}
                   >
                     <MessageSquare size={14} className="conv-icon" />
-                    <span className="conv-title">{conv.title}</span>
+                    <div className="conv-item-text">
+                      <span className="conv-title">{conv.title}</span>
+                      <div className="conv-date">{formatConversationDate(conv.updatedAt)}</div>
+                    </div>
                     <button
                       className="conv-delete"
                       onClick={(e) => deleteConversation(conv.id, e)}
