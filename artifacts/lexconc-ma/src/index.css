@@ -875,6 +875,7 @@ body, .sidebar, .main-header, .input-box, .msg-bubble.assistant, .typing-bubble,
   display: flex;
   gap: 8px;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .feedback-btn {
@@ -889,11 +890,20 @@ body, .sidebar, .main-header, .input-box, .msg-bubble.assistant, .typing-bubble,
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .feedback-btn.active {
   background: rgba(82,183,136,0.16);
   border-color: rgba(82,183,136,0.3);
+}
+
+.feedback-btn:hover {
+  transform: translateY(-1px);
+}
+
+.feedback-copy-ok {
+  color: var(--green-700);
 }
 
 .topbar-actions {

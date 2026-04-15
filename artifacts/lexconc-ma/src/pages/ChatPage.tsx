@@ -252,6 +252,26 @@ export default function ChatPage() {
     setTheme((curr) => (curr === "light" ? "dark" : "light"));
   }, []);
 
+  const handleCopyMessage = useCallback(async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {}
+  }, []);
+
+  const handleExportConversation = useCallback(() => {
+    if (!activeConv) return;
+    const lines = activeConv.messages.map((m) =>
+      `${m.role === "user" ? "[Vous]" : "[Monafassa]"} ${m.content}`
+    );
+    const blob = new Blob([lines.join("\n\n")], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${activeConv.title || "conversation"}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [activeConv]);
+
   const handleSend = useCallback(
     async (question?: string) => {
       const q = (question ?? input).trim();
@@ -500,7 +520,7 @@ export default function ChatPage() {
             <button className="sidebar-action" onClick={clearAllConversations} type="button" aria-label="Supprimer tout">
               <Trash2 size={16} />
             </button>
-            <button className="sidebar-action" type="button" aria-label="Exporter">
+            <button className="sidebar-action" onClick={handleExportConversation} type="button" aria-label="Exporter">
               <Globe size={16} />
             </button>
           </div>
@@ -601,6 +621,7 @@ export default function ChatPage() {
                     key={msg.id}
                     message={msg.id === streamingMsgId && typedPreview[msg.id] ? { ...msg, content: typedPreview[msg.id] } : msg}
                     isStreaming={msg.id === streamingMsgId}
+                    onCopy={handleCopyMessage}
                   />
                 ))}
                 {isLoading && !streamingMsgId && (

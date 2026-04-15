@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { ChevronDown, ChevronUp, ThumbsUp, PencilLine } from "lucide-react";
+import { ChevronDown, ChevronUp, ThumbsUp, PencilLine, Clipboard, Check } from "lucide-react";
 import type { ChatMessage as ChatMessageType } from "@/lib/api";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 
 interface Props {
   message: ChatMessageType;
   isStreaming?: boolean;
+  onCopy?: (text: string) => void;
 }
 
 const BOT_AVATAR = <img src={chatbotLogo} alt="Monafassa" className="bot-avatar-img" />;
@@ -37,10 +38,11 @@ function saveFeedback(items: Array<{ msgId: string; type: FeedbackType; comment:
   } catch {}
 }
 
-export default function ChatMessage({ message, isStreaming }: Props) {
+export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
   const [showChunks, setShowChunks] = useState(false);
   const [showImproveField, setShowImproveField] = useState(false);
   const [improvementText, setImprovementText] = useState("");
+  const [copied, setCopied] = useState(false);
   const [feedbackType, setFeedbackType] = useState<FeedbackType | null>(() => {
     const existing = loadFeedback().find((item: any) => item.msgId === message.id);
     return existing?.type ?? null;
@@ -104,6 +106,12 @@ export default function ChatMessage({ message, isStreaming }: Props) {
     if (nextOpen) return;
     persistFeedback("improve", improvementText.trim());
   };
+
+  useEffect(() => {
+    if (!copied) return;
+    const id = window.setTimeout(() => setCopied(false), 2000);
+    return () => window.clearTimeout(id);
+  }, [copied]);
 
   return (
     <div className="msg-row assistant">
@@ -176,6 +184,14 @@ export default function ChatMessage({ message, isStreaming }: Props) {
           )}
 
           <div className="feedback-row">
+            <button
+              className="feedback-btn"
+              onClick={() => onCopy?.(message.content)}
+              type="button"
+            >
+              {copied ? <Check size={13} /> : <Clipboard size={13} />}
+              Copier
+            </button>
             <button className={`feedback-btn ${feedbackType === "useful" ? "active" : ""}`} onClick={handleUseful} type="button">
               <ThumbsUp size={13} />
               Utile
