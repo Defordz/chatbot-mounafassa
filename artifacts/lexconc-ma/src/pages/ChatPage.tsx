@@ -119,6 +119,10 @@ const SpeechRecognitionAPI =
     ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     : null;
 
+function splitTokens(text: string) {
+  return text.match(/(\s+|[^\s]+)/g) ?? [];
+}
+
 export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>(() => loadConversations());
   const [activeId, setActiveId] = useState<string | null>(() => loadActiveId());
@@ -126,10 +130,12 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [pendingCount, setPendingCount] = useState(0);
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
+  const [typedPreview, setTypedPreview] = useState<Record<string, string>>({});
   const [listening, setListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
+  const typingTimersRef = useRef<number[]>([]);
 
   const activeConv = useMemo(
     () => conversations.find((c) => c.id === activeId) ?? null,
@@ -150,6 +156,35 @@ export default function ChatPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, pendingCount]);
+
+  useEffect(() => {
+    return () => {
+      typingTimersRef.current.forEach((id) => window.clearTimeout(id));
+      typingTimersRef.current = [];
+    };
+  }, []);
+
+  const playTypingEffect = useCallback((messageId: string, fullText: string, done: () => void) => {
+    typingTimersRef.current.forEach((id) => window.clearTimeout(id));
+    typingTimersRef.current = [];
+    setTypedPreview((prev) => ({ ...prev, [messageId]: "" }));
+    const tokens = splitTokens(fullText);
+    let index = 0;
+    const tick = () => {
+      if (index >= tokens.length) {
+        setTypedPreview((prev) => ({ ...prev, [messageId]: fullText }));
+        done();
+        return;
+      }
+      const nextText = tokens.slice(0, index + 1).join("");
+      setTypedPreview((prev) => ({ ...prev, [messageId]: nextText }));
+      index += 1;
+      const timer = window.setTimeout(tick, 22);
+      typingTimersRef.current.push(timer);
+    };
+    const firstTimer = window.setTimeout(tick, 120);
+    typingTimersRef.current.push(firstTimer);
+  }, []);
 
   const updateConversation = useCallback(
     (id: string, updater: (c: Conversation) => Conversation) => {
@@ -271,8 +306,20 @@ export default function ChatPage() {
           }));
         },
         onDone: () => {
-          setStreamingMsgId(null);
-          setPendingCount((c) => Math.max(0, c - 1));
+          updateConversation(currentConvId, (c) => {
+            const finalMsg = c.messages.find((m) => m.id === assistantId);
+            if (!finalMsg) return c;
+            playTypingEffect(assistantId, finalMsg.content, () => {
+              setStreamingMsgId(null);
+              setTypedPreview((prev) => {
+                const next = { ...prev };
+                delete next[assistantId];
+                return next;
+              });
+              setPendingCount((cnt) => Math.max(0, cnt - 1));
+            });
+            return c;
+          });
         },
         onError: (error) => {
           updateConversation(currentConvId, (c) => ({
@@ -285,6 +332,11 @@ export default function ChatPage() {
             updatedAt: Date.now(),
           }));
           setStreamingMsgId(null);
+          setTypedPreview((prev) => {
+            const next = { ...prev };
+            delete next[assistantId];
+            return next;
+          });
           setPendingCount((c) => Math.max(0, c - 1));
         },
       }, abortController.signal);
@@ -500,7 +552,7 @@ export default function ChatPage() {
                 {messages.map((msg) => (
                   <ChatMessageComponent
                     key={msg.id}
-                    message={msg}
+                    message={msg.id === streamingMsgId && typedPreview[msg.id] ? { ...msg, content: typedPreview[msg.id] } : msg}
                     isStreaming={msg.id === streamingMsgId}
                   />
                 ))}
