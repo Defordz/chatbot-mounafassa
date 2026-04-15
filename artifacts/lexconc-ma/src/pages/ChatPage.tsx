@@ -123,6 +123,10 @@ function splitTokens(text: string) {
   return text.match(/(\s+|[^\s]+)/g) ?? [];
 }
 
+function wait(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
 export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>(() => loadConversations());
   const [activeId, setActiveId] = useState<string | null>(() => loadActiveId());
@@ -136,6 +140,7 @@ export default function ChatPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
   const typingTimersRef = useRef<number[]>([]);
+  const typingRunRef = useRef<string | null>(null);
 
   const activeConv = useMemo(
     () => conversations.find((c) => c.id === activeId) ?? null,
@@ -158,32 +163,34 @@ export default function ChatPage() {
   }, [messages, pendingCount]);
 
   useEffect(() => {
+    if (streamingMsgId || typedPreview[typingRunRef.current ?? ""]) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [typedPreview, streamingMsgId]);
+
+  useEffect(() => {
     return () => {
       typingTimersRef.current.forEach((id) => window.clearTimeout(id));
       typingTimersRef.current = [];
     };
   }, []);
 
-  const playTypingEffect = useCallback((messageId: string, fullText: string, done: () => void) => {
+  const playTypingEffect = useCallback(async (messageId: string, fullText: string, done: () => void) => {
     typingTimersRef.current.forEach((id) => window.clearTimeout(id));
     typingTimersRef.current = [];
+    typingRunRef.current = messageId;
     setTypedPreview((prev) => ({ ...prev, [messageId]: "" }));
     const tokens = splitTokens(fullText);
-    let index = 0;
-    const tick = () => {
-      if (index >= tokens.length) {
-        setTypedPreview((prev) => ({ ...prev, [messageId]: fullText }));
-        done();
-        return;
-      }
-      const nextText = tokens.slice(0, index + 1).join("");
-      setTypedPreview((prev) => ({ ...prev, [messageId]: nextText }));
-      index += 1;
-      const timer = window.setTimeout(tick, 22);
-      typingTimersRef.current.push(timer);
-    };
-    const firstTimer = window.setTimeout(tick, 120);
-    typingTimersRef.current.push(firstTimer);
+    await wait(90);
+    for (let index = 0; index < tokens.length; index += 1) {
+      if (typingRunRef.current !== messageId) return;
+      setTypedPreview((prev) => ({ ...prev, [messageId]: tokens.slice(0, index + 1).join("") }));
+      await wait(22);
+    }
+    if (typingRunRef.current !== messageId) return;
+    setTypedPreview((prev) => ({ ...prev, [messageId]: fullText }));
+    typingRunRef.current = null;
+    done();
   }, []);
 
   const updateConversation = useCallback(
@@ -309,7 +316,7 @@ export default function ChatPage() {
           updateConversation(currentConvId, (c) => {
             const finalMsg = c.messages.find((m) => m.id === assistantId);
             if (!finalMsg) return c;
-            playTypingEffect(assistantId, finalMsg.content, () => {
+            void playTypingEffect(assistantId, finalMsg.content, () => {
               setStreamingMsgId(null);
               setTypedPreview((prev) => {
                 const next = { ...prev };
@@ -332,6 +339,7 @@ export default function ChatPage() {
             updatedAt: Date.now(),
           }));
           setStreamingMsgId(null);
+          typingRunRef.current = null;
           setTypedPreview((prev) => {
             const next = { ...prev };
             delete next[assistantId];
