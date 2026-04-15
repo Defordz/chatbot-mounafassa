@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity } from "lucide-react";
+import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessageStream } from "@/lib/api";
@@ -19,6 +19,7 @@ interface Conversation {
 
 const STORAGE_KEY = "monafassa_history";
 const ACTIVE_KEY = "lexconc-active-conv";
+const THEME_KEY = "monafassa_theme";
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -60,6 +61,17 @@ function loadActiveId(): string | null {
 function saveActiveId(id: string | null) {
   if (id) localStorage.setItem(ACTIVE_KEY, id);
   else localStorage.removeItem(ACTIVE_KEY);
+}
+
+type ThemeMode = "light" | "dark";
+
+function getSystemTheme(): ThemeMode {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function loadTheme(): ThemeMode {
+  const saved = localStorage.getItem(THEME_KEY);
+  return saved === "dark" || saved === "light" ? saved : getSystemTheme();
 }
 
 type DateGroup = "today" | "yesterday" | "thisWeek" | "thisMonth" | "older";
@@ -130,6 +142,7 @@ function wait(ms: number) {
 export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>(() => loadConversations());
   const [activeId, setActiveId] = useState<string | null>(() => loadActiveId());
+  const [theme, setTheme] = useState<ThemeMode>(() => loadTheme());
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [input, setInput] = useState("");
   const [pendingCount, setPendingCount] = useState(0);
@@ -157,6 +170,11 @@ export default function ChatPage() {
   useEffect(() => {
     saveActiveId(activeId);
   }, [activeId]);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -217,11 +235,22 @@ export default function ChatPage() {
   const deleteConversation = useCallback(
     (id: string, e: React.MouseEvent) => {
       e.stopPropagation();
+      if (!window.confirm("Supprimer cette conversation ?")) return;
       setConversations((prev) => prev.filter((c) => c.id !== id));
       if (activeId === id) setActiveId(null);
     },
     [activeId]
   );
+
+  const clearAllConversations = useCallback(() => {
+    if (!window.confirm("Supprimer tout l'historique ?")) return;
+    setConversations([]);
+    setActiveId(null);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((curr) => (curr === "light" ? "dark" : "light"));
+  }, []);
 
   const handleSend = useCallback(
     async (question?: string) => {
@@ -465,6 +494,9 @@ export default function ChatPage() {
 
         <div className="sidebar-footer">
           <div className="sidebar-divider" />
+          <button className="btn-clear-history" onClick={clearAllConversations} type="button">
+            Tout effacer
+          </button>
           <div className="sidebar-credit">
             Conseil de la Concurrence<br />du Royaume du Maroc
           </div>
@@ -494,6 +526,9 @@ export default function ChatPage() {
               </div>
             </div>
             <div className="topbar-actions">
+              <button className="theme-toggle" onClick={toggleTheme} type="button" aria-label="Changer le thème">
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
               <div className="status-pill" aria-label="Système actif">
                 <span className="status-dot" />
                 RAG actif
