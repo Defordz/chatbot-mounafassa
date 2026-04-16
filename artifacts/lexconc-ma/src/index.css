@@ -96,6 +96,45 @@
   --shadow-input: 0 0 0 3px rgba(91,191,239,0.20);
 }
 
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] .main-header,
+[data-theme="dark"] .input-box,
+[data-theme="dark"] .msg-bubble.assistant,
+[data-theme="dark"] .msg-bubble.ai-bubble,
+[data-theme="dark"] .response-bubble,
+[data-theme="dark"] .message-bubble {
+  background: #1A2332 !important;
+  color: #E8F2FC !important;
+  border: 1px solid #2A3F58 !important;
+}
+
+[data-theme="dark"] .msg-bubble h2,
+[data-theme="dark"] .msg-bubble h3,
+[data-theme="dark"] .response-section-title {
+  color: #5BBFEF !important;
+}
+
+[data-theme="dark"] .input-box {
+  background: #1A2332 !important;
+  border: 1.5px solid #2A3F58 !important;
+  color: #F0F6FF !important;
+}
+
+[data-theme="dark"] .input-box textarea {
+  color: #F0F6FF !important;
+}
+
+[data-theme="dark"] .input-box textarea::placeholder {
+  color: #5C7A96 !important;
+}
+
+[data-theme="dark"] .bg-pattern,
+[data-theme="dark"] .sidebar::before,
+[data-theme="dark"] .sidebar::after {
+  opacity: 0 !important;
+  background-image: none !important;
+}
+
 /* ── SIDEBAR en mode sombre ── */
 [data-theme="dark"] .sidebar {
   background: #0C1320;
