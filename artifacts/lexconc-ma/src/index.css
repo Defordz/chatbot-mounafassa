@@ -104,7 +104,7 @@
 [data-theme="dark"] .response-bubble,
 [data-theme="dark"] .message-bubble {
   background: #1A2332 !important;
-  color: #E8F2FC !important;
+  color: #FFFFFF !important;
   border: 1px solid #2A3F58 !important;
 }
 
@@ -186,7 +186,7 @@
 [data-theme="dark"] .msg-bubble.ai-bubble {
   background: #1A2332;
   border-color: #2A3F58;
-  color: #E8F2FC;
+  color: #FFFFFF;
 }
 
 /* Titres de section dans la réponse IA */
@@ -199,7 +199,7 @@
 /* Texte normal dans la bulle */
 [data-theme="dark"] .msg-bubble p,
 [data-theme="dark"] .msg-bubble li {
-  color: #D4E6F5;
+  color: #FFFFFF;
 }
 
 /* ── Bulle utilisateur ── */
