@@ -540,7 +540,11 @@ button:active {
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 10;
-  transition: width var(--transition-fast), padding var(--transition-fast), opacity var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    width 0.28s cubic-bezier(0.4,0,0.2,1),
+    padding 0.28s cubic-bezier(0.4,0,0.2,1),
+    opacity 0.2s ease,
+    transform 0.28s cubic-bezier(0.4,0,0.2,1);
 }
 
 .sidebar.collapsed {
@@ -549,6 +553,7 @@ button:active {
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
+  transform: scale(0.98);
 }
 
 .sidebar-toggle {
