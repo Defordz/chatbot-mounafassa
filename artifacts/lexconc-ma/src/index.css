@@ -189,6 +189,7 @@
 }
 
 [data-theme="dark"] .sidebar-logo-img,
+[data-theme="dark"] .welcome-chatbot-logo,
 [data-theme="dark"] .welcome-logo {
   background: transparent !important;
   filter: brightness(0) invert(1) !important;
@@ -196,6 +197,22 @@
 
 [data-theme="dark"] .welcome-screen {
   background: #0E1117 !important;
+}
+
+[data-theme="dark"] .welcome-title,
+[data-theme="dark"] .header-title,
+[data-theme="dark"] .topbar-title span,
+[data-theme="dark"] .sidebar-logo-text h1,
+[data-theme="dark"] .msg-bubble.assistant,
+[data-theme="dark"] .msg-bubble.ai-bubble {
+  color: #F0F6FF;
+}
+
+[data-theme="dark"] .welcome-desc,
+[data-theme="dark"] .header-subtitle,
+[data-theme="dark"] .topbar-title,
+[data-theme="dark"] .sidebar-logo-text span {
+  color: #94A8BF;
 }
 
 /* ── Bouton Nouvelle conversation ── */
