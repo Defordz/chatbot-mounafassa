@@ -243,6 +243,10 @@
   color: #94A8BF !important;
 }
 
+[data-theme="dark"] .quick-action {
+  color: #F0F6FF !important;
+}
+
 [data-theme="dark"] .suggestion-item,
 [data-theme="dark"] .quick-question,
 [data-theme="dark"] .example-question {
