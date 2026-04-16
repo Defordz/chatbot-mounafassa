@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X, Globe, Menu } from "lucide-react";
+import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X, Globe } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessageStream } from "@/lib/api";
@@ -7,6 +7,7 @@ import { sendChatMessageStream } from "@/lib/api";
 let activeAbortController: AbortController | null = null;
 import councillogo from "@assets/image_1775927493944.png";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
+import sidebarMenuLogo from "@assets/image_1776299415868.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
 
 interface Conversation {
@@ -472,7 +473,7 @@ export default function ChatPage() {
           onClick={() => setSidebarOpen((v) => !v)}
           title={sidebarOpen ? "Réduire la barre latérale" : "Afficher la barre latérale"}
         >
-          <Menu size={18} />
+          <img src={sidebarMenuLogo} alt="" aria-hidden="true" className="sidebar-toggle-img" />
         </button>
 
         <div className="sidebar-divider" />

@@ -196,6 +196,13 @@
   color: #FFFFFF !important;
 }
 
+.sidebar-toggle-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+}
+
 [data-theme="dark"] .sidebar-logo-img,
 [data-theme="dark"] .welcome-chatbot-logo,
 [data-theme="dark"] .welcome-logo {
