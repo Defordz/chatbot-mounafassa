@@ -48,6 +48,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
     return existing?.type ?? null;
   });
   const isUser = message.role === "user";
+  const isError = !!message.isError;
 
   const timeStr = message.timestamp.toLocaleTimeString("fr-FR", {
     hour: "2-digit",
@@ -64,7 +65,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
     );
   }
 
-  if (message.isError) {
+  if (isError) {
     return (
       <div className="msg-row assistant">
         <div className="msg-wrapper">
@@ -77,7 +78,6 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
       </div>
     );
   }
-
   const uniqueSources = message.sources?.map(s => s.source_name).filter(Boolean) ?? [];
   const feedbackItems = loadFeedback();
 
