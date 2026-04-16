@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X, Globe } from "lucide-react";
+import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X, Globe, Menu } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
 import { sendChatMessageStream } from "@/lib/api";
@@ -472,7 +472,7 @@ export default function ChatPage() {
           onClick={() => setSidebarOpen(false)}
           title="Réduire la barre latérale"
         >
-          <PanelLeftClose size={18} />
+          <Menu size={18} />
         </button>
 
         <div className="sidebar-divider" />
