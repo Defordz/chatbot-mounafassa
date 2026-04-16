@@ -144,7 +144,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
               style={{ marginTop: "10px" }}
             >
               {showChunks ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-              {showChunks ? "Masquer" : "Voir"} passages ({message.retrieved_chunks.length})
+              {showChunks ? "Masquer" : "Sources citées"} : [{message.retrieved_chunks[0]?.source_name}{message.retrieved_chunks[0]?.article_ref ? `, ${message.retrieved_chunks[0]?.article_ref}` : ""}]
             </button>
           )}
 
