@@ -79,6 +79,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
     );
   }
   const feedbackItems = loadFeedback();
+  const hasSpecificSources = !!message.retrieved_chunks && message.retrieved_chunks.length > 0 && !!message.sources?.length;
 
   const persistFeedback = (type: FeedbackType, comment = "") => {
     const next = feedbackItems.filter((item: any) => item.msgId !== message.id);
@@ -136,7 +137,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
             {isStreaming && <span className="streaming-cursor">▌</span>}
           </div>
 
-          {message.retrieved_chunks && message.retrieved_chunks.length > 0 && (
+          {hasSpecificSources && (
             <button
               type="button"
               className="source-tag"
@@ -148,7 +149,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
             </button>
           )}
 
-          {showChunks && message.retrieved_chunks && (
+          {showChunks && hasSpecificSources && message.retrieved_chunks && (
             <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
               {message.retrieved_chunks.map((chunk, i) => (
                 <div
