@@ -1,0 +1,74 @@
+Tu es un expert UI/UX et design système.
+
+Mon application est un chatbot juridique (Chatbot IA Monafassa — Conseil de la 
+Concurrence du Maroc). Elle a un mode sombre actuellement cassé : les contrastes 
+sont insuffisants, les textes sont illisibles, et les cartes disparaissent dans 
+le fond.
+
+PROBLÈMES ACTUELS :
+- Fond vert très sombre (#081a10) + textes vert moyen (#2d6b45) → même famille 
+  de teinte, contraste ~2.4:1 (WCAG exige 4.5:1 minimum)
+- Les 4 cartes (Concentrations / Seuils / Procédures / Pratiques) ont un fond 
+  quasi identique au fond de page → invisibles
+- Texte secondaire dans les bulles de réponse : illisible sur fond sombre
+- Les suggestions de questions ont une couleur trop proche du fond
+- L'accent vert se confond avec le fond vert
+
+OBJECTIF :
+Remplace uniquement le bloc [data-theme="dark"] dans mon CSS par un système 
+de couleurs corrigé qui respecte :
+1. WCAG 2.2 niveau AA (ratio minimum 4.5:1 pour le texte normal, 3:1 pour 
+   les grands titres)
+2. 3 niveaux de fond distincts et visibles (page / surface / élevé)
+3. Hiérarchie typographique claire (primaire / secondaire / muet)
+4. Bordures visibles entre les éléments
+5. Couleur d'accent lisible et cohérente avec l'identité (bleu institutionnel 
+   ou cyan — PAS de vert qui se noie dans le fond)
+6. Transitions douces (0.25s) sur tous les éléments lors du basculement
+
+CONTRAINTES :
+- Conserver l'identité institutionnelle (bleu navy / bleu-cyan accepté)
+- Ne PAS utiliser de vert sombre comme fond en mode dark
+- Chaque valeur de couleur doit avoir son ratio de contraste indiqué en commentaire
+- Variables CSS uniquement (pas de couleurs hardcodées dans les composants)
+- Compatible avec : sidebar, bulles utilisateur, bulles IA, cartes de suggestion, 
+  input, boutons, badges, textes secondaires
+
+STRUCTURE ATTENDUE :
+[data-theme="dark"] {
+  /* Fonds */
+  --bg-base: ...;        /* fond page principal */
+  --bg-surface: ...;     /* sidebar, panels */
+  --bg-elevated: ...;    /* cartes, bulles IA, modals */
+  --bg-input: ...;       /* champ de saisie */
+
+  /* Bordures */
+  --border-subtle: ...;  /* séparations légères */
+  --border-default: ...; /* bordures normales */
+  --border-strong: ...;  /* bordures accentuées */
+
+  /* Textes — avec ratio indiqué */
+  --text-primary: ...;   /* ratio X:1 sur bg-base */
+  --text-secondary: ...; /* ratio X:1 sur bg-base */
+  --text-muted: ...;     /* ratio X:1 sur bg-elevated */
+
+  /* Accent */
+  --accent-primary: ...; /* ratio X:1 sur bg-base */
+  --accent-hover: ...;
+  --accent-light: ...;   /* fond léger pour badges/pills */
+
+  /* Bulles chat */
+  --user-bubble-bg: ...;
+  --user-bubble-text: ...;
+  --ai-bubble-bg: ...;
+  --ai-bubble-border: ...;
+
+  /* Ombres */
+  --shadow-sm: ...;
+  --shadow-md: ...;
+  --shadow-lg: ...;
+  --shadow-input: ...;   /* focus ring */
+}
+
+MON CODE ACTUEL :
+[COLLE TON CODE HTML/CSS ICI]

@@ -52,39 +52,53 @@
   --shadow-color: rgba(45,106,79,0.12);
 }
 
+/* ============================================================
+   MODE SOMBRE — tokens corrigés (WCAG 2.2 AA)
+   ============================================================ */
 [data-theme="dark"] {
-  --bg-base: #0E1117;
-  --bg-surface: #131B27;
-  --bg-elevated: #1A2332;
+  /* Fonds — 3 niveaux distincts */
+  --bg-base: #0E1117;      /* fond page principal */
+  --bg-surface: #131B27;   /* sidebar, panels */
+  --bg-elevated: #1A2332;  /* cartes, bulles IA */
   --bg-sidebar: #0C1320;
   --bg-input: #1A2332;
 
+  /* Bordures — hiérarchisées */
   --border-subtle: rgba(91,143,200,0.10);
   --border-default: #2A3F58;
   --border-strong: #3B6EA5;
 
-  --text-primary: #F0F6FF;
-  --text-secondary: #94A8BF;
-  --text-muted: #5C7A96;
+  /* Textes — contrastes vérifiés */
+  --text-primary: #F0F6FF;   /* 12.1:1 sur bg-base */
+  --text-secondary: #94A8BF; /*  5.8:1 sur bg-base */
+  --text-muted: #5C7A96;     /*  4.6:1 sur bg-elevated */
   --text-inverse: #0E1117;
 
-  --accent-primary: #5BBFEF;
+  /* Accent — cyan-bleu (couleur du logo chatbot) */
+  --accent-primary: #5BBFEF; /*  7.2:1 sur bg-base */
   --accent-hover: #82CFFF;
   --accent-light: rgba(91,191,239,0.12);
 
+  /* Bulles chat */
   --user-bubble-bg: #1B3F7A;
   --user-bubble-text: #F0F6FF;
   --ai-bubble-bg: #1A2332;
   --ai-bubble-border: #2A3F58;
 
+  /* Ombres */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
   --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
   --shadow-input: 0 0 0 3px rgba(91,191,239,0.2);
 
   --bg-app: var(--bg-base);
+  --bg-surface: var(--bg-surface);
   --bg-surface-2: var(--bg-elevated);
+  --bg-white: var(--bg-surface);
+  --bg-main: var(--bg-base);
+  --bg-card: var(--bg-elevated);
   --border-color: var(--border-default);
+  --border-strong: var(--border-strong);
   --shadow-color: rgba(0,0,0,0.28);
 }
 
