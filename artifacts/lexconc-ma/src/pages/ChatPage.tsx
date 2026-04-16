@@ -7,7 +7,6 @@ import { sendChatMessageStream } from "@/lib/api";
 let activeAbortController: AbortController | null = null;
 import councillogo from "@assets/image_1775927493944.png";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
-import sidebarMenuLogo from "@assets/image_1776299415868.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
 
 interface Conversation {
@@ -473,7 +472,7 @@ export default function ChatPage() {
           onClick={() => setSidebarOpen((v) => !v)}
           title={sidebarOpen ? "Réduire la barre latérale" : "Afficher la barre latérale"}
         >
-          <img src={sidebarMenuLogo} alt="" aria-hidden="true" className="sidebar-toggle-img" />
+          <PanelLeftClose size={18} />
         </button>
 
         <div className="sidebar-divider" />
