@@ -1,0 +1,158 @@
+You are a senior frontend engineer and motion designer (2026 level).
+
+You are given an existing chatbot UI (HTML/CSS/JS) that is already clean and functional.
+
+Your task is to **refine and elevate it to a premium, production-grade interface** using advanced motion design and micro-interactions — WITHOUT redesigning or breaking the existing structure.
+
+---
+
+## OBJECTIVE
+
+Make the UI feel:
+
+* premium
+* smooth
+* intentional
+* high-end (Apple / Notion / ChatGPT level)
+
+Everything must feel:
+“carefully crafted, not generic”
+
+---
+
+## CORE REQUIREMENTS
+
+### 1. SIDEBAR ANIMATION (CRITICAL)
+
+Upgrade sidebar open/close behavior:
+
+* Use smooth, slow, premium animation
+
+* Animate:
+
+  * width
+  * opacity
+  * transform (slight scale)
+
+* Duration: 400–450ms
+
+* Easing: cubic-bezier(0.16, 1, 0.3, 1)
+
+IMPORTANT:
+
+* Content inside sidebar must fade out BEFORE collapse
+* Content must fade in AFTER expansion (small delay ~80ms)
+* Prevent layout jumps
+
+---
+
+### 2. DARK MODE TRANSITION (HIGH-END)
+
+* Implement dark mode toggle using CSS variables
+* Animate ALL color changes smoothly
+
+Transitions must include:
+
+* background
+* text
+* borders
+* shadows
+
+Duration: ~300ms
+
+The transition must feel like a **soft crossfade**, not a sudden switch.
+
+---
+
+### 3. MICRO-INTERACTIONS (MANDATORY)
+
+For ALL interactive elements (buttons, cards, sidebar items):
+
+Hover:
+
+* translateY(-2px)
+* subtle shadow increase
+
+Click:
+
+* scale(0.97)
+* fast response (~120ms)
+
+Use:
+cubic-bezier(0.4, 0, 0.2, 1)
+
+---
+
+### 4. MESSAGE ANIMATION
+
+Messages must not appear instantly.
+
+Add:
+
+* fade in
+* slight upward movement (8–12px)
+
+Duration: ~250ms
+
+---
+
+### 5. GLOBAL MOTION SYSTEM
+
+Define consistent timing:
+
+* 120ms → clicks
+* 250ms → UI elements
+* 300–450ms → layout transitions
+
+Use consistent easing across the app.
+
+---
+
+### 6. VISUAL POLISH
+
+* Add subtle backdrop blur where relevant (header, overlays)
+* Improve shadows (soft, diffused, not harsh)
+* Ensure spacing consistency (8px system)
+
+---
+
+### 7. ACCESSIBILITY
+
+* Add visible focus states
+* Ensure keyboard navigation works
+* Add aria-labels where relevant
+
+---
+
+## CONSTRAINTS
+
+* DO NOT redesign layout
+* DO NOT remove features
+* ONLY refine and enhance
+
+---
+
+## OUTPUT
+
+Provide:
+
+1. Improved CSS (animations + transitions)
+2. Minimal JS (for toggles and interactions)
+3. Clean, readable code
+4. Short explanation of improvements
+
+---
+
+## FINAL EXPECTATION
+
+The result must feel like:
+“A premium AI product where every interaction is intentional and refined.”
+
+Avoid:
+
+* flashy effects
+* over-animation
+* anything that feels gimmicky
+
+Prioritize:
+precision, smoothness, and subtle elegance.
