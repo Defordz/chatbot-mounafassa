@@ -252,6 +252,10 @@
   color: #F0F6FF !important;
 }
 
+[data-theme="dark"] .example-question {
+  color: #5BBFEF !important;
+}
+
 [data-theme="dark"] .suggestion-item,
 [data-theme="dark"] .quick-question,
 [data-theme="dark"] .example-question {
