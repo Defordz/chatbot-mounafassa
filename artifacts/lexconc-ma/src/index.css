@@ -210,6 +210,10 @@
   filter: brightness(0) invert(1) !important;
 }
 
+[data-theme="dark"] .welcome-chatbot-logo {
+  filter: brightness(0) invert(1) !important;
+}
+
 [data-theme="dark"] .welcome-screen {
   background: #0E1117 !important;
 }
