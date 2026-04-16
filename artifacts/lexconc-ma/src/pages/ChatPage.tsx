@@ -179,10 +179,6 @@ export default function ChatPage() {
   }, [theme]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, pendingCount]);
-
-  useEffect(() => {
     if (streamingMsgId || typedPreview[typingRunRef.current ?? ""]) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
