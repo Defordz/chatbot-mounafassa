@@ -188,6 +188,12 @@
   color: #5C7A96;
 }
 
+[data-theme="dark"] .sidebar-logo-img,
+[data-theme="dark"] .welcome-logo {
+  background: transparent !important;
+  filter: brightness(0) invert(1) !important;
+}
+
 /* ── Bouton Nouvelle conversation ── */
 [data-theme="dark"] .btn-new-chat {
   background: #1B3F7A;
