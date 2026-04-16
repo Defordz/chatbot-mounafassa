@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { ChevronDown, ChevronUp, ThumbsUp, PencilLine, Clipboard, Check } from "lucide-react";
+import { ThumbsUp, PencilLine, Clipboard, Check } from "lucide-react";
 import type { ChatMessage as ChatMessageType } from "@/lib/api";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 
@@ -39,7 +39,6 @@ function saveFeedback(items: Array<{ msgId: string; type: FeedbackType; comment:
 }
 
 export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
-  const [showChunks, setShowChunks] = useState(false);
   const [showImproveField, setShowImproveField] = useState(false);
   const [improvementText, setImprovementText] = useState("");
   const [copied, setCopied] = useState(false);
@@ -78,7 +77,6 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
       </div>
     );
   }
-  const uniqueSources = message.sources?.map(s => s.source_name).filter(Boolean) ?? [];
   const feedbackItems = loadFeedback();
 
   const persistFeedback = (type: FeedbackType, comment = "") => {
@@ -137,28 +135,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
             {isStreaming && <span className="streaming-cursor">▌</span>}
           </div>
 
-          {uniqueSources.length > 0 && (
-            <div className="source-tags">
-              {uniqueSources.slice(0, 5).map((src, i) => (
-                <span key={i} className="source-tag">
-                  {SVG_BOOK}
-                  {src}
-                </span>
-              ))}
-              {message.retrieved_chunks && message.retrieved_chunks.length > 0 && (
-                <button
-                  onClick={() => setShowChunks(!showChunks)}
-                  className="source-tag"
-                  style={{ cursor: "pointer" }}
-                >
-                  {showChunks ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-                  {showChunks ? "Masquer" : "Voir"} passages ({message.retrieved_chunks.length})
-                </button>
-              )}
-            </div>
-          )}
-
-          {showChunks && message.retrieved_chunks && (
+          {message.retrieved_chunks && message.retrieved_chunks.length > 0 && (
             <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
               {message.retrieved_chunks.map((chunk, i) => (
                 <div
