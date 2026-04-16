@@ -1113,7 +1113,7 @@ body, .sidebar, .main-header, .input-box, .msg-bubble.assistant, .typing-bubble,
 .msg-row {
   display: flex;
   margin-bottom: 22px;
-  animation: fadeInUp 0.35s ease;
+  animation: smoothAppear 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
 .msg-row.user {
