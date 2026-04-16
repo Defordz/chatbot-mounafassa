@@ -469,8 +469,8 @@ export default function ChatPage() {
 
         <button
           className="sidebar-toggle"
-          onClick={() => setSidebarOpen(false)}
-          title="Réduire la barre latérale"
+          onClick={() => setSidebarOpen((v) => !v)}
+          title={sidebarOpen ? "Réduire la barre latérale" : "Afficher la barre latérale"}
         >
           <Menu size={18} />
         </button>
