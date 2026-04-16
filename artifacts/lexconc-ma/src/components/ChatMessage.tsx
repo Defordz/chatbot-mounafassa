@@ -136,7 +136,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
             {isStreaming && <span className="streaming-cursor">▌</span>}
           </div>
 
-          {message.retrieved_chunks && message.retrieved_chunks.length > 0 && (
+          {message.retrieved_chunks && message.retrieved_chunks.length > 0 && false && (
             <button
               type="button"
               className="source-tag"
