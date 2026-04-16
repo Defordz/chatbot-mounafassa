@@ -199,6 +199,53 @@
   background: #0E1117 !important;
 }
 
+[data-theme="dark"] .main-area {
+  background: #0E1117 !important;
+}
+
+[data-theme="dark"] .chat-messages {
+  background: #0E1117 !important;
+}
+
+[data-theme="dark"] .suggestion-card {
+  background: #1A2332 !important;
+  border: 1px solid #2A3F58 !important;
+  color: #F0F6FF !important;
+}
+
+[data-theme="dark"] .suggestion-card h3,
+[data-theme="dark"] .suggestion-card .card-title,
+[data-theme="dark"] .suggestion-card strong {
+  color: #F0F6FF !important;
+}
+
+[data-theme="dark"] .suggestion-card p,
+[data-theme="dark"] .suggestion-card .card-desc {
+  color: #94A8BF !important;
+}
+
+[data-theme="dark"] .suggestion-item,
+[data-theme="dark"] .quick-question,
+[data-theme="dark"] .example-question {
+  color: #5BBFEF !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .disclaimer,
+[data-theme="dark"] .footer-text,
+[data-theme="dark"] .legal-note,
+[data-theme="dark"] .welcome-disclaimer,
+[data-theme="dark"] .input-disclaimer {
+  color: #5C7A96 !important;
+}
+
+[data-theme="dark"] body,
+[data-theme="dark"] html,
+[data-theme="dark"] .app,
+[data-theme="dark"] .app-container {
+  background: #0E1117 !important;
+}
+
 [data-theme="dark"] .welcome-title,
 [data-theme="dark"] .header-title,
 [data-theme="dark"] .topbar-title span,
