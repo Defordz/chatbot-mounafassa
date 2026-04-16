@@ -207,7 +207,7 @@
 [data-theme="dark"] .welcome-chatbot-logo,
 [data-theme="dark"] .welcome-logo {
   background: transparent !important;
-  filter: brightness(0) invert(1) !important;
+  filter: none !important;
 }
 
 [data-theme="dark"] .welcome-chatbot-logo {
