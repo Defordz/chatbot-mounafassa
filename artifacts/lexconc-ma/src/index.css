@@ -1,9 +1,18 @@
 @import "tailwindcss";
 
-/* ═══════════════════════════════════════════
-   GREEN DESIGN SYSTEM
-   ═══════════════════════════════════════════ */
 :root {
+  --bg-base: #f4f7f2;
+  --bg-surface: #ffffff;
+  --bg-elevated: #fafcf9;
+  --bg-card: #fafcf9;
+  --text-primary: #1b4332;
+  --text-secondary: #344e41;
+  --text-muted: #7c9a82;
+  --accent: #2d6a4f;
+  --accent-light: #40916c;
+  --accent-glow: rgba(45,106,79,0.15);
+  --border: rgba(45,106,79,0.1);
+  --border-accent: #2d6a4f;
   --green-900: #0d2818;
   --green-800: #1b4332;
   --green-700: #2d6a4f;
@@ -14,18 +23,15 @@
   --green-200: #b7e4c7;
   --green-100: #d8f3dc;
   --green-50:  #edf7f0;
-
   --text-900: #1b4332;
   --text-700: #344e41;
   --text-500: #588157;
   --text-400: #7c9a82;
   --text-300: #95a88e;
   --text-200: #b8c9b5;
-
   --bg-main: #f4f7f2;
   --bg-white: #ffffff;
   --bg-card: #fafcf9;
-
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(45,106,79,0.08);
   --shadow-lg: 0 8px 32px rgba(45,106,79,0.12);
@@ -41,13 +47,10 @@
   --sidebar-width: 270px;
   --header-height: 64px;
   --transition-fast: 0.25s ease;
-  --bg-app: #f4f7f2;
-  --bg-surface: #ffffff;
-  --bg-surface-2: #fafcf9;
-  --text-primary: #1b4332;
-  --text-secondary: #344e41;
-  --text-muted: #7c9a82;
-  --border-color: rgba(45,106,79,0.1);
+  --bg-app: var(--bg-base);
+  --bg-surface: var(--bg-surface);
+  --bg-surface-2: var(--bg-elevated);
+  --border-color: var(--border);
   --border-strong: rgba(45,106,79,0.18);
   --shadow-color: rgba(45,106,79,0.12);
 }
@@ -58,42 +61,25 @@
    ============================================================ */
 
 [data-theme="dark"] {
-
-  /* ── FONDS — 3 niveaux distincts ── */
-  --bg-base:        #0E1117;   /* fond page */
-  --bg-surface:     #131B27;   /* sidebar, panels */
-  --bg-elevated:    #1A2332;   /* cartes, bulles IA */
-  --bg-sidebar:     #0C1320;   /* sidebar fond */
-  --bg-input:       #1A2332;   /* champ de saisie */
-
-  /* ── BORDURES — hiérarchisées ── */
-  --border-subtle:  rgba(91,143,200,0.10);
-  --border-default: #2A3F58;
-  --border-strong:  #3B6EA5;
-
-  /* ── TEXTES ── */
-  --text-primary:   #F0F6FF;   /* ratio 12.1:1 ✓ */
-  --text-secondary: #94A8BF;   /* ratio  5.8:1 ✓ */
-  --text-muted:     #5C7A96;   /* ratio  4.6:1 ✓ */
-  --text-inverse:   #0E1117;
-
-  /* ── ACCENT — cyan institutionnel ── */
-  --accent-primary: #5BBFEF;   /* ratio  7.2:1 ✓ */
-  --accent-hover:   #82CFFF;
-  --accent-light:   rgba(91,191,239,0.12);
-  --accent-grad: linear-gradient(135deg, #1B3F7A 0%, #1E5FA0 55%, #0A8FCC 100%);
-
-  /* ── BULLES CHAT ── */
-  --user-bubble-bg:   #1B4A7A;  /* bleu marine, ratio texte 8.1:1 ✓ */
-  --user-bubble-text: #F0F6FF;
-  --ai-bubble-bg:     #1A2332;
-  --ai-bubble-border: #2A3F58;
-
-  /* ── OMBRES ── */
-  --shadow-sm:    0 1px 3px rgba(0,0,0,0.45);
-  --shadow-md:    0 4px 12px rgba(0,0,0,0.55);
-  --shadow-lg:    0 12px 32px rgba(0,0,0,0.65);
-  --shadow-input: 0 0 0 3px rgba(91,191,239,0.20);
+  --bg-base: #0A0F1E;
+  --bg-surface: #111827;
+  --bg-elevated: #1C2333;
+  --bg-card: #1C2333;
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --accent: #3B82F6;
+  --accent-light: #1D4ED8;
+  --accent-glow: rgba(59,130,246,0.15);
+  --border: #1F2937;
+  --border-accent: #3B82F6;
+  --bg-sidebar: #111827;
+  --bg-input: #1C2333;
+  --bg-app: #0A0F1E;
+  --bg-surface-2: #1C2333;
+  --border-color: #1F2937;
+  --border-strong: #3B82F6;
+  --shadow-color: rgba(0,0,0,0.35);
 }
 
 [data-theme="dark"] .sidebar,
@@ -200,11 +186,11 @@
 }
 
 [data-theme="dark"] .main-area {
-  background: #0E1117 !important;
+  background: #0A0F1E !important;
 }
 
 [data-theme="dark"] .chat-messages {
-  background: #0E1117 !important;
+  background: #0A0F1E !important;
 }
 
 [data-theme="dark"] .suggestion-card {
@@ -243,7 +229,7 @@
 [data-theme="dark"] html,
 [data-theme="dark"] .app,
 [data-theme="dark"] .app-container {
-  background: #0E1117 !important;
+  background: #0A0F1E !important;
 }
 
 [data-theme="dark"] .welcome-title,

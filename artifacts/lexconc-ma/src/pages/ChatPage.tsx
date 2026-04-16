@@ -115,10 +115,10 @@ const QUICK_ACTIONS = [
 ];
 
 const SUGGESTIONS = [
-  { icon: "\u2696\uFE0F", label: "Concentrations", text: "Qu'est-ce qu'une opération de concentration économique ?" },
-  { icon: "\uD83D\uDCCA", label: "Seuils", text: "Quels sont les seuils de notification obligatoire ?" },
-  { icon: "\uD83D\uDD04", label: "Procédures", text: "Comment se déroule la procédure Phase I et Phase II ?" },
-  { icon: "\uD83D\uDEE1\uFE0F", label: "Pratiques", text: "Quelles sont les pratiques anticoncurrentielles prohibées ?" },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>, label: "Concentrations", text: "Qu'est-ce qu'une opération de concentration économique ?" },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18M3 9l9-6 9 6M5 20h14"/><path d="M5 12l-2 5h4l-2-5z"/><path d="M19 12l-2 5h4l-2-5z"/></svg>, label: "Seuils", text: "Quels sont les seuils de notification obligatoire ?" },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17.5 17.5v3M17.5 14v1.5M17.5 17.5h-3"/></svg>, label: "Procédures", text: "Comment se déroule la procédure Phase I et Phase II ?" },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l7 4v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-4z"/><path d="M9 12l2 2 4-4"/></svg>, label: "Pratiques", text: "Quelles sont les pratiques anticoncurrentielles prohibées ?" },
 ];
 
 const BOT_AVATAR = <img src={chatbotLogo} alt="Monafassa" className="bot-avatar-img" />;
