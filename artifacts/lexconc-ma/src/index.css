@@ -247,6 +247,11 @@
   color: #F0F6FF !important;
 }
 
+[data-theme="dark"] .suggestion-label,
+[data-theme="dark"] .suggestion-text {
+  color: #F0F6FF !important;
+}
+
 [data-theme="dark"] .suggestion-item,
 [data-theme="dark"] .quick-question,
 [data-theme="dark"] .example-question {
