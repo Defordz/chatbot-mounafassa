@@ -1116,6 +1116,31 @@ body, .sidebar, .main-header, .input-box, .msg-bubble.assistant, .typing-bubble,
   animation: smoothAppear 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
+.chat-messages {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45,106,79,0.28) transparent;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(45,106,79,0.22);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(45,106,79,0.34);
+  background-clip: padding-box;
+}
+
 .msg-row.user {
   justify-content: flex-end;
 }
