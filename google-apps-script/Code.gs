@@ -107,7 +107,13 @@ function chat(userMessage, history) {
     var json = JSON.parse(response.getContentText());
 
     if (json.error) {
-      return { success: false, error: json.error.message };
+      var errMsg = json.error.message;
+      if (json.error.code === 'rate_limit_exceeded') {
+        errMsg = "Limite de requêtes atteinte. Veuillez patienter 30 secondes.";
+      } else if (json.error.code === 'context_length_exceeded') {
+        errMsg = "La conversation est trop longue. Démarrez une nouvelle conversation.";
+      }
+      return { success: false, error: errMsg };
     }
 
     var answer = json.choices[0].message.content;
