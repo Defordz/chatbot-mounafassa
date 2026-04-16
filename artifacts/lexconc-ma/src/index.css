@@ -102,6 +102,10 @@
 [data-theme="dark"] .msg-bubble.assistant,
 [data-theme="dark"] .msg-bubble.ai-bubble,
 [data-theme="dark"] .response-bubble,
+[data-theme="dark"] .ai-message,
+[data-theme="dark"] .response-card,
+[data-theme="dark"] .answer-card,
+[data-theme="dark"] .message-content,
 [data-theme="dark"] .message-bubble {
   background: #1A2332 !important;
   color: #FFFFFF !important;
@@ -110,8 +114,43 @@
 
 [data-theme="dark"] .msg-bubble h2,
 [data-theme="dark"] .msg-bubble h3,
+[data-theme="dark"] .msg-bubble strong,
+[data-theme="dark"] .msg-bubble .section-title,
 [data-theme="dark"] .response-section-title {
   color: #5BBFEF !important;
+}
+
+[data-theme="dark"] .msg-bubble.assistant p,
+[data-theme="dark"] .msg-bubble.assistant span,
+[data-theme="dark"] .msg-bubble.assistant li,
+[data-theme="dark"] .msg-bubble.assistant div,
+[data-theme="dark"] .msg-bubble.ai-bubble p,
+[data-theme="dark"] .msg-bubble.ai-bubble span,
+[data-theme="dark"] .msg-bubble.ai-bubble li,
+[data-theme="dark"] .msg-bubble.ai-bubble div {
+  color: #E8F2FC !important;
+}
+
+[data-theme="dark"] .msg-bubble.assistant h1,
+[data-theme="dark"] .msg-bubble.assistant h2,
+[data-theme="dark"] .msg-bubble.assistant h3,
+[data-theme="dark"] .msg-bubble.assistant .section-title,
+[data-theme="dark"] .msg-bubble.assistant strong,
+[data-theme="dark"] .msg-bubble.ai-bubble h1,
+[data-theme="dark"] .msg-bubble.ai-bubble h2,
+[data-theme="dark"] .msg-bubble.ai-bubble h3,
+[data-theme="dark"] .msg-bubble.ai-bubble .section-title,
+[data-theme="dark"] .msg-bubble.ai-bubble strong {
+  color: #5BBFEF !important;
+}
+
+[data-theme="dark"] .msg-bubble.assistant .subtitle,
+[data-theme="dark"] .msg-bubble.assistant .meta,
+[data-theme="dark"] .msg-bubble.assistant small,
+[data-theme="dark"] .msg-bubble.ai-bubble .subtitle,
+[data-theme="dark"] .msg-bubble.ai-bubble .meta,
+[data-theme="dark"] .msg-bubble.ai-bubble small {
+  color: #94A8BF !important;
 }
 
 [data-theme="dark"] .input-box {
