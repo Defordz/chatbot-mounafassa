@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { ThumbsUp, PencilLine, Clipboard, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, ThumbsUp, PencilLine, Clipboard, Check } from "lucide-react";
 import type { ChatMessage as ChatMessageType } from "@/lib/api";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 
@@ -39,6 +39,7 @@ function saveFeedback(items: Array<{ msgId: string; type: FeedbackType; comment:
 }
 
 export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
+  const [showChunks, setShowChunks] = useState(false);
   const [showImproveField, setShowImproveField] = useState(false);
   const [improvementText, setImprovementText] = useState("");
   const [copied, setCopied] = useState(false);
@@ -136,6 +137,18 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
           </div>
 
           {message.retrieved_chunks && message.retrieved_chunks.length > 0 && (
+            <button
+              type="button"
+              className="source-tag"
+              onClick={() => setShowChunks((v) => !v)}
+              style={{ marginTop: "10px" }}
+            >
+              {showChunks ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+              {showChunks ? "Masquer" : "Voir"} passages ({message.retrieved_chunks.length})
+            </button>
+          )}
+
+          {showChunks && message.retrieved_chunks && (
             <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
               {message.retrieved_chunks.map((chunk, i) => (
                 <div
