@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2, PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X, Globe } from "lucide-react";
 import ChatMessageComponent from "@/components/ChatMessage";
 import type { ChatMessage } from "@/lib/api";
-import { sendChatMessageStream } from "@/lib/api";
+import { sendChatMessageSafe } from "@/lib/api";
 
 let activeAbortController: AbortController | null = null;
+let activeRequestSeq = 0;
 import councillogo from "@assets/image_1775927493944.png";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
@@ -328,11 +329,11 @@ export default function ChatPage() {
 
       setStreamingMsgId(assistantId);
 
-      if (activeAbortController) {
-        activeAbortController.abort();
-      }
+      if (activeAbortController) activeAbortController.abort();
       const abortController = new AbortController();
       activeAbortController = abortController;
+      const requestSeq = ++activeRequestSeq;
+      const timeoutId = window.setTimeout(() => abortController.abort(), 10000);
 
       const currentConv = conversations.find((c) => c.id === currentConvId);
       const historyMsgs = currentConv ? currentConv.messages : [];
@@ -341,72 +342,57 @@ export default function ChatPage() {
         .map((m) => ({ role: m.role, content: m.content }));
 
       try {
-      await sendChatMessageStream(q, recentHistory, null, {
-        onMeta: (data) => {
+        const result = await sendChatMessageSafe(q, recentHistory, null, abortController.signal);
+        if (requestSeq !== activeRequestSeq) return;
+        if (!result.ok || !result.data) {
+          const error = result.error || "Une erreur est survenue.";
           updateConversation(currentConvId, (c) => ({
             ...c,
             messages: c.messages.map((m) =>
-              m.id === assistantId
-                ? { ...m, sources: data.sources, confidence_score: data.confidence_score, retrieved_chunks: data.retrieved_chunks }
-                : m
-            ),
-          }));
-        },
-        onChunk: (text) => {
-          updateConversation(currentConvId, (c) => ({
-            ...c,
-            messages: c.messages.map((m) =>
-              m.id === assistantId
-                ? { ...m, content: m.content + text }
-                : m
-            ),
-          }));
-        },
-        onDone: () => {
-          updateConversation(currentConvId, (c) => {
-            const finalMsg = c.messages.find((m) => m.id === assistantId);
-            if (!finalMsg) return c;
-            void playTypingEffect(assistantId, finalMsg.content, () => {
-              setStreamingMsgId(null);
-              setTypedPreview((prev) => {
-                const next = { ...prev };
-                delete next[assistantId];
-                return next;
-              });
-              setPendingCount((cnt) => Math.max(0, cnt - 1));
-            });
-            return c;
-          });
-        },
-        onError: (error) => {
-          updateConversation(currentConvId, (c) => ({
-            ...c,
-            messages: c.messages.map((m) =>
-              m.id === assistantId
-                ? { ...m, content: error, isError: true }
-                : m
+              m.id === assistantId ? { ...m, content: error, isError: true } : m
             ),
             updatedAt: Date.now(),
           }));
+          return;
+        }
+
+        const { answer, sources, confidence_score, retrieved_chunks } = result.data;
+        updateConversation(currentConvId, (c) => ({
+          ...c,
+          messages: c.messages.map((m) =>
+            m.id === assistantId
+              ? { ...m, content: answer, sources, confidence_score, retrieved_chunks }
+              : m
+          ),
+          updatedAt: Date.now(),
+        }));
+
+        void playTypingEffect(assistantId, answer, () => {
           setStreamingMsgId(null);
-          typingRunRef.current = null;
           setTypedPreview((prev) => {
             const next = { ...prev };
             delete next[assistantId];
             return next;
           });
-          setPendingCount((c) => Math.max(0, c - 1));
-        },
-      }, abortController.signal);
+        });
+      } catch (error: any) {
+        if (requestSeq !== activeRequestSeq) return;
+        const message = error?.message || "Impossible d'envoyer le message.";
+        updateConversation(currentConvId, (c) => ({
+          ...c,
+          messages: c.messages.map((m) =>
+            m.id === assistantId ? { ...m, content: message, isError: true } : m
+          ),
+          updatedAt: Date.now(),
+        }));
       } finally {
-        if (activeAbortController === abortController) {
-          activeAbortController = null;
-        }
-        setStreamingMsgId((prev) => prev === assistantId ? null : prev);
+        window.clearTimeout(timeoutId);
+        if (activeAbortController === abortController) activeAbortController = null;
+        setStreamingMsgId((prev) => (prev === assistantId ? null : prev));
         setPendingCount((c) => Math.max(0, c - 1));
       }
     },
-    [input, activeId, conversations, updateConversation]
+    [input, activeId, conversations, updateConversation, playTypingEffect]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

@@ -26,6 +26,13 @@ export interface ChatResponse {
   retrieved_chunks: RetrievedChunk[];
 }
 
+export interface ChatRequestResult {
+  ok: boolean;
+  data?: ChatResponse;
+  error?: string;
+  status?: number;
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
@@ -65,6 +72,62 @@ async function safeJson(res: Response): Promise<any> {
   } catch {
     console.error("[API] Non-JSON response:", text.slice(0, 500));
     throw new Error("Réponse invalide du serveur. Veuillez réessayer.");
+  }
+}
+
+function getRequestError(message: string, status?: number) {
+  return status ? `${message} (HTTP ${status})` : message;
+}
+
+export async function sendChatMessageSafe(
+  question: string,
+  conversationHistory: Array<{ role: string; content: string }>,
+  sourceFilter: string | null,
+  signal?: AbortSignal
+): Promise<ChatRequestResult> {
+  try {
+    const res = await fetch(`${PYTHON_API_BASE}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question,
+        conversation_history: conversationHistory,
+        source_filter: sourceFilter,
+      }),
+      signal,
+    });
+
+    const data = await safeJson(res).catch((error) => {
+      console.error("[API] Invalid JSON response:", error);
+      return null;
+    });
+
+    if (!res.ok) {
+      const message =
+        data?.error ||
+        data?.detail ||
+        data?.message ||
+        getRequestError("La requête a échoué.", res.status);
+      console.error("[API] Chat error:", { status: res.status, data, message });
+      return { ok: false, error: message, status: res.status };
+    }
+
+    return {
+      ok: true,
+      data: {
+        answer: data?.answer ?? "",
+        sources: data?.sources ?? [],
+        confidence_score: data?.confidence_score ?? 0,
+        retrieved_chunks: data?.retrieved_chunks ?? [],
+      },
+    };
+  } catch (err: any) {
+    const isAbort = err?.name === "AbortError";
+    const message = isAbort
+      ? "La requête a expiré. Réessayez."
+      : "Impossible de joindre le serveur.";
+    console.error("[API] Chat request failed:", err);
+    return { ok: false, error: message };
   }
 }
 
