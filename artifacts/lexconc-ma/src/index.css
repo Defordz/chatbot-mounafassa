@@ -194,6 +194,10 @@
   filter: brightness(0) invert(1) !important;
 }
 
+[data-theme="dark"] .welcome-screen {
+  background: #0E1117 !important;
+}
+
 /* ── Bouton Nouvelle conversation ── */
 [data-theme="dark"] .btn-new-chat {
   background: #1B3F7A;
