@@ -188,6 +188,14 @@
   color: #5C7A96;
 }
 
+[data-theme="dark"] .sidebar-toggle {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .sidebar-toggle:hover {
+  color: #FFFFFF !important;
+}
+
 [data-theme="dark"] .sidebar-logo-img,
 [data-theme="dark"] .welcome-chatbot-logo,
 [data-theme="dark"] .welcome-logo {
