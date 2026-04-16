@@ -136,7 +136,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
             {isStreaming && <span className="streaming-cursor">▌</span>}
           </div>
 
-          {message.retrieved_chunks && message.retrieved_chunks.length > 0 && false && (
+          {message.retrieved_chunks && message.retrieved_chunks.length > 0 && (
             <button
               type="button"
               className="source-tag"
@@ -144,7 +144,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
               style={{ marginTop: "10px" }}
             >
               {showChunks ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-              {showChunks ? "Masquer" : "Sources citées"} : [{message.retrieved_chunks[0]?.source_name}{message.retrieved_chunks[0]?.article_ref ? `, ${message.retrieved_chunks[0]?.article_ref}` : ""}]
+              {showChunks ? "Masquer les passages" : "Voir les passages"}
             </button>
           )}
 
