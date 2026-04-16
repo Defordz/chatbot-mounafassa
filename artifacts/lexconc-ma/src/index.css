@@ -145,6 +145,20 @@
   color: #F0F6FF !important;
 }
 
+[data-theme="dark"] .input-area,
+[data-theme="dark"] .input-zone,
+[data-theme="dark"] .input-wrapper,
+[data-theme="dark"] .input-container,
+[data-theme="dark"] .chat-input-container,
+[data-theme="dark"] .bottom-bar,
+[data-theme="dark"] .footer-input,
+[data-theme="dark"] .message-input-container,
+[data-theme="dark"] .input-footer,
+[data-theme="dark"] .chat-footer {
+  background: #0A0F1E !important;
+  background-color: #0A0F1E !important;
+}
+
 [data-theme="dark"] .input-box textarea {
   color: #F0F6FF !important;
 }
