@@ -145,6 +145,7 @@ export default function ChatPage() {
   const [activeId, setActiveId] = useState<string | null>(() => loadActiveId());
   const [theme, setTheme] = useState<ThemeMode>(() => loadTheme());
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const sidebarOpenRef = useRef(true);
   const [input, setInput] = useState("");
   const [pendingCount, setPendingCount] = useState(0);
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
@@ -167,6 +168,103 @@ export default function ChatPage() {
   useEffect(() => {
     saveConversations(conversations);
   }, [conversations]);
+
+  useEffect(() => {
+    sidebarOpenRef.current = sidebarOpen;
+  }, [sidebarOpen]);
+
+  // Swipe / drag gesture to open/close the sidebar.
+  // - Touch or mouse drag from the LEFT edge (x < 24px) toward the right → open.
+  // - When sidebar is open, drag LEFT (at least 60px) → close.
+  useEffect(() => {
+    const EDGE_ZONE = 24;
+    const OPEN_THRESHOLD = 55;
+    const CLOSE_THRESHOLD = 60;
+
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
+    let mode: "open" | "close" | null = null;
+    let pointerDown = false;
+
+    const begin = (x: number, y: number) => {
+      startX = x;
+      startY = y;
+      tracking = true;
+      if (!sidebarOpenRef.current && x <= EDGE_ZONE) {
+        mode = "open";
+      } else if (sidebarOpenRef.current) {
+        // On mobile (fixed overlay) any leftward drag works; on desktop require start within sidebar area.
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile || x <= 300) {
+          mode = "close";
+        } else {
+          mode = null;
+        }
+      } else {
+        mode = null;
+      }
+    };
+
+    const move = (x: number, y: number, ev?: Event) => {
+      if (!tracking || mode === null) return;
+      const dx = x - startX;
+      const dy = y - startY;
+      if (Math.abs(dy) > Math.abs(dx)) return; // vertical scroll — ignore
+      if (mode === "open" && dx > OPEN_THRESHOLD) {
+        setSidebarOpen(true);
+        tracking = false;
+        ev?.preventDefault?.();
+      } else if (mode === "close" && dx < -CLOSE_THRESHOLD) {
+        setSidebarOpen(false);
+        tracking = false;
+        ev?.preventDefault?.();
+      }
+    };
+
+    const end = () => {
+      tracking = false;
+      mode = null;
+      pointerDown = false;
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      begin(e.touches[0].clientX, e.touches[0].clientY);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      move(e.touches[0].clientX, e.touches[0].clientY, e);
+    };
+    const onTouchEnd = () => end();
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      pointerDown = true;
+      begin(e.clientX, e.clientY);
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!pointerDown) return;
+      move(e.clientX, e.clientY, e);
+    };
+    const onMouseUp = () => end();
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
 
   useEffect(() => {
     saveActiveId(activeId);
