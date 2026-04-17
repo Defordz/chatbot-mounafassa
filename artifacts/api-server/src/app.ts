@@ -51,4 +51,20 @@ app.use("/monafassa-v2", (_req, res) => {
   res.sendFile(path.join(monafassaDistPath, "index.html"));
 });
 
+const conseilDistPath = path.resolve(
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "artifacts",
+  "conseil-chatbot",
+  "dist",
+  "public"
+);
+
+app.use("/conseil-chatbot", express.static(conseilDistPath));
+app.use("/conseil-chatbot", (_req, res) => {
+  res.sendFile(path.join(conseilDistPath, "index.html"));
+});
+
 export default app;

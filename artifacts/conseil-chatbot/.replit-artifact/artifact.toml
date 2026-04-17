@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/conseil-chatbot/"
+title = "Conseil Chatbot IA"
+version = "1.0.0"
+id = "artifacts/conseil-chatbot"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/conseil-chatbot/" ]
+localPort = 3002
+
+[services.development]
+run = "pnpm --filter @workspace/conseil-chatbot run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/conseil-chatbot", "run", "build" ]
+publicDir = "artifacts/conseil-chatbot/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "3002"
+BASE_PATH = "/conseil-chatbot/"

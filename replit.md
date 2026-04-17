@@ -131,6 +131,62 @@ Node.js/Express-powered AI legal chatbot for the Conseil de la Concurrence. Uses
 - `JWT_SECRET` — JWT signing secret
 - `ADMIN_PASSWORD_HASH` — bcryptjs hash of admin password
 
+## Conseil Chatbot IA (artifacts/conseil-chatbot)
+
+New full-stack chatbot using Anthropic Claude AI (claude-sonnet-4-6) with custom RAG vector store (PostgreSQL-based), admin panel, and configurable appearance.
+
+### Architecture
+- **Frontend**: React + Vite (artifacts/conseil-chatbot) — compiled static files served by API server at `/conseil-chatbot/`
+- **Backend**: Express routes in `artifacts/api-server/src/routes/conseil-chat.ts` and `conseil-admin.ts`
+- **AI**: Anthropic claude-sonnet-4-6 via Replit AI Integration (`@workspace/integrations-anthropic-ai`)
+- **Embeddings**: OpenAI text-embedding-3-small for vector search (cosine similarity in JavaScript)
+- **Vector Store**: PostgreSQL JSONB columns storing float[] embeddings; top-K retrieval by cosine similarity
+
+### Database Tables
+- `conseil_documents` — uploaded documents metadata (name, filename, size, mime_type, active flag)
+- `conseil_chunks` — text chunks with embeddings (1536-dim float array stored as JSONB)
+- `conseil_feedbacks` — user feedback (question, answer, rating +1/-1, optional comment)
+- `conseil_config` — bot configuration (name, greeting, colors, system prompt, max_tokens, temperature, admin_password_hash)
+
+### Chat Features
+- Streaming SSE responses from Claude claude-sonnet-4-6
+- RAG: query embedded with OpenAI, top-5 chunks retrieved from active documents
+- Conversation history (localStorage), grouped by date
+- Voice input (Web Speech API, French)
+- Markdown rendering (custom inline renderer — no extra dependencies)
+- 👍/👎 feedback buttons on each response
+- Sidebar with conversation history, new chat button, admin access
+
+### Admin Panel (password-protected)
+- **Documents tab**: Upload PDF/TXT → auto-parsed & chunked → embeddings generated → stored in PostgreSQL
+- **Feedback tab**: View all user feedback with statistics (total, positive, negative)
+- **Config tab**: Bot name, greeting, primary/secondary colors, system prompt, model params (max_tokens, temperature), admin password change
+- Default admin password: **admin123** (change in admin config tab)
+
+### API Endpoints
+- `GET /api/conseil/config` — public bot config (name, greeting, colors)
+- `POST /api/conseil/chat` — streaming SSE chat with RAG context
+- `POST /api/conseil/feedback` — submit feedback
+- `POST /api/conseil/admin/login` — JWT login
+- `GET/PUT /api/conseil/admin/config` — full config management (auth required)
+- `GET /api/conseil/admin/documents` — list documents (auth required)
+- `POST /api/conseil/admin/documents` — upload + index document (auth required)
+- `PATCH /api/conseil/admin/documents/:id` — toggle active/inactive (auth required)
+- `DELETE /api/conseil/admin/documents/:id` — delete document + chunks (auth required)
+- `GET /api/conseil/admin/feedbacks` — list feedbacks (auth required)
+
+### Service Routing
+- The conseil-chatbot frontend is compiled and served by the api-server at `/conseil-chatbot/`
+- The `/conseil-chatbot/` path is registered in the api-server artifact.toml alongside `/api/` and `/monafassa-v2/`
+- The conseil-chatbot dev workflow (vite on port 3002) is a separate workflow but the app is accessible via the api-server
+- **To update after frontend changes**: `PORT=3002 BASE_PATH=/conseil-chatbot/ pnpm --filter @workspace/conseil-chatbot run build` then rebuild+restart api-server
+
+### Environment Variables Required
+- `OPENAI_API_KEY` — for text-embedding-3-small (already set)
+- `AI_INTEGRATIONS_ANTHROPIC_BASE_URL` + `AI_INTEGRATIONS_ANTHROPIC_API_KEY` — Replit AI Integration (set via Anthropic integration)
+- `SESSION_SECRET` — JWT signing (already set)
+- `CONSEIL_ADMIN_PASSWORD` — (optional) default admin password override (defaults to "admin123")
+
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages

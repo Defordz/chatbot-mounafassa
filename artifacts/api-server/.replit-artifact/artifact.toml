@@ -7,7 +7,7 @@ kind = "api"
   [[services]]
   localPort = 8080
   name = "API Server"
-  paths = ["/api", "/monafassa-v2/"]
+  paths = ["/api", "/monafassa-v2/", "/conseil-chatbot/"]
 
   [services.development]
   run = "pnpm --filter @workspace/api-server run dev"
@@ -30,4 +30,3 @@ kind = "api"
 
   [services.production.health.startup]
   path = "/api/healthz"
-  
