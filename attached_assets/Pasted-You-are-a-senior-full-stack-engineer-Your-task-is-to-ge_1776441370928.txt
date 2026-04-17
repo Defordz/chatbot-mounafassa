@@ -1,0 +1,316 @@
+You are a senior full-stack engineer. Your task is to generate a COMPLETE, PRODUCTION-READY web application.
+
+⚠️ CRITICAL RULES:
+- You MUST generate ALL files completely (no placeholders, no “to be implemented”)
+- You MUST respect the exact file structure
+- You MUST return FULL CODE for each file
+- The app MUST run directly on Replit with "npm start"
+- NEVER expose API keys in frontend
+- Use clean, working, minimal but solid code
+
+---
+
+# 🎯 PROJECT
+
+Build a full web app called:
+
+"Monafassa AI Chatbot v2"
+
+It is the official chatbot of the Moroccan Competition Council.
+
+The app has TWO MODES:
+1. Visitor chatbot (public)
+2. Admin panel (protected)
+
+---
+
+# 🧱 TECH STACK (MANDATORY)
+
+- Backend: Node.js + Express
+- Frontend: Single HTML file (public/index.html)
+- AI: OpenAI API (model: gpt-4o)
+- RAG: OpenAI Responses API with file_search
+- Auth: JWT + bcrypt
+- Storage: local JSON files
+- Hosting: Replit
+
+---
+
+# 🔐 ENV VARIABLES (USE process.env)
+
+- OPENAI_API_KEY
+- VECTOR_STORE_ID = vs_69e0499e7fb081919b0157d8195caed6
+- ADMIN_PASSWORD_HASH
+- JWT_SECRET
+- PORT
+
+---
+
+# 📁 FILE STRUCTURE (STRICT)
+
+monafassa/
+- index.js
+- package.json
+- .env.example
+
+/routes/
+- chat.js
+- admin.js
+- settings.js
+
+/middleware/
+- adminAuth.js
+
+/services/
+- openai.js
+- storage.js
+
+/data/
+- feedbacks.json
+- analytics.json
+- settings.json
+- errors.log
+
+/public/
+- index.html
+
+---
+
+# ⚙️ CORE FEATURES
+
+## 1. CHAT (RAG)
+
+POST /api/chat
+
+- Input: message + history
+- Uses OpenAI responses API with file_search
+- Uses VECTOR_STORE_ID
+- Returns:
+  {
+    success: true,
+    answer: string,
+    sources: [],
+    annotations: []
+  }
+
+- Temperature = 0.1
+- Max tokens = 3000
+
+- MUST include:
+  - error handling
+  - fallback message if OpenAI fails
+  - logging to analytics
+
+---
+
+## 2. ADMIN AUTH
+
+POST /api/admin/login
+
+- Compare password with bcrypt
+- Return JWT (8h)
+
+Middleware:
+- Protect ALL /api/admin routes
+
+---
+
+## 3. DOCUMENT MANAGEMENT
+
+- GET /api/admin/documents
+- POST /api/admin/documents/upload (base64 PDF)
+- DELETE /api/admin/documents/:fileId
+
+Flow:
+- Upload file to OpenAI
+- Attach to vector store
+- Return status
+
+---
+
+## 4. FEEDBACK SYSTEM
+
+POST /api/feedbacks (public)
+
+- Save:
+  question, answer, sources, rating, sessionId, timestamp
+
+GET /api/admin/feedbacks
+
+- Pagination
+- Filter (positive / negative)
+
+GET /api/admin/feedbacks/export
+
+- Return CSV
+
+---
+
+## 5. ANALYTICS
+
+Compute from stored data:
+
+- totalQuestions
+- todayQuestions
+- weeklyQuestions
+- satisfactionRate
+- noAnswerRate
+
+Endpoints:
+- /api/admin/analytics/summary
+- /api/admin/analytics/daily
+- /api/admin/analytics/top-questions
+
+---
+
+## 6. SETTINGS
+
+GET + POST /api/admin/settings
+
+Fields:
+- maxResults
+- temperature
+- welcomeMessage
+- maintenanceMode
+- maintenanceMessage
+
+---
+
+# 💾 STORAGE SERVICE
+
+Create a reusable module:
+
+services/storage.js
+
+Functions:
+- readJSON(file)
+- writeJSON(file)
+- appendJSON(file, data)
+
+⚠️ MUST:
+- handle concurrency safely
+- create file if not exists
+
+---
+
+# 🤖 OPENAI SERVICE
+
+services/openai.js
+
+Functions:
+- askWithRAG(message, history)
+- listDocuments()
+- uploadDocument(buffer, filename)
+- deleteDocument(fileId)
+
+---
+
+# 🌐 FRONTEND (SINGLE FILE)
+
+public/index.html
+
+Must include:
+
+## Visitor UI
+- Chat interface
+- Message history
+- Sources display under answers
+- Feedback buttons 👍 👎
+- Maintenance mode support
+
+## Admin UI
+- Login modal
+- Sidebar navigation
+- Sections:
+  - Documents (upload + list)
+  - Feedbacks (table)
+  - Analytics (charts via Chart.js CDN)
+  - Settings
+
+## State management (JS)
+- mode: visitor/admin
+- adminToken
+- conversations
+
+## API helper
+- auto attach JWT
+
+---
+
+# 🎨 DESIGN
+
+- Clean institutional UI
+- Colors:
+  - Green: #2d6a4f
+  - Light background
+- Fonts:
+  - DM Sans
+  - Instrument Serif
+- Subtle animations (hover, transitions)
+
+---
+
+# ⚡ PERFORMANCE
+
+- Cache responses in memory (Map, TTL 30min)
+- Limit upload size (25mb)
+- Debounce chat input
+
+---
+
+# 🛡️ SECURITY
+
+- NEVER expose API key
+- Validate inputs
+- Restrict file type to PDF
+- JWT required for admin routes
+
+---
+
+# 🧪 ERROR HANDLING
+
+- All routes must use try/catch
+- Log errors in data/errors.log
+- Return clean JSON errors
+
+---
+
+# 📦 PACKAGE.JSON
+
+Include:
+- express
+- openai
+- bcrypt
+- jsonwebtoken
+- multer
+- cors
+
+---
+
+# 📄 .env.example
+
+Provide template WITHOUT real values
+
+---
+
+# 📘 README.md
+
+Include:
+- Setup instructions (Replit)
+- How to add secrets
+- How to run project
+
+---
+
+# 🚨 FINAL INSTRUCTION
+
+You MUST output:
+
+1. ALL files
+2. FULL code (no omissions)
+3. Correct imports
+4. Working structure
+
+DO NOT EXPLAIN.
+
+ONLY OUTPUT CODE FILES.
