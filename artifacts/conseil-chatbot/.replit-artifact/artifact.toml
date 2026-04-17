@@ -12,7 +12,7 @@ version = "1.0.0"
 [[services]]
 name = "web"
 paths = [ "/conseil-chatbot/" ]
-localPort = 3002
+localPort = 21936
 
 [services.development]
 run = "pnpm --filter @workspace/conseil-chatbot run dev"
@@ -27,5 +27,5 @@ from = "/*"
 to = "/index.html"
 
 [services.env]
-PORT = "3002"
+PORT = "21936"
 BASE_PATH = "/conseil-chatbot/"
