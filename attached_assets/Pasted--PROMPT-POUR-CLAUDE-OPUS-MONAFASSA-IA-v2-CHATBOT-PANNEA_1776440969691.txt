@@ -1,0 +1,498 @@
+# PROMPT POUR CLAUDE OPUS — MONAFASSA IA v2 : CHATBOT + PANNEAU ADMIN (Replit)
+
+## CONTEXTE ET MISSION
+
+Tu es chargé de concevoir et développer une application web complète pour le **Chatbot IA Monafassa**, outil officiel du **Conseil de la Concurrence du Royaume du Maroc**.
+
+L'application est hébergée sur **Replit** (Node.js + Express backend, HTML/CSS/JS frontend). Elle utilise l'**API OpenAI** (GPT-4o + Vector Store pour le RAG).
+
+L'application doit comporter **deux parties distinctes** accessibles depuis la même URL :
+1. **Interface Visiteur** — le chatbot juridique (déjà conçu, à conserver et améliorer)
+2. **Panneau Administrateur** — gestion documentaire, feedbacks, analytics (à créer)
+
+---
+
+## STACK TECHNIQUE OBLIGATOIRE
+
+- **Backend** : Node.js + Express (Replit)
+- **Frontend** : HTML/CSS/JS servi par Express (fichier unique `public/index.html`)
+- **IA** : OpenAI API — modèle `gpt-4o`
+- **RAG** : OpenAI Responses API (`POST /v1/responses`) avec `file_search`
+- **Vector Store ID** : `vs_69e0499e7fb081919b0157d8195caed6` (déjà configuré et indexé)
+- **Clé API** : stockée dans les **Replit Secrets** sous la clé `OPENAI_API_KEY` (jamais dans le code)
+- **Stockage admin** : fichier JSON local (`data/feedbacks.json` + `data/analytics.json`) ou SQLite via `better-sqlite3`
+- **Auth admin** : JWT ou session simple avec mot de passe hashé (bcrypt) stocké dans Replit Secrets sous `ADMIN_PASSWORD_HASH`
+- **Polices** : Instrument Serif + DM Sans (Google Fonts)
+- **Design** : Flat, institutionnel, vert marocain (#2d6a4f), animations CSS subtiles
+
+---
+
+## STRUCTURE DES FICHIERS REPLIT
+
+```
+monafassa/
+├── index.js                 ← serveur Express principal
+├── package.json
+├── .env.example             ← template (sans vraies valeurs)
+├── routes/
+│   ├── chat.js              ← POST /api/chat
+│   ├── admin.js             ← routes admin (auth + docs + feedbacks + analytics)
+│   └── settings.js          ← GET/POST /api/admin/settings
+├── middleware/
+│   └── adminAuth.js         ← vérification JWT admin
+├── services/
+│   ├── openai.js            ← appels OpenAI (chat + vector store)
+│   └── storage.js           ← lecture/écriture JSON local
+├── data/
+│   ├── feedbacks.json       ← stockage feedbacks
+│   ├── analytics.json       ← stats agrégées
+│   └── settings.json        ← paramètres admin
+└── public/
+    └── index.html           ← frontend complet (visiteur + admin)
+```
+
+---
+
+## CONFIGURATION REPLIT SECRETS
+
+Dans l'onglet **Secrets** de Replit, configurer :
+```
+OPENAI_API_KEY=sk-proj-...        ← clé API OpenAI (ne jamais mettre dans le code)
+VECTOR_STORE_ID=vs_69e0499e7fb081919b0157d8195caed6
+ADMIN_PASSWORD_HASH=...           ← hash bcrypt du mot de passe admin
+JWT_SECRET=...                    ← secret aléatoire pour signer les JWT
+PORT=3000
+```
+
+**Pour générer ADMIN_PASSWORD_HASH** (à faire une fois en console Replit) :
+```javascript
+const bcrypt = require('bcrypt');
+console.log(await bcrypt.hash('votre_mot_de_passe', 10));
+```
+
+---
+
+## BACKEND — index.js
+
+```javascript
+const express = require('express');
+const app = express();
+app.use(express.json({ limit: '50mb' })); // pour les uploads base64
+app.use(express.static('public'));
+
+app.use('/api/chat', require('./routes/chat'));
+app.use('/api/admin', require('./routes/admin'));
+
+app.listen(process.env.PORT || 3000);
+```
+
+---
+
+## BACKEND — routes/chat.js
+
+**POST /api/chat** — point d'entrée visiteur
+
+```javascript
+// Corps : { message: string, history: [{role, content}] }
+// Réponse : { success, answer, sources, annotations }
+
+// Appel OpenAI Responses API :
+const response = await openai.responses.create({
+  model: 'gpt-4o',
+  instructions: SYSTEM_PROMPT,
+  input: [...history, { role: 'user', content: message }],
+  tools: [{
+    type: 'file_search',
+    vector_store_ids: [process.env.VECTOR_STORE_ID],
+    max_num_results: 8,
+    ranking_options: { score_threshold: 0.1 }
+  }],
+  temperature: 0.1,
+  max_output_tokens: 3000
+});
+
+// Logger la question pour analytics
+await logQuestion(message, sources, hasAnswer);
+```
+
+**Prompt système** (identique à la version actuelle qui fonctionne bien) :
+```
+Tu es « Chatbot IA Monafassa », assistant juridique officiel du Conseil de la Concurrence du Royaume du Maroc.
+Tu réponds uniquement à partir des documents officiels fournis via la recherche documentaire.
+[... garder le prompt existant qui fonctionne ...]
+```
+
+---
+
+## BACKEND — routes/admin.js
+
+### Authentification
+
+**POST /api/admin/login**
+```javascript
+const { password } = req.body;
+const valid = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
+if (valid) {
+  const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '8h' });
+  res.json({ success: true, token });
+}
+```
+
+**Middleware adminAuth.js** — protège toutes les routes `/api/admin/*` sauf `/login`
+
+### Gestion Documents
+
+**GET /api/admin/documents** — liste les fichiers du Vector Store
+```javascript
+const files = await openai.vectorStores.files.list(process.env.VECTOR_STORE_ID);
+```
+
+**POST /api/admin/documents/upload** — upload un nouveau PDF
+```javascript
+// 1. Recevoir base64 depuis frontend
+// 2. Convertir en Buffer
+// 3. POST /v1/files avec purpose='assistants'
+// 4. POST /v1/vector_stores/{id}/files avec le file_id
+// 5. Répondre avec statut
+const file = await openai.files.create({
+  file: new File([buffer], filename, { type: 'application/pdf' }),
+  purpose: 'assistants'
+});
+await openai.vectorStores.files.create(process.env.VECTOR_STORE_ID, {
+  file_id: file.id
+});
+```
+
+**DELETE /api/admin/documents/:fileId** — supprime un fichier
+```javascript
+await openai.vectorStores.files.del(process.env.VECTOR_STORE_ID, fileId);
+await openai.files.del(fileId);
+```
+
+### Feedbacks
+
+**GET /api/admin/feedbacks** — liste avec pagination et filtres
+```javascript
+// Query params : ?limit=20&offset=0&filter=negative&startDate=...&endDate=...
+// Lire depuis data/feedbacks.json
+```
+
+**POST /api/feedbacks** — reçoit un feedback du visiteur (route publique)
+```javascript
+// Corps : { question, answer, sources, rating: 'up'|'down', sessionId }
+// Append dans data/feedbacks.json
+```
+
+**GET /api/admin/feedbacks/export** — export CSV
+```javascript
+// Générer CSV et retourner avec Content-Type: text/csv
+```
+
+### Analytics
+
+**GET /api/admin/analytics/summary** — stats globales
+```javascript
+// Retourner : { totalQuestions, todayQuestions, weekQuestions, satisfactionRate, noAnswerRate }
+```
+
+**GET /api/admin/analytics/daily?days=30** — questions par jour
+```javascript
+// Retourner : [{date, count, positiveCount, negativeCount}]
+```
+
+**GET /api/admin/analytics/top-questions?limit=10** — questions fréquentes
+```javascript
+// Regrouper par similarité basique (mots-clés communs)
+// Retourner : [{questionSample, count, satisfactionRate}]
+```
+
+### Paramètres
+
+**GET /api/admin/settings** — lire settings
+**POST /api/admin/settings** — sauvegarder settings
+```javascript
+// Paramètres : maxResults (4-16), temperature (0-1), welcomeMessage,
+//              maintenanceMode (bool), maintenanceMessage
+// Stockés dans data/settings.json
+// Lus dynamiquement à chaque requête chat
+```
+
+**POST /api/admin/change-password**
+```javascript
+const { currentPassword, newPassword } = req.body;
+// Vérifier current, générer nouveau hash, mettre à jour Replit Secrets via API ou fichier local
+```
+
+---
+
+## FRONTEND — public/index.html
+
+### Architecture JS
+
+```javascript
+// ── ÉTAT GLOBAL ──────────────────────────────────────────────────
+const STATE = {
+  mode: 'visitor',          // 'visitor' | 'admin'
+  adminSection: 'docs',     // 'docs' | 'feedbacks' | 'analytics' | 'settings'
+  adminToken: sessionStorage.getItem('adminToken') || null,
+  // État visiteur existant...
+  conversations: [],
+  activeConvId: null,
+  darkMode: localStorage.getItem('darkMode') === '1',
+};
+
+// ── ROUTER ───────────────────────────────────────────────────────
+function render() {
+  if (STATE.mode === 'admin' && STATE.adminToken) {
+    renderAdmin();
+  } else {
+    renderVisitor();
+  }
+}
+
+// ── API CLIENT ────────────────────────────────────────────────────
+async function api(endpoint, options = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (STATE.adminToken) headers['Authorization'] = `Bearer ${STATE.adminToken}`;
+  const res = await fetch(`/api${endpoint}`, { ...options, headers });
+  if (res.status === 401) { logoutAdmin(); return; }
+  return res.json();
+}
+```
+
+### Partie Visiteur (améliorer l'existant)
+
+**Améliorations à apporter** :
+- Afficher les **noms des documents sources** sous chaque réponse bot
+- Envoi automatique du feedback via `POST /api/feedbacks`
+- Gestion du **mode maintenance** (si activé, afficher le message de l'admin)
+- Bouton discret "Admin" dans le footer de la sidebar
+
+```html
+<!-- Footer sidebar visiteur -->
+<div class="sb-foot">
+  <div class="sb-credit">Conseil de la Concurrence — Royaume du Maroc</div>
+  <button class="btn-admin-access" onclick="showAdminLogin()">⚙</button>
+</div>
+```
+
+### Partie Admin
+
+**Modal Login** :
+```html
+<div id="admin-login-modal" class="modal">
+  <div class="modal-card">
+    <h2>Accès administrateur</h2>
+    <input type="password" id="admin-password" placeholder="Mot de passe">
+    <button onclick="loginAdmin()">Connexion</button>
+  </div>
+</div>
+```
+
+**Layout Admin** :
+```html
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-logo">Monafassa Admin</div>
+    <nav>
+      <button onclick="goSection('docs')">📄 Documents</button>
+      <button onclick="goSection('feedbacks')">💬 Feedbacks</button>
+      <button onclick="goSection('analytics')">📊 Analytics</button>
+      <button onclick="goSection('settings')">⚙️ Paramètres</button>
+    </nav>
+    <button onclick="logoutAdmin()">Déconnexion</button>
+  </aside>
+  
+  <!-- Zone principale -->
+  <main class="admin-main" id="admin-content">
+    <!-- Rendu dynamique selon la section -->
+  </main>
+</div>
+```
+
+**Section Documents** — interface d'upload avec drag & drop :
+```javascript
+async function renderAdminDocs() {
+  const files = await api('/admin/documents');
+  // Afficher liste + zone upload
+  // Drag & drop → FileReader → base64 → POST /api/admin/documents/upload
+}
+```
+
+**Section Analytics** — graphiques Chart.js :
+```javascript
+// Charger Chart.js depuis CDN
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js">
+
+async function renderAdminAnalytics() {
+  const [summary, daily, topQ] = await Promise.all([
+    api('/admin/analytics/summary'),
+    api('/admin/analytics/daily?days=30'),
+    api('/admin/analytics/top-questions?limit=10')
+  ]);
+  
+  // Cards synthèse
+  // Graphique ligne (questions/jour)
+  // Donut (satisfaction)
+  // Table top questions
+}
+```
+
+---
+
+## DESIGN SYSTEM
+
+```css
+:root {
+  /* Palette visiteur (existante) */
+  --ink: #0a1f12;
+  --pine: #2d6a4f;
+  --sage: #52b788;
+  --paper: #f7f9f5;
+  --gold: #c9a84c;
+  
+  /* Palette admin */
+  --admin-bg: #f0f2f0;
+  --admin-sidebar: #1a3d26;
+  --admin-sidebar-text: rgba(255,255,255,0.85);
+  --admin-card: #ffffff;
+  --admin-border: rgba(45,106,79,0.12);
+  --admin-accent: #2d6a4f;
+  
+  /* Polices */
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+
+/* Cards admin */
+.admin-card {
+  background: var(--admin-card);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid var(--admin-border);
+}
+
+/* Badges statut */
+.badge-indexed   { background: #d8f3dc; color: #2d6a4f; }
+.badge-processing{ background: #fff3cd; color: #856404; }
+.badge-failed    { background: #f8d7da; color: #842029; }
+
+/* Table admin */
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th { background: #f0f2f0; padding: 10px 14px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--pine); }
+.admin-table tr:nth-child(even) { background: #f7f9f5; }
+.admin-table td { padding: 10px 14px; border-bottom: 1px solid var(--admin-border); font-size: 13px; }
+```
+
+---
+
+## PACKAGE.JSON
+
+```json
+{
+  "name": "monafassa-chatbot",
+  "version": "2.0.0",
+  "main": "index.js",
+  "scripts": { "start": "node index.js" },
+  "dependencies": {
+    "express": "^4.18.0",
+    "openai": "^4.0.0",
+    "bcrypt": "^5.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^1.4.5",
+    "cors": "^2.8.5"
+  }
+}
+```
+
+---
+
+## FLUX COMPLET — AJOUT D'UN DOCUMENT
+
+```
+Admin choisit PDF
+    ↓
+Frontend lit le fichier (FileReader)
+    ↓
+POST /api/admin/documents/upload { filename, base64, mimeType }
+    ↓ (avec Bearer token)
+adminAuth middleware vérifie JWT
+    ↓
+openai.files.create({ file: Buffer, purpose: 'assistants' })
+    ↓ → file_id obtenu
+openai.vectorStores.files.create(VECTOR_STORE_ID, { file_id })
+    ↓ → statut 'processing' puis 'indexed'
+Réponse { success, fileId, status: 'processing' }
+    ↓
+Frontend poll GET /api/admin/documents/:fileId/status toutes les 3s
+    ↓ quand status === 'indexed'
+Message : "✅ Document indexé — les visiteurs peuvent maintenant l'utiliser"
+    ↓
+IMMÉDIATEMENT : prochaine question visiteur → Vector Store inclut le nouveau doc
+```
+
+---
+
+## FLUX COMPLET — FEEDBACK VISITEUR
+
+```
+Visiteur clique 👍 ou 👎
+    ↓
+POST /api/feedbacks { question, answer, sources, rating, sessionId }
+    ↓
+Append dans data/feedbacks.json
+    ↓
+Mise à jour data/analytics.json (compteurs en temps réel)
+    ↓
+Admin voit le feedback dans le tableau Feedbacks
+    ↓
+Analytics mis à jour automatiquement
+```
+
+---
+
+## CONTRAINTES ET BONNES PRATIQUES
+
+1. **Sécurité** : `OPENAI_API_KEY` uniquement dans Replit Secrets, jamais dans le code ou le HTML
+2. **Upload** : limiter à 20MB par fichier côté Express (`express.json({ limit: '25mb' })`)
+3. **Concurrence** : utiliser des locks ou queues pour les écritures JSON simultanées
+4. **Résilience** : si OpenAI API down, afficher message clair aux visiteurs
+5. **Performance** : mettre en cache les réponses fréquentes (Map en mémoire, TTL 30min)
+6. **Logs** : logger toutes les erreurs avec timestamp dans `data/errors.log`
+7. **CORS** : désactiver en production (tout est sur le même domaine Replit)
+8. **Validation** : valider tous les inputs admin (type fichier = PDF, taille, etc.)
+
+---
+
+## ORDRE DE DÉVELOPPEMENT
+
+1. `package.json` + `index.js` — serveur Express de base
+2. `services/openai.js` — wrapper OpenAI (chat + vector store)
+3. `routes/chat.js` — endpoint visiteur fonctionnel
+4. `middleware/adminAuth.js` + login
+5. `routes/admin.js` — documents, feedbacks, analytics, settings
+6. `public/index.html` — frontend complet (visiteur amélioré + admin)
+7. Tests de chaque endpoint via console Replit
+
+---
+
+## LIVRABLES ATTENDUS
+
+1. Tous les fichiers `.js` du backend
+2. `public/index.html` — frontend complet
+3. `package.json`
+4. `.env.example` (template sans vraies valeurs)
+5. `README.md` avec instructions de déploiement Replit
+
+---
+
+## NOTE IMPORTANTE SUR LA CLÉ API
+
+**Ne jamais mettre la clé API dans le code.** Sur Replit :
+- Aller dans **Secrets** (icône cadenas dans le panneau gauche)
+- Ajouter : `OPENAI_API_KEY` = votre clé
+- Accès dans le code : `process.env.OPENAI_API_KEY`
+
+La clé est automatiquement injectée comme variable d'environnement et n'est jamais exposée dans le code source ou le frontend.
