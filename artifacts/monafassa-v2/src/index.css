@@ -200,6 +200,22 @@ body {
   30% { transform: translateY(-8px); }
 }
 
+.streaming-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--green);
+  border-radius: 1px;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 0.75s ease-in-out infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 45% { opacity: 1; }
+  55%, 100% { opacity: 0; }
+}
+
 .msg-actions {
   display: flex;
   gap: 4px;

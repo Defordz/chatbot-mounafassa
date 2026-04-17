@@ -49,6 +49,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [streamingId, setStreamingId] = useState<string | null>(null);
   const [welcomeMsg, setWelcomeMsg] = useState(
     "Bonjour ! Je suis Monafassa, votre assistant juridique du Conseil de la Concurrence du Maroc. Comment puis-je vous aider ?"
   );
@@ -82,10 +83,15 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
         body: JSON.stringify({ message: userMsg.content, session_messages: sessionMessages }),
       });
 
+      if (!res.ok || !res.body) {
+        throw new Error(`Erreur serveur: ${res.status}`);
+      }
+
       const assistantId = (Date.now() + 1).toString();
       setMessages(prev => [...prev, { role: "assistant", content: "", id: assistantId }]);
+      setStreamingId(assistantId);
 
-      const reader = res.body!.getReader();
+      const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
 
@@ -117,6 +123,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
         id: (Date.now() + 2).toString()
       }]);
     } finally {
+      setStreamingId(null);
       setLoading(false);
     }
   };
@@ -163,8 +170,8 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
               <div className="avatar assistant-avatar">⚖️</div>
             )}
             <div className="message-bubble">
-              <MessageContent content={msg.content} />
-              {msg.role === "assistant" && msg.content && (
+              <MessageContent content={msg.content} isStreaming={msg.id === streamingId} />
+              {msg.role === "assistant" && msg.content && msg.id !== streamingId && (
                 <div className="msg-actions">
                   <button className="action-btn" onClick={() => navigator.clipboard.writeText(msg.content)} title="Copier">
                     📋
@@ -188,7 +195,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
           </div>
         ))}
 
-        {loading && (
+        {loading && !streamingId && (
           <div className="message assistant">
             <div className="avatar assistant-avatar">⚖️</div>
             <div className="message-bubble typing">
@@ -223,8 +230,9 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
   );
 }
 
-function MessageContent({ content }: { content: string }) {
-  if (!content) return null;
+function MessageContent({ content, isStreaming }: { content: string; isStreaming?: boolean }) {
+  if (!content && !isStreaming) return null;
+  if (!content) return <span className="streaming-cursor" aria-hidden="true" />;
   const html = content
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
@@ -236,7 +244,12 @@ function MessageContent({ content }: { content: string }) {
     .replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>")
     .replace(/\n\n/g, "</p><p>")
     .replace(/\n/g, "<br>");
-  return <div className="msg-content" dangerouslySetInnerHTML={{ __html: `<p>${html}</p>` }} />;
+  return (
+    <>
+      <div className="msg-content" dangerouslySetInnerHTML={{ __html: `<p>${html}</p>` }} />
+      {isStreaming && <span className="streaming-cursor" aria-hidden="true" />}
+    </>
+  );
 }
 
 function FeedbackForm({ msgId, messages, onClose }: { msgId: string; messages: Message[]; onClose: () => void }) {
