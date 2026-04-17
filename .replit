@@ -86,3 +86,10 @@ externalPort = 8008
 [nix]
 channel = "stable-25_05"
 packages = ["cargo", "libiconv", "libxcrypt", "rustc"]
+
+[userenv]
+
+[userenv.shared]
+VECTOR_STORE_ID = "vs_69e0499e7fb081919b0157d8195caed6"
+JWT_SECRET = "monafassa_jwt_secret_key_2024_conseil_concurrence"
+ADMIN_PASSWORD_HASH = "$2b$10$mYFOGoZPtmM2015PGkgB7eEEBUHOnYu8TaNI3pkqZH6jVczlUS0E6"

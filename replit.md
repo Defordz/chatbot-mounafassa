@@ -88,6 +88,49 @@ A professional AI legal assistant (RAG chatbot) for the Conseil de la Concurrenc
 - `attached_assets/image_1775927493944.png` — Conseil de la Concurrence logo (used in sidebar + welcome screen)
 - `attached_assets/chatbot-ia-monafassa_1775928088645.html` — original HTML design reference
 
+## Monafassa AI Chatbot v2 (artifacts/monafassa-v2)
+
+Node.js/Express-powered AI legal chatbot for the Conseil de la Concurrence. Uses OpenAI Responses API with file_search (vector store) for RAG, JWT admin authentication, PostgreSQL for feedback/analytics/settings.
+
+### Architecture
+- **Frontend**: React + Vite (artifacts/monafassa-v2) — compiled static files served by API server at `/monafassa-v2/`
+- **Backend**: Express routes in `artifacts/api-server/src/routes/monafassa-chat.ts` and `monafassa-admin.ts`
+- **Database**: PostgreSQL tables `monafassa_feedbacks`, `monafassa_analytics`, `monafassa_settings`
+- **AI**: OpenAI Responses API + file_search with vector store `vs_69e0499e7fb081919b0157d8195caed6`
+
+### Service Routing
+- The monafassa-v2 artifact serves at `/monafassa-v2/` via the shared API server (port 8080)
+- The workflow `artifacts/monafassa-v2: web` is **intentionally** set to port 8080 (same as API server)
+- Static files are compiled with `pnpm --filter @workspace/monafassa-v2 run build` and served via `app.ts`
+- **To update after frontend changes**: rebuild with `PORT=24654 BASE_PATH=/monafassa-v2/ pnpm --filter @workspace/monafassa-v2 run build` then rebuild+restart api-server
+
+### Admin Panel
+- Accessible at `/monafassa-v2/` → admin button (top-right person icon)
+- Default password: **admin123**
+- Password hash stored in `ADMIN_PASSWORD_HASH` env var (bcryptjs format)
+- JWT tokens expire after 8 hours
+
+### API Endpoints (no auth required)
+- `POST /api/monafassa/chat` — chat with caching
+- `POST /api/monafassa/chat/stream` — SSE streaming chat
+- `GET /api/monafassa/settings` — public chatbot settings (welcome message)
+- `POST /api/monafassa/feedback` — submit user feedback
+
+### Admin API Endpoints (JWT required)
+- `POST /api/monafassa/admin/login` — get JWT token
+- `GET /api/monafassa/admin/documents` — list vector store documents
+- `POST /api/monafassa/admin/documents` — upload PDF to vector store
+- `DELETE /api/monafassa/admin/documents/:fileId` — delete document
+- `GET /api/monafassa/admin/feedbacks` — user feedbacks + stats
+- `GET /api/monafassa/admin/analytics` — daily query analytics
+- `GET/PUT /api/monafassa/admin/settings` — chatbot settings
+
+### Environment Variables
+- `OPENAI_API_KEY` — OpenAI API key (secret)
+- `VECTOR_STORE_ID` — OpenAI vector store ID (`vs_69e0499e7fb081919b0157d8195caed6`)
+- `JWT_SECRET` — JWT signing secret
+- `ADMIN_PASSWORD_HASH` — bcryptjs hash of admin password
+
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages

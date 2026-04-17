@@ -1,0 +1,32 @@
+kind = "web"
+  previewPath = "/monafassa-v2/"
+  title = "Monafassa AI Chatbot v2"
+  version = "1.0.0"
+  id = "artifacts/monafassa-v2"
+  router = "path"
+
+  [[integratedSkills]]
+  name = "react-vite"
+  version = "1.0.0"
+
+  [[services]]
+  name = "web"
+  paths = [ "/monafassa-v2/" ]
+  localPort = 8080
+
+  [services.development]
+  run = "pnpm --filter @workspace/api-server run dev"
+
+  [services.production]
+  build = [ "pnpm", "--filter", "@workspace/monafassa-v2", "run", "build" ]
+  publicDir = "artifacts/monafassa-v2/dist/public"
+  serve = "static"
+
+  [[services.production.rewrites]]
+  from = "/*"
+  to = "/index.html"
+
+  [services.env]
+  PORT = "8080"
+  BASE_PATH = "/monafassa-v2/"
+  
