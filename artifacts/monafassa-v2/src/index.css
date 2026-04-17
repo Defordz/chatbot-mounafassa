@@ -221,19 +221,54 @@ body {
   gap: 4px;
   margin-top: 8px;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .action-btn {
   background: none;
-  border: none;
-  font-size: 14px;
+  border: 1px solid transparent;
   cursor: pointer;
-  opacity: 0.5;
-  padding: 2px 4px;
-  border-radius: 4px;
-  transition: opacity 0.2s;
+  opacity: 0.45;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  line-height: 1;
 }
-.action-btn:hover { opacity: 1; }
+.action-btn:hover {
+  opacity: 1;
+  background: var(--green-pale);
+  border-color: var(--green-light);
+  color: var(--green-dark);
+}
+
+.copy-btn.copied {
+  opacity: 1;
+  background: #e6f4ea;
+  border-color: var(--green-light);
+  color: var(--green-dark);
+}
+
+.copy-btn.error {
+  opacity: 1;
+  background: #fff0f0;
+  border-color: #f28b82;
+  color: #c62828;
+}
+
+.copied-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.copy-error {
+  color: #c62828;
+}
 
 .feedback-form {
   margin-top: 12px;

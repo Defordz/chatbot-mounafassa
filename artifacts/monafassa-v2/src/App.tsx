@@ -54,8 +54,34 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
     "Bonjour ! Je suis Monafassa, votre assistant juridique du Conseil de la Concurrence du Maroc. Comment puis-je vous aider ?"
   );
   const [feedbackOpen, setFeedbackOpen] = useState<string | null>(null);
+  const [copyState, setCopyState] = useState<{ id: string; status: "copied" | "error" } | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleCopy = (msg: Message) => {
+    navigator.clipboard.writeText(msg.content).then(() => {
+      setCopyState({ id: msg.id, status: "copied" });
+      setTimeout(() => setCopyState(null), 2000);
+    }).catch(() => {
+      setCopyState({ id: msg.id, status: "error" });
+      setTimeout(() => setCopyState(null), 2000);
+    });
+  };
+
+  const handleShare = (msg: Message) => {
+    if (navigator.share) {
+      navigator.share({
+        title: "Réponse juridique – Monafassa",
+        text: msg.content,
+      }).catch((err: unknown) => {
+        if (err instanceof Error && err.name !== "AbortError") {
+          handleCopy(msg);
+        }
+      });
+    } else {
+      handleCopy(msg);
+    }
+  };
 
   useEffect(() => {
     apiFetch("/monafassa/settings").then((s: any) => {
@@ -173,11 +199,36 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
               <MessageContent content={msg.content} isStreaming={msg.id === streamingId} />
               {msg.role === "assistant" && msg.content && msg.id !== streamingId && (
                 <div className="msg-actions">
-                  <button className="action-btn" onClick={() => navigator.clipboard.writeText(msg.content)} title="Copier">
-                    📋
+                  <button
+                    className={`action-btn copy-btn ${copyState?.id === msg.id ? copyState.status : ""}`}
+                    onClick={() => handleCopy(msg)}
+                    title="Copier la réponse"
+                  >
+                    {copyState?.id === msg.id && copyState.status === "copied" ? (
+                      <span className="copied-label">✓ Copié !</span>
+                    ) : copyState?.id === msg.id && copyState.status === "error" ? (
+                      <span className="copied-label copy-error">✗ Erreur</span>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                      </svg>
+                    )}
                   </button>
-                  <button className="action-btn" onClick={() => setFeedbackOpen(msg.id)} title="Feedback">
-                    ⭐
+                  {typeof navigator.share === "function" && (
+                    <button
+                      className="action-btn share-btn"
+                      onClick={() => handleShare(msg)}
+                      title="Partager la réponse"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                      </svg>
+                    </button>
+                  )}
+                  <button className="action-btn" onClick={() => setFeedbackOpen(msg.id)} title="Évaluer cette réponse">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
                   </button>
                 </div>
               )}
