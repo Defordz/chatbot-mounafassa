@@ -103,10 +103,7 @@
 [data-theme="dark"] .input-box textarea { color: #F0F6FF !important; }
 [data-theme="dark"] .input-box textarea::placeholder { color: #5C7A96 !important; }
 
-[data-theme="dark"] .sidebar::before,
-[data-theme="dark"] .sidebar::after { opacity: 0 !important; background-image: none !important; }
-
-[data-theme="dark"] .sidebar { background: #0C1320; border-right-color: #1E2D40; }
+[data-theme="dark"] .sidebar { border-right-color: #1E2D40; }
 [data-theme="dark"] .sidebar-logo-text h1 { color: #F0F6FF; }
 [data-theme="dark"] .sidebar-logo-text span { color: #5C7A96; }
 [data-theme="dark"] .sidebar-toggle { color: #FFFFFF !important; }

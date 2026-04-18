@@ -10,6 +10,7 @@ import {
 import councillogo from "@assets/image_1775927493944.png";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
+import sidebarBgDark from "@assets/Gemini_Generated_Image_pks76hpks76hpks7_1776472474538.png";
 
 const API_BASE = "/api";
 
@@ -583,7 +584,7 @@ function ChatPage({
       <aside
         className={`sidebar ${sidebarOpen ? "" : "collapsed"}`}
         style={{
-          backgroundImage: `url(${sidebarBg})`,
+          backgroundImage: `url(${theme === "dark" ? sidebarBgDark : sidebarBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
