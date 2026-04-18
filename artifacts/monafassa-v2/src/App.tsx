@@ -187,7 +187,14 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
           <img src={conseilLogo} alt="Conseil de la Concurrence" className="logo-icon" />
           <div>
             <h1>Monafassa</h1>
-            <span className="subtitle">Assistant juridique du Conseil de la Concurrence</span>
+            {loading ? (
+              <span className="generating-status">
+                <span className="generating-dot" aria-hidden="true" />
+                En cours de génération...
+              </span>
+            ) : (
+              <span className="subtitle">Assistant juridique du Conseil de la Concurrence</span>
+            )}
           </div>
         </div>
         <button className="admin-btn" onClick={onGoAdmin} title="Administration">
