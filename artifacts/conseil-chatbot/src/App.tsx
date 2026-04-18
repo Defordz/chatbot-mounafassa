@@ -4,7 +4,7 @@ import {
   Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2,
   PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X,
   ThumbsUp, PencilLine, Clipboard, Check, Settings, LogOut,
-  FileText, ChevronDown, ChevronUp,
+  FileText, ChevronDown, ChevronUp, Square,
 } from "lucide-react";
 
 import councillogo from "@assets/image_1775927493944.png";
@@ -574,8 +574,7 @@ function ChatPage({
       {/* Sidebar overlay (mobile) */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-30"
-          style={{ display: "none" }}
+          className="sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -733,7 +732,7 @@ function ChatPage({
                 </div>
                 <h2 className="welcome-title">{botConfig.botName || "Chatbot IA Conseil"}</h2>
                 <p className="welcome-desc">
-                  {botConfig.greeting || "Assistant juridique intelligent spécialisé en droit marocain de la concurrence, basé sur les textes officiels du Conseil de la Concurrence."}
+                  Assistant juridique intelligent spécialisé en droit marocain de la concurrence, basé sur les textes officiels du Conseil de la Concurrence.
                 </p>
                 <div className="quick-actions">
                   {QUICK_ACTIONS.map((action) => (
@@ -816,14 +815,29 @@ function ChatPage({
               >
                 {listening ? <MicOff size={18} /> : <Mic size={18} />}
               </button>
-              <button
-                className={`btn-send ${input.trim() ? "active" : "inactive"}`}
-                onClick={() => handleSend()}
-                disabled={!input.trim()}
-                type="button"
-              >
-                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-              </button>
+              {streamingMsgId ? (
+                <button
+                  className="btn-send active"
+                  onClick={() => {
+                    abortControllerRef.current?.abort();
+                    setStreamingMsgId(null);
+                    setIsLoading(false);
+                  }}
+                  type="button"
+                  title="Arrêter la génération"
+                >
+                  <Square size={16} fill="currentColor" />
+                </button>
+              ) : (
+                <button
+                  className={`btn-send ${input.trim() ? "active" : "inactive"}`}
+                  onClick={() => handleSend()}
+                  disabled={!input.trim()}
+                  type="button"
+                >
+                  <Send size={18} />
+                </button>
+              )}
             </div>
           </div>
         </div>

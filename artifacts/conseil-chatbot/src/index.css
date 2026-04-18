@@ -1050,8 +1050,17 @@ body, .sidebar, .main-header, .input-box, .msg-bubble.assistant, .typing-bubble,
   background: var(--bg-elevated);
 }
 
+.sidebar-overlay { display: none; }
+
 /* ══ MOBILE & RESPONSIVE ════════════════════════════════ */
 @media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 35;
+  }
   .sidebar {
     display: flex;
     width: 100%;
