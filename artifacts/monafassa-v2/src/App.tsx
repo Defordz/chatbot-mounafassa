@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import conseilLogo from "./assets/conseil-logo.png";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -162,7 +163,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
     <div className="chat-container">
       <header className="chat-header">
         <div className="header-left">
-          <div className="logo-icon">⚖️</div>
+          <img src={conseilLogo} alt="Conseil de la Concurrence" className="logo-icon" />
           <div>
             <h1>Monafassa</h1>
             <span className="subtitle">Assistant juridique du Conseil de la Concurrence</span>

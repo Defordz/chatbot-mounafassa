@@ -50,7 +50,7 @@ body {
 
 .header-left { display: flex; align-items: center; gap: 12px; }
 
-.logo-icon { font-size: 28px; line-height: 1; }
+.logo-icon { height: 44px; width: auto; object-fit: contain; flex-shrink: 0; }
 
 .chat-header h1 {
   font-family: 'Instrument Serif', serif;
