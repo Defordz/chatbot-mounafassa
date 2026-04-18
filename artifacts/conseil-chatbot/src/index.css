@@ -97,29 +97,29 @@
   color: #F0F6FF !important;
 }
 
-[data-theme="dark"] .chat-messages { background: rgba(4, 20, 34, 0.78) !important; }
-[data-theme="dark"] .input-area { background: rgba(4, 18, 30, 0.92) !important; }
+[data-theme="dark"] .input-area,
+[data-theme="dark"] .chat-messages { background: #0A0F1E !important; }
 
 [data-theme="dark"] .input-box textarea { color: #F0F6FF !important; }
 [data-theme="dark"] .input-box textarea::placeholder { color: #5C7A96 !important; }
 
-[data-theme="dark"] .sidebar { border-right-color: rgba(30,60,80,0.5); }
+[data-theme="dark"] .sidebar { border-right-color: #1E2D40; }
 [data-theme="dark"] .sidebar-logo-text h1 { color: #F0F6FF; }
-[data-theme="dark"] .sidebar-logo-text span { color: #A8CFDF; }
+[data-theme="dark"] .sidebar-logo-text span { color: #5C7A96; }
 [data-theme="dark"] .sidebar-toggle { color: #FFFFFF !important; }
 [data-theme="dark"] .sidebar-toggle:hover { color: #FFFFFF !important; }
 [data-theme="dark"] .sidebar-logo-img,
 [data-theme="dark"] .welcome-chatbot-logo { background: transparent !important; filter: none !important; }
 [data-theme="dark"] .welcome-chatbot-logo { filter: brightness(0) invert(1) !important; }
-[data-theme="dark"] .welcome-screen { background: rgba(4, 20, 34, 0.72) !important; }
-[data-theme="dark"] .main-area { background: rgba(4, 20, 34, 0.80) !important; }
-[data-theme="dark"] .suggestion-card { background: rgba(15, 50, 70, 0.70) !important; border: 1px solid rgba(60,120,150,0.3) !important; color: #F0F6FF !important; }
+[data-theme="dark"] .welcome-screen { background: #0E1117 !important; }
+[data-theme="dark"] .main-area { background: #0A0F1E !important; }
+[data-theme="dark"] .suggestion-card { background: #1A2332 !important; border: 1px solid #2A3F58 !important; color: #F0F6FF !important; }
 [data-theme="dark"] .suggestion-label,
 [data-theme="dark"] .suggestion-text { color: #F0F6FF !important; }
-[data-theme="dark"] .quick-action { color: #F0F6FF !important; border-color: rgba(60,140,170,0.3) !important; }
-[data-theme="dark"] .welcome-disclaimer { color: #8BBCD0 !important; }
+[data-theme="dark"] .quick-action { color: #F0F6FF !important; }
+[data-theme="dark"] .welcome-disclaimer { color: #5C7A96 !important; }
 [data-theme="dark"] body, [data-theme="dark"] html,
-[data-theme="dark"] .app, [data-theme="dark"] .app-container { background: transparent; }
+[data-theme="dark"] .app, [data-theme="dark"] .app-container { background: #0A0F1E !important; }
 [data-theme="dark"] .welcome-title { color: #F0F6FF; }
 [data-theme="dark"] .welcome-desc { color: #94A8BF; }
 [data-theme="dark"] .btn-new-chat { background: #1B3F7A; color: #F0F6FF; border: 1px solid #2A3F58; }

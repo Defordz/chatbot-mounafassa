@@ -10,7 +10,7 @@ import {
 import councillogo from "@assets/image_1775927493944.png";
 import chatbotLogo from "@assets/IMG_0521_1776050301072_transparent.png";
 import sidebarBg from "@assets/Gemini_Generated_Image_3d8qzc3d8qzc3d8q_1775926443399.png";
-import sidebarBgDark from "@assets/IMG_0653_1776475843496.png";
+import sidebarBgDark from "@assets/IMG_0653_1776476377835.png";
 
 const API_BASE = "/api";
 
@@ -571,15 +571,7 @@ function ChatPage({
 
   /* ── Render ── */
   return (
-    <div
-      className="app-container"
-      style={theme === "dark" ? {
-        backgroundImage: `url(${sidebarBgDark})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      } : undefined}
-    >
+    <div className="app-container">
       {/* Sidebar overlay (mobile) */}
       {sidebarOpen && (
         <div
