@@ -73,7 +73,6 @@
   --bg-main: #0A0F1E;
 }
 
-[data-theme="dark"] .sidebar,
 [data-theme="dark"] .main-header,
 [data-theme="dark"] .input-box,
 [data-theme="dark"] .msg-bubble.assistant,
