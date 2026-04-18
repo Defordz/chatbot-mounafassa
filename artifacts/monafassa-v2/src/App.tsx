@@ -58,6 +58,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
   const [copyState, setCopyState] = useState<{ id: string; status: "copied" | "error" } | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleCopy = (msg: Message) => {
     navigator.clipboard.writeText(msg.content).then(() => {
@@ -94,6 +95,12 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  const stopGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
     const userMsg: Message = { role: "user", content: input.trim(), id: Date.now().toString() };
@@ -102,12 +109,15 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
     setLoading(true);
 
     const sessionMessages = messages.slice(-10).map(m => ({ role: m.role, content: m.content }));
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       const res = await fetch(`${API_BASE}/monafassa/chat/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg.content, session_messages: sessionMessages }),
+        signal: controller.signal,
       });
 
       if (!res.ok || !res.body) {
@@ -122,34 +132,45 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
       const decoder = new TextDecoder();
       let buffer = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
 
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6);
-          if (data === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed.delta) {
-              setMessages(prev => prev.map(m =>
-                m.id === assistantId ? { ...m, content: m.content + parsed.delta } : m
-              ));
-            }
-          } catch {}
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            const data = line.slice(6);
+            if (data === "[DONE]") break;
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.delta) {
+                setMessages(prev => prev.map(m =>
+                  m.id === assistantId ? { ...m, content: m.content + parsed.delta } : m
+                ));
+              }
+            } catch {}
+          }
+        }
+      } catch (readErr: unknown) {
+        if (readErr instanceof Error && readErr.name !== "AbortError") {
+          throw readErr;
         }
       }
-    } catch {
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "Désolé, une erreur est survenue. Veuillez réessayer.",
-        id: (Date.now() + 2).toString()
-      }]);
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
+      } else {
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: "Désolé, une erreur est survenue. Veuillez réessayer.",
+          id: (Date.now() + 2).toString()
+        }]);
+      }
     } finally {
+      abortControllerRef.current = null;
+      setMessages(prev => prev.filter(m => !(m.role === "assistant" && m.content === "")));
       setStreamingId(null);
       setLoading(false);
     }
@@ -270,11 +291,20 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
             disabled={loading}
             className="chat-input"
           />
-          <button onClick={sendMessage} disabled={loading || !input.trim()} className="send-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-          </button>
+          {loading ? (
+            <button onClick={stopGeneration} className="stop-btn" title="Arrêter la génération">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="4" y="4" width="16" height="16" rx="2"/>
+              </svg>
+              Arrêter
+            </button>
+          ) : (
+            <button onClick={sendMessage} disabled={!input.trim()} className="send-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          )}
         </div>
         <p className="disclaimer">Les réponses sont générées par IA et ne remplacent pas un avis juridique professionnel.</p>
       </footer>
