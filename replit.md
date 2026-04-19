@@ -131,9 +131,9 @@ Node.js/Express-powered AI legal chatbot for the Conseil de la Concurrence. Uses
 - `JWT_SECRET` — JWT signing secret
 - `ADMIN_PASSWORD_HASH` — bcryptjs hash of admin password
 
-## Conseil Chatbot IA (artifacts/conseil-chatbot)
+## Chatbot CC V 3.0 (artifacts/conseil-chatbot)
 
-New full-stack chatbot using Anthropic Claude AI (claude-sonnet-4-6) with custom RAG vector store (PostgreSQL-based), admin panel, and configurable appearance.
+Production chatbot using Anthropic Claude AI (claude-sonnet-4-6) with custom RAG vector store (PostgreSQL-based), admin panel, and configurable appearance. Current stable version.
 
 ### Architecture
 - **Frontend**: React + Vite (artifacts/conseil-chatbot) — compiled static files served by API server at `/conseil-chatbot/`

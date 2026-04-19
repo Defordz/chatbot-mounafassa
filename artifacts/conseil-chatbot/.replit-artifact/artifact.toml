@@ -1,31 +1,32 @@
 kind = "web"
-previewPath = "/conseil-chatbot/"
-title = "Monafassa AI Chatbot v2 avec admin panel"
-version = "1.0.0"
-id = "artifacts/conseil-chatbot"
-router = "path"
+  previewPath = "/conseil-chatbot/"
+  title = "Chatbot CC V 3.0"
+  version = "1.0.0"
+  id = "artifacts/conseil-chatbot"
+  router = "path"
 
-[[integratedSkills]]
-name = "react-vite"
-version = "1.0.0"
+  [[integratedSkills]]
+  name = "react-vite"
+  version = "1.0.0"
 
-[[services]]
-name = "web"
-paths = [ "/conseil-chatbot/" ]
-localPort = 21936
+  [[services]]
+  name = "web"
+  paths = [ "/conseil-chatbot/" ]
+  localPort = 21936
 
-[services.development]
-run = "pnpm --filter @workspace/conseil-chatbot run dev"
+  [services.development]
+  run = "pnpm --filter @workspace/conseil-chatbot run dev"
 
-[services.production]
-build = [ "pnpm", "--filter", "@workspace/conseil-chatbot", "run", "build" ]
-publicDir = "artifacts/conseil-chatbot/dist/public"
-serve = "static"
+  [services.production]
+  build = [ "pnpm", "--filter", "@workspace/conseil-chatbot", "run", "build" ]
+  publicDir = "artifacts/conseil-chatbot/dist/public"
+  serve = "static"
 
-[[services.production.rewrites]]
-from = "/*"
-to = "/index.html"
+  [[services.production.rewrites]]
+  from = "/*"
+  to = "/index.html"
 
-[services.env]
-PORT = "21936"
-BASE_PATH = "/conseil-chatbot/"
+  [services.env]
+  PORT = "21936"
+  BASE_PATH = "/conseil-chatbot/"
+  

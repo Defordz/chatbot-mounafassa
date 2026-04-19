@@ -601,7 +601,7 @@ function ChatPage({
           <img src={councillogo} alt="Conseil de la Concurrence" className="sidebar-logo-img" />
           <div className="sidebar-logo-text">
             <h1>{botConfig.botName || "Conseil IA"}</h1>
-            <span>Chatbot intelligent</span>
+            <span>CC V 3.0</span>
           </div>
         </div>
 
@@ -695,7 +695,7 @@ function ChatPage({
                 <div className="header-title">
                   {activeConv ? activeConv.title : (botConfig.botName || "Conseil IA")}
                 </div>
-                <div className="header-subtitle">Chatbot IA · Conseil de la Concurrence</div>
+                <div className="header-subtitle">Chatbot CC V 3.0 · Conseil de la Concurrence</div>
               </div>
             </div>
             <div className="topbar-actions">
