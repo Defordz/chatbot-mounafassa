@@ -660,15 +660,6 @@ function ChatPage({
             >
               {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
-            <button
-              className="sidebar-action"
-              onClick={onAdmin}
-              title="Administration"
-              style={{ flex: 1, width: "auto", justifyContent: "center", gap: "8px", fontSize: "12px", color: "rgba(255,255,255,0.7)", borderRadius: "12px" }}
-            >
-              <Settings size={15} />
-              <span style={{ fontWeight: 500 }}>Admin</span>
-            </button>
           </div>
         </div>
       </aside>
@@ -699,13 +690,17 @@ function ChatPage({
               </div>
             </div>
             <div className="topbar-actions">
-              <div className="status-pill" aria-label="Système actif">
-                <span className="status-dot" />
-                Claude actif
-              </div>
               <div className="header-badge">
                 {questionCount} question{questionCount !== 1 ? "s" : ""}
               </div>
+              <button
+                className="header-admin-btn"
+                onClick={onAdmin}
+                title="Administration"
+                aria-label="Administration"
+              >
+                <Settings size={16} />
+              </button>
             </div>
           </header>
         )}

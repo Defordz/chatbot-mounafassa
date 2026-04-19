@@ -587,6 +587,23 @@ button.header-home-btn { cursor: pointer; transition: all 0.2s ease; padding: 0;
   letter-spacing: 0.02em;
 }
 
+.header-admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(45,106,79,0.08);
+  color: var(--green-700);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.header-admin-btn:hover { background: rgba(45,106,79,0.16); color: var(--green-800); }
+[data-theme="dark"] .header-admin-btn { background: rgba(82,183,136,0.1); color: #5BBFEF; }
+[data-theme="dark"] .header-admin-btn:hover { background: rgba(82,183,136,0.2); }
+
 /* ═══════════════════════════════════════════
    CHAT MESSAGES
    ═══════════════════════════════════════════ */
