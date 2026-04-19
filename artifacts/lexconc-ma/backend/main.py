@@ -12,7 +12,7 @@ import uvicorn
 
 from rag import LexConcRAG
 
-app = FastAPI(title="LexConc-MA API")
+app = FastAPI(title="LexConc-MA API", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +26,7 @@ DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
 VECTOR_STORE_DIR = Path(__file__).parent / "vector_store"
+VECTOR_STORE_DIR.mkdir(exist_ok=True)
 
 rag_instance: Optional[LexConcRAG] = None
 rag_error: Optional[str] = None
@@ -69,6 +70,7 @@ class ChatRequest(BaseModel):
     question: str
     conversation_history: list = []
     source_filter: Optional[str] = None
+    include_warnings: bool = True
 
 
 router = APIRouter(prefix="/lexconc-api/api")
@@ -101,181 +103,95 @@ async def health():
         )
 
 
+@router.get("/config")
+async def get_config():
+    """Expose non-sensitive runtime config for ops dashboards."""
+    rag = get_rag()
+    if rag is None:
+        return JSONResponse(status_code=503, content={"error": rag_error or "RAG not ready"})
+    try:
+        stats = rag.get_stats()
+        return {
+            "status": "ok",
+            "embedding_model": stats.get("embedding_model"),
+            "generation_model": stats.get("generation_model"),
+            "reranker": stats.get("reranker"),
+            "total_chunks": stats.get("total_chunks", 0),
+            "documents": stats.get("documents", []),
+        }
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
 @router.post("/chat")
 async def chat(request: ChatRequest):
+    """Non-streaming chat — returns full JSON response."""
+    rag = get_rag()
+    if rag is None:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "answer": "Le système RAG est en cours d'initialisation. Réessayez dans quelques secondes.",
+                "sources": [],
+                "confidence_score": 0.0,
+                "retrieved_chunks": [],
+                "error": rag_error or "RAG not ready",
+                "type": "service_unavailable",
+            },
+        )
     try:
-        rag = get_rag()
-
-        if rag is None:
-            msg = rag_error or "Le système RAG est en cours d'initialisation. Veuillez réessayer dans quelques instants."
-            return JSONResponse(
-                status_code=503,
-                content={
-                    "error": msg,
-                    "type": "rag_not_ready",
-                    "answer": f"Le système n'est pas encore prêt : {msg}",
-                    "sources": [],
-                    "confidence_score": 0.0,
-                    "retrieved_chunks": [],
-                },
-            )
-
-        if not rag.has_documents():
-            return JSONResponse(
-                content={
-                    "answer": "La base de connaissances juridiques n'est pas encore disponible. Les documents sont en cours d'indexation ou n'ont pas pu être chargés.",
-                    "sources": [],
-                    "confidence_score": 0.0,
-                    "retrieved_chunks": [],
-                }
-            )
-
         result = await asyncio.to_thread(
             rag.query,
             request.question,
             request.conversation_history,
             request.source_filter,
         )
-        # Return via JSONResponse to avoid FastAPI's encoder touching numpy types
-        return JSONResponse(content=result)
-
+        return result
     except Exception as e:
-        err_str = str(e)
         traceback.print_exc()
-
-        # OpenAI-specific errors
-        if "insufficient_quota" in err_str or "429" in err_str:
-            return JSONResponse(
-                status_code=402,
-                content={
-                    "error": "Quota OpenAI dépassé. Veuillez recharger votre compte sur platform.openai.com.",
-                    "type": "quota_exceeded",
-                    "answer": "Le service est temporairement indisponible : quota OpenAI dépassé. Veuillez contacter l'administrateur.",
-                    "sources": [],
-                    "confidence_score": 0.0,
-                    "retrieved_chunks": [],
-                },
-            )
-
-        if "invalid_api_key" in err_str or "Incorrect API key" in err_str or "401" in err_str:
-            return JSONResponse(
-                status_code=401,
-                content={
-                    "error": "Clé API OpenAI invalide.",
-                    "type": "invalid_api_key",
-                    "answer": "Erreur de configuration : clé API invalide. Veuillez contacter l'administrateur.",
-                    "sources": [],
-                    "confidence_score": 0.0,
-                    "retrieved_chunks": [],
-                },
-            )
-
-        if "timeout" in err_str.lower() or "timed out" in err_str.lower():
-            return JSONResponse(
-                status_code=504,
-                content={
-                    "error": "Délai d'attente dépassé.",
-                    "type": "timeout",
-                    "answer": "La requête a pris trop de temps. Veuillez réessayer.",
-                    "sources": [],
-                    "confidence_score": 0.0,
-                    "retrieved_chunks": [],
-                },
-            )
-
-        # Generic error
         return JSONResponse(
             status_code=500,
             content={
-                "error": err_str,
-                "type": "internal_error",
-                "answer": f"Une erreur interne s'est produite : {err_str}",
+                "answer": f"Une erreur interne est survenue : {str(e)}",
                 "sources": [],
                 "confidence_score": 0.0,
                 "retrieved_chunks": [],
+                "error": str(e),
+                "type": "internal_error",
             },
         )
 
 
 @router.post("/chat/stream")
 async def chat_stream(request: ChatRequest):
+    """Streaming chat — Server-Sent Events (text/event-stream)."""
+    rag = get_rag()
+    if rag is None:
+        async def error_stream():
+            import json as _json
+            yield f"data: {_json.dumps({'type': 'error', 'content': rag_error or 'RAG not ready'})}\n\n"
+        return StreamingResponse(error_stream(), media_type="text/event-stream")
+
     import json as _json
 
-    rag = get_rag()
+    async def generate():
+        try:
+            for event in rag.query_stream(
+                request.question,
+                request.conversation_history,
+                request.source_filter,
+            ):
+                yield f"data: {_json.dumps(event)}\n\n"
+        except Exception as e:
+            traceback.print_exc()
+            yield f"data: {_json.dumps({'type': 'error', 'content': str(e)})}\n\n"
 
-    if rag is None:
-        msg = rag_error or "Le système RAG est en cours d'initialisation."
-        async def error_gen():
-            yield f"data: {_json.dumps({'type': 'error', 'content': msg})}\n\n"
-            yield "data: [DONE]\n\n"
-        return StreamingResponse(error_gen(), media_type="text/event-stream", headers={
-            "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no",
-        })
-
-    if not rag.has_documents():
-        async def error_gen():
-            yield f"data: {_json.dumps({'type': 'error', 'content': 'La base de connaissances n est pas encore disponible.'})}\n\n"
-            yield "data: [DONE]\n\n"
-        return StreamingResponse(error_gen(), media_type="text/event-stream", headers={
-            "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no",
-        })
-
-    async def stream_gen():
-        import queue
-        import threading
-
-        q = queue.Queue()
-
-        def _run():
-            try:
-                for event in rag.query_stream(
-                    request.question,
-                    request.conversation_history,
-                    request.source_filter,
-                ):
-                    q.put(event)
-                q.put(None)
-            except Exception as e:
-                traceback.print_exc()
-                q.put({"type": "error", "content": str(e)})
-                q.put(None)
-
-        thread = threading.Thread(target=_run, daemon=True)
-        thread.start()
-
-        while True:
-            event = await asyncio.to_thread(q.get)
-            if event is None:
-                break
-            yield f"data: {_json.dumps(event, ensure_ascii=False)}\n\n"
-        yield "data: [DONE]\n\n"
-
-    return StreamingResponse(stream_gen(), media_type="text/event-stream", headers={
-        "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no",
-    })
-
-
-@router.get("/stats")
-async def get_stats():
-    try:
-        rag = get_rag()
-        if rag is None:
-            return JSONResponse(
-                status_code=503,
-                content={"error": rag_error or "RAG not ready", "type": "rag_not_ready"},
-            )
-        return rag.get_stats()
-    except Exception as e:
-        traceback.print_exc()
-        return JSONResponse(
-            status_code=500,
-            content={"error": str(e), "type": "internal_error"},
-        )
+    return StreamingResponse(generate(), media_type="text/event-stream")
 
 
 app.include_router(router)
 
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8765))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
+    port = int(os.environ.get("PYTHON_API_PORT", 8765))
+    uvicorn.run(app, host="0.0.0.0", port=port)

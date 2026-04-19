@@ -1,0 +1,124 @@
+{
+  "documents": [
+    {
+      "doc_id": "7732066f75c5",
+      "title": "avis assurance",
+      "type": "avis",
+      "chunks": 122,
+      "chars": 179888
+    },
+    {
+      "doc_id": "a02995e280d8",
+      "title": "avis circuits distribution",
+      "type": "avis",
+      "chunks": 214,
+      "chars": 363793
+    },
+    {
+      "doc_id": "9583387cf243",
+      "title": "avis distribution produits alimentaires",
+      "type": "avis",
+      "chunks": 214,
+      "chars": 363793
+    },
+    {
+      "doc_id": "e24320b5b6ed",
+      "title": "avis electricite",
+      "type": "avis",
+      "chunks": 228,
+      "chars": 341858
+    },
+    {
+      "doc_id": "079223be17e3",
+      "title": "avis flambee prix intrants",
+      "type": "avis",
+      "chunks": 124,
+      "chars": 215609
+    },
+    {
+      "doc_id": "bb4a86de3768",
+      "title": "avis fruits legumes",
+      "type": "avis",
+      "chunks": 260,
+      "chars": 393572
+    },
+    {
+      "doc_id": "d0e928bd67ff",
+      "title": "avis gestion deleguee transport",
+      "type": "avis",
+      "chunks": 156,
+      "chars": 231452
+    },
+    {
+      "doc_id": "bc7cf99a059c",
+      "title": "avis livre scolaire",
+      "type": "avis",
+      "chunks": 101,
+      "chars": 163679
+    },
+    {
+      "doc_id": "0039fd470e8f",
+      "title": "avis marche ciment",
+      "type": "avis",
+      "chunks": 229,
+      "chars": 354067
+    },
+    {
+      "doc_id": "cb9484921cc8",
+      "title": "avis marche meunier",
+      "type": "avis",
+      "chunks": 270,
+      "chars": 424248
+    },
+    {
+      "doc_id": "45deb32fc570",
+      "title": "avis medicament",
+      "type": "avis",
+      "chunks": 135,
+      "chars": 237381
+    },
+    {
+      "doc_id": "ca7b30f40817",
+      "title": "avis paiement en ligne",
+      "type": "lignes_directrices",
+      "chunks": 96,
+      "chars": 169221
+    },
+    {
+      "doc_id": "cecc97b00504",
+      "title": "avis rond a beton",
+      "type": "avis",
+      "chunks": 213,
+      "chars": 369287
+    },
+    {
+      "doc_id": "628197f95fc4",
+      "title": "avis soins medicaux cliniques",
+      "type": "avis",
+      "chunks": 156,
+      "chars": 275818
+    },
+    {
+      "doc_id": "2343d206f4a9",
+      "title": "guidelines concentration",
+      "type": "lignes_directrices",
+      "chunks": 174,
+      "chars": 265866
+    },
+    {
+      "doc_id": "12a675757ecd",
+      "title": "guidelines transaction",
+      "type": "lignes_directrices",
+      "chunks": 20,
+      "chars": 33672
+    },
+    {
+      "doc_id": "e6cdea5c5a70",
+      "title": "loi 20 13",
+      "type": "loi",
+      "chunks": 37,
+      "chars": 27966
+    }
+  ],
+  "total_chunks": 2749
+}
