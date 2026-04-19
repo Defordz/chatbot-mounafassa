@@ -421,6 +421,15 @@ function ChatPage({
     if (activeId === id) setActiveId(null);
   }
 
+  function clearAllConversations() {
+    if (conversations.length === 0) return;
+    if (!window.confirm("Supprimer toutes les conversations ?")) return;
+    setConversations([]);
+    setActiveId(null);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(ACTIVE_KEY);
+  }
+
   /* Send message ─── */
   async function handleSend(text?: string) {
     const msgText = (text ?? input).trim();
@@ -659,6 +668,14 @@ function ChatPage({
               title={theme === "dark" ? "Mode clair" : "Mode sombre"}
             >
               {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button
+              className="sidebar-action sidebar-action-danger"
+              onClick={clearAllConversations}
+              title="Supprimer toutes les conversations"
+              disabled={conversations.length === 0}
+            >
+              <Trash2 size={16} />
             </button>
           </div>
         </div>
