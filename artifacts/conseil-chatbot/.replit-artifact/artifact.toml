@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/conseil-chatbot/"
-title = "Conseil Chatbot IA"
+title = "Monafassa AI Chatbot v2 avec admin panel"
 version = "1.0.0"
 id = "artifacts/conseil-chatbot"
 router = "path"
