@@ -158,9 +158,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
           }
         }
       } catch (readErr: unknown) {
-        if (readErr instanceof Error && readErr.name !== "AbortError") {
-          throw readErr;
-        }
+        throw readErr;
       }
     } catch (err: unknown) {
       if (err instanceof Error && err.name === "AbortError") {
