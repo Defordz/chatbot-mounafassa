@@ -110,88 +110,105 @@ async def get_config():
     if rag is None:
         return JSONResponse(status_code=503, content={"error": rag_error or "RAG not ready"})
     try:
-        stats = rag.get_stats()
         return {
-            "status": "ok",
-            "embedding_model": stats.get("embedding_model"),
-            "generation_model": stats.get("generation_model"),
-            "reranker": stats.get("reranker"),
-            "total_chunks": stats.get("total_chunks", 0),
-            "documents": stats.get("documents", []),
+            "total_documents": rag.get_stats().get("total_documents", 0),
+            "total_chunks": rag.get_stats().get("total_chunks", 0),
+            "has_vector_store": rag.get_stats().get("has_vector_store", False),
         }
     except Exception as e:
-        traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 @router.post("/chat")
 async def chat(request: ChatRequest):
-    """Non-streaming chat — returns full JSON response."""
-    rag = get_rag()
-    if rag is None:
-        return JSONResponse(
-            status_code=503,
-            content={
-                "answer": "Le système RAG est en cours d'initialisation. Réessayez dans quelques secondes.",
-                "sources": [],
-                "confidence_score": 0.0,
-                "retrieved_chunks": [],
-                "error": rag_error or "RAG not ready",
-                "type": "service_unavailable",
-            },
-        )
     try:
+        rag = get_rag()
+
+        if rag is None:
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "error": rag_error or "RAG not ready",
+                    "answer": "Le système n'est pas prêt.",
+                    "sources": [],
+                    "confidence_score": 0.0,
+                    "retrieved_chunks": [],
+                },
+            )
+
         result = await asyncio.to_thread(
             rag.query,
             request.question,
             request.conversation_history,
             request.source_filter,
         )
-        return result
+
+        return JSONResponse(content=result)
+
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(
             status_code=500,
             content={
-                "answer": f"Une erreur interne est survenue : {str(e)}",
+                "error": str(e),
+                "answer": f"Erreur interne: {str(e)}",
                 "sources": [],
                 "confidence_score": 0.0,
                 "retrieved_chunks": [],
-                "error": str(e),
-                "type": "internal_error",
             },
         )
 
 
 @router.post("/chat/stream")
 async def chat_stream(request: ChatRequest):
-    """Streaming chat — Server-Sent Events (text/event-stream)."""
-    rag = get_rag()
-    if rag is None:
-        async def error_stream():
-            import json as _json
-            yield f"data: {_json.dumps({'type': 'error', 'content': rag_error or 'RAG not ready'})}\n\n"
-        return StreamingResponse(error_stream(), media_type="text/event-stream")
-
     import json as _json
 
-    async def generate():
-        try:
-            for event in rag.query_stream(
-                request.question,
-                request.conversation_history,
-                request.source_filter,
-            ):
-                yield f"data: {_json.dumps(event)}\n\n"
-        except Exception as e:
-            traceback.print_exc()
-            yield f"data: {_json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+    rag = get_rag()
 
-    return StreamingResponse(generate(), media_type="text/event-stream")
+    async def stream_gen():
+        import queue
+        import threading
+
+        q = queue.Queue()
+
+        def _run():
+            try:
+                for event in rag.query_stream(
+                    request.question,
+                    request.conversation_history,
+                    request.source_filter,
+                ):
+                    q.put(event)
+                q.put(None)
+            except Exception as e:
+                q.put({"type": "error", "content": str(e)})
+                q.put(None)
+
+        thread = threading.Thread(target=_run, daemon=True)
+        thread.start()
+
+        while True:
+            event = await asyncio.to_thread(q.get)
+            if event is None:
+                break
+            yield f"data: {_json.dumps(event, ensure_ascii=False)}\n\n"
+
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(stream_gen(), media_type="text/event-stream")
+
+
+@router.get("/stats")
+async def get_stats():
+    rag = get_rag()
+    if rag is None:
+        return JSONResponse(status_code=503, content={"error": rag_error or "RAG not ready"})
+    return rag.get_stats()
 
 
 app.include_router(router)
 
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PYTHON_API_PORT", 8765))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 8765))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

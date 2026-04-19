@@ -270,7 +270,7 @@ class LexConcRAG:
         self.vector_store_dir = Path(vector_store_dir)
         self.vector_store_dir.mkdir(parents=True, exist_ok=True)
 
-        api_key = os.environ.get("OPENAI_API_KEY")
+        api_key = os.environ.get("")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY is not set.")
         self.client = OpenAI(api_key=api_key)
