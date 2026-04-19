@@ -55,6 +55,12 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
     minute: "2-digit",
   });
 
+  useEffect(() => {
+    if (!copied) return;
+    const id = window.setTimeout(() => setCopied(false), 2000);
+    return () => window.clearTimeout(id);
+  }, [copied]);
+
   if (isUser) {
     return (
       <div className="msg-row user">
@@ -78,6 +84,7 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
       </div>
     );
   }
+
   const feedbackItems = loadFeedback();
 
   const persistFeedback = (type: FeedbackType, comment = "") => {
@@ -105,12 +112,6 @@ export default function ChatMessage({ message, isStreaming, onCopy }: Props) {
     if (nextOpen) return;
     persistFeedback("improve", improvementText.trim());
   };
-
-  useEffect(() => {
-    if (!copied) return;
-    const id = window.setTimeout(() => setCopied(false), 2000);
-    return () => window.clearTimeout(id);
-  }, [copied]);
 
   return (
     <div className="msg-row assistant">
