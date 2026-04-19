@@ -207,7 +207,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
       <main className="chat-main">
         {messages.length === 0 && (
           <div className="welcome">
-            <div className="welcome-icon">⚖️</div>
+            <div className="welcome-icon"><img src={conseilLogo} alt="Conseil de la Concurrence" /></div>
             <p className="welcome-text">{welcomeMsg}</p>
             <div className="suggestions">
               {["Qu'est-ce que la loi 104-12 sur la concurrence ?", "Quelles sont les pratiques anticoncurrentielles ?", "Comment déposer une plainte ?"].map(s => (
@@ -222,7 +222,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
         {messages.map((msg) => (
           <div key={msg.id} className={`message ${msg.role}`}>
             {msg.role === "assistant" && (
-              <div className="avatar assistant-avatar">⚖️</div>
+              <div className="avatar assistant-avatar"><img src={conseilLogo} alt="" /></div>
             )}
             <div className="message-bubble">
               <MessageContent content={msg.content} isStreaming={msg.id === streamingId} />
@@ -277,7 +277,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
 
         {loading && !streamingId && (
           <div className="message assistant">
-            <div className="avatar assistant-avatar">⚖️</div>
+            <div className="avatar assistant-avatar"><img src={conseilLogo} alt="" /></div>
             <div className="message-bubble typing">
               <span></span><span></span><span></span>
             </div>
@@ -415,7 +415,7 @@ function AdminLogin({ onLogin, onBack }: { onLogin: (t: string) => void; onBack:
   return (
     <div className="admin-login">
       <div className="login-card">
-        <div className="login-logo">⚖️</div>
+        <div className="login-logo"><img src={conseilLogo} alt="Conseil de la Concurrence" /></div>
         <h2>Administration Monafassa</h2>
         <form onSubmit={submit}>
           <input

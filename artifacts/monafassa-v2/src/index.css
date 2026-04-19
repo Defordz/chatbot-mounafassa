@@ -128,7 +128,8 @@ body {
   padding: 40px 20px;
 }
 
-.welcome-icon { font-size: 56px; margin-bottom: 20px; }
+.welcome-icon { margin-bottom: 20px; }
+.welcome-icon img { width: 80px; height: 80px; object-fit: contain; }
 
 .welcome-text {
   font-size: 1rem;
@@ -178,7 +179,8 @@ body {
   flex-shrink: 0;
 }
 
-.assistant-avatar { background: var(--green-pale); }
+.assistant-avatar { background: var(--green-pale); overflow: hidden; }
+.assistant-avatar img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
 .user-avatar { background: #f0f0f5; }
 
 .message-bubble {
@@ -440,7 +442,8 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
-.login-logo { font-size: 48px; margin-bottom: 16px; }
+.login-logo { margin-bottom: 16px; }
+.login-logo img { width: 72px; height: 72px; object-fit: contain; }
 .login-card h2 {
   font-family: 'Instrument Serif', serif;
   font-size: 1.5rem;
