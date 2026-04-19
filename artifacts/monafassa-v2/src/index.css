@@ -181,7 +181,7 @@ body {
 
 .assistant-avatar { background: var(--green-pale); overflow: hidden; }
 .assistant-avatar img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
-.user-avatar { background: #f0f0f5; }
+.user-avatar { background: #f0f0f5; color: #6b7280; }
 
 .message-bubble {
   max-width: 75%;

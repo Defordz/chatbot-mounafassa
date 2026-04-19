@@ -270,7 +270,12 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
               )}
             </div>
             {msg.role === "user" && (
-              <div className="avatar user-avatar">👤</div>
+              <div className="avatar user-avatar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+              </div>
             )}
           </div>
         ))}
