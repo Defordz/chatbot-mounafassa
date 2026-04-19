@@ -56,6 +56,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
   );
   const [feedbackOpen, setFeedbackOpen] = useState<string | null>(null);
   const [copyState, setCopyState] = useState<{ id: string; status: "copied" | "error" } | null>(null);
+  const [stoppedIds, setStoppedIds] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -111,6 +112,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
     const sessionMessages = messages.slice(-10).map(m => ({ role: m.role, content: m.content }));
     const controller = new AbortController();
     abortControllerRef.current = controller;
+    let currentAssistantId: string | null = null;
 
     try {
       const res = await fetch(`${API_BASE}/monafassa/chat/stream`, {
@@ -125,6 +127,7 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
       }
 
       const assistantId = (Date.now() + 1).toString();
+      currentAssistantId = assistantId;
       setMessages(prev => [...prev, { role: "assistant", content: "", id: assistantId }]);
       setStreamingId(assistantId);
 
@@ -161,6 +164,9 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
       }
     } catch (err: unknown) {
       if (err instanceof Error && err.name === "AbortError") {
+        if (currentAssistantId) {
+          setStoppedIds(prev => new Set([...prev, currentAssistantId!]));
+        }
       } else {
         setMessages(prev => [...prev, {
           role: "assistant",
@@ -226,6 +232,9 @@ function ChatView({ onGoAdmin }: { onGoAdmin: () => void }) {
             )}
             <div className="message-bubble">
               <MessageContent content={msg.content} isStreaming={msg.id === streamingId} />
+              {msg.role === "assistant" && stoppedIds.has(msg.id) && (
+                <div className="stopped-badge">⏹ Arrêté</div>
+              )}
               {msg.role === "assistant" && msg.content && msg.id !== streamingId && (
                 <div className="msg-actions">
                   <button

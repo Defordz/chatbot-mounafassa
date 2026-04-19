@@ -291,6 +291,22 @@ body {
   color: #c62828;
 }
 
+.stopped-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #9ca3af;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  opacity: 0.8;
+  user-select: none;
+}
+
 .copied-label {
   font-size: 0.72rem;
   font-weight: 600;
