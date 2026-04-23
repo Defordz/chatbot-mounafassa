@@ -866,6 +866,7 @@ function AdminPage({ onBack }: { onBack: () => void }) {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [sessionExpiredMsg, setSessionExpiredMsg] = useState("");
 
   async function login(e: React.FormEvent) {
     e.preventDefault();
@@ -880,6 +881,7 @@ function AdminPage({ onBack }: { onBack: () => void }) {
       if (!res.ok) { setLoginError("Mot de passe incorrect"); return; }
       const { token: t } = await res.json();
       setToken(t);
+      setSessionExpiredMsg("");
       localStorage.setItem("conseil-admin-token", t);
     } catch { setLoginError("Erreur de connexion"); }
     finally { setLoginLoading(false); }
@@ -888,6 +890,12 @@ function AdminPage({ onBack }: { onBack: () => void }) {
   function logout() {
     setToken("");
     localStorage.removeItem("conseil-admin-token");
+  }
+
+  function handleSessionExpired() {
+    localStorage.removeItem("conseil-admin-token");
+    setToken("");
+    setSessionExpiredMsg("Votre session a expiré. Veuillez vous reconnecter.");
   }
 
   if (!token) {
@@ -904,6 +912,11 @@ function AdminPage({ onBack }: { onBack: () => void }) {
             <h1 className="admin-title">Administration</h1>
             <p className="admin-subtitle">Accès restreint</p>
           </div>
+          {sessionExpiredMsg && (
+            <p className="admin-error" style={{ textAlign: "center", marginBottom: "16px" }}>
+              {sessionExpiredMsg}
+            </p>
+          )}
           <form onSubmit={login} className="admin-form">
             <div className="admin-field">
               <label>Mot de passe</label>
@@ -952,16 +965,16 @@ function AdminPage({ onBack }: { onBack: () => void }) {
           ))}
         </div>
 
-        {tab === "documents" && <DocumentsTab token={token} />}
-        {tab === "feedback" && <FeedbackTab token={token} />}
-        {tab === "config" && <ConfigTab token={token} />}
+        {tab === "documents" && <DocumentsTab token={token} onSessionExpired={handleSessionExpired} />}
+        {tab === "feedback" && <FeedbackTab token={token} onSessionExpired={handleSessionExpired} />}
+        {tab === "config" && <ConfigTab token={token} onSessionExpired={handleSessionExpired} />}
       </div>
     </div>
   );
 }
 
 /* ─── Documents tab ──────────────────────────────────── */
-function DocumentsTab({ token }: { token: string }) {
+function DocumentsTab({ token, onSessionExpired }: { token: string; onSessionExpired: () => void }) {
   const [docs, setDocs] = useState<DocumentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -975,6 +988,7 @@ function DocumentsTab({ token }: { token: string }) {
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/conseil/admin/documents`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.status === 401) { onSessionExpired(); return; }
       const data = await res.json();
       setDocs(Array.isArray(data) ? data : []);
     } catch { setError("Erreur de chargement"); }
@@ -1100,14 +1114,17 @@ function DocumentsTab({ token }: { token: string }) {
 }
 
 /* ─── Feedback tab ───────────────────────────────────── */
-function FeedbackTab({ token }: { token: string }) {
+function FeedbackTab({ token, onSessionExpired }: { token: string; onSessionExpired: () => void }) {
   const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${API_BASE}/conseil/admin/feedbacks`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(d => setFeedbacks(Array.isArray(d) ? d : []))
+      .then(r => {
+        if (r.status === 401) { onSessionExpired(); return null; }
+        return r.json();
+      })
+      .then(d => { if (d) setFeedbacks(Array.isArray(d) ? d : []); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -1170,25 +1187,30 @@ function FeedbackTab({ token }: { token: string }) {
 }
 
 /* ─── Config tab ─────────────────────────────────────── */
-function ConfigTab({ token }: { token: string }) {
+function ConfigTab({ token, onSessionExpired }: { token: string; onSessionExpired: () => void }) {
   const [config, setConfig] = useState<AdminConfig | null>(null);
+  const [loadError, setLoadError] = useState("");
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
+  const [saveError, setSaveError] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pwError, setPwError] = useState("");
 
   useEffect(() => {
     fetch(`${API_BASE}/conseil/admin/config`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(setConfig)
-      .catch(() => {});
+      .then(r => {
+        if (r.status === 401) { onSessionExpired(); return null; }
+        return r.json();
+      })
+      .then(d => { if (d) setConfig(d); })
+      .catch(() => setLoadError("Impossible de charger la configuration."));
   }, []);
 
   async function saveConfig(e: React.FormEvent) {
     e.preventDefault();
     if (!config) return;
-    setPwError("");
+    setPwError(""); setSaveError("");
     if (newPassword) {
       if (newPassword !== confirmPassword) { setPwError("Les mots de passe ne correspondent pas"); return; }
       if (newPassword.length < 6) { setPwError("Mot de passe trop court (min 6 caractères)"); return; }
@@ -1200,16 +1222,23 @@ function ConfigTab({ token }: { token: string }) {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ ...config, ...(newPassword ? { newPassword } : {}) }),
       });
+      if (res.status === 401) { onSessionExpired(); return; }
       if (!res.ok) throw new Error("Erreur de sauvegarde");
       const updated = await res.json();
       setConfig(updated);
       setSuccess("Configuration sauvegardée !");
       setNewPassword(""); setConfirmPassword("");
-    } catch { alert("Erreur de sauvegarde"); }
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Erreur de sauvegarde");
+    }
     finally { setSaving(false); }
   }
 
-  if (!config) return <div className="admin-loading" style={{ padding: "48px 0" }}>Chargement…</div>;
+  if (!config) return (
+    <div className="admin-loading" style={{ padding: "48px 0" }}>
+      {loadError ? <p className="admin-error">{loadError}</p> : "Chargement…"}
+    </div>
+  );
 
   return (
     <form onSubmit={saveConfig} className="admin-section">
@@ -1279,6 +1308,7 @@ function ConfigTab({ token }: { token: string }) {
           {saving ? "Sauvegarde…" : "Sauvegarder la configuration"}
         </button>
         {success && <p className="admin-success">{success}</p>}
+        {saveError && <p className="admin-error">{saveError}</p>}
       </div>
     </form>
   );
