@@ -4,7 +4,7 @@ import {
   Send, Loader2, Plus, Mic, MicOff, MessageSquare, Trash2,
   PanelLeftClose, PanelLeftOpen, Activity, Moon, Sun, X,
   ThumbsUp, PencilLine, Clipboard, Check, Settings, LogOut,
-  FileText, ChevronDown, ChevronUp, Square,
+  FileText, ChevronDown, ChevronUp, Square, Download,
 } from "lucide-react";
 
 import councillogo from "@assets/image_1775927493944.png";
@@ -171,6 +171,16 @@ const SUGGESTIONS = [
 
 const BOT_AVATAR = <img src={chatbotLogo} alt="Chatbot Conseil" className="bot-avatar-img" />;
 
+const IMPROVE_OPTIONS = [
+  "Réponse incomplète",
+  "Information incorrecte",
+  "Peu claire ou confuse",
+  "Hors sujet",
+  "Source manquante",
+  "Trop longue ou répétitive",
+  "Autre",
+];
+
 /* ─── ChatMessage component ──────────────────────────── */
 function ChatMessageComp({
   message,
@@ -186,7 +196,9 @@ function ChatMessageComp({
   const [copied, setCopied] = useState(false);
   const [feedbackGiven, setFeedbackGiven] = useState<number | null>(null);
   const [showImprove, setShowImprove] = useState(false);
+  const [improveChecked, setImproveChecked] = useState<string[]>([]);
   const [improveText, setImproveText] = useState("");
+  const [improveSent, setImproveSent] = useState(false);
 
   const timeStr = message.timestamp.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
@@ -228,8 +240,17 @@ function ChatMessageComp({
   const handleFeedback = (rating: number) => {
     setFeedbackGiven(rating);
     onFeedback?.(message.id, rating);
-    if (rating < 0) setShowImprove(true);
   };
+
+  function toggleOption(opt: string) {
+    setImproveChecked(prev => prev.includes(opt) ? prev.filter(o => o !== opt) : [...prev, opt]);
+  }
+
+  function submitImprove() {
+    setImproveSent(true);
+    setShowImprove(false);
+    onFeedback?.(message.id, -1);
+  }
 
   return (
     <div className="msg-row assistant">
@@ -270,30 +291,44 @@ function ChatMessageComp({
                 Utile
               </button>
               <button
-                className={`feedback-btn ${showImprove ? "active" : ""}`}
-                onClick={() => { handleFeedback(-1); setShowImprove(v => !v); }}
+                className={`feedback-btn ${showImprove || improveSent ? "active" : ""}`}
+                onClick={() => setShowImprove(v => !v)}
                 type="button"
               >
                 <PencilLine size={13} />
-                Améliorer
+                {improveSent ? "Envoyé ✓" : "Améliorer"}
               </button>
             </div>
           )}
 
           {showImprove && (
             <div className="feedback-improve">
+              <p className="improve-title">Qu'est-ce qui pourrait être amélioré ?</p>
+              <div className="improve-checklist">
+                {IMPROVE_OPTIONS.map(opt => (
+                  <label key={opt} className="improve-option">
+                    <input
+                      type="checkbox"
+                      checked={improveChecked.includes(opt)}
+                      onChange={() => toggleOption(opt)}
+                    />
+                    <span>{opt}</span>
+                  </label>
+                ))}
+              </div>
               <textarea
                 value={improveText}
                 onChange={(e) => setImproveText(e.target.value)}
-                placeholder="Expliquez ce qui pourrait être amélioré..."
-                rows={3}
+                placeholder="Commentaire supplémentaire (optionnel)…"
+                rows={2}
               />
               <button
                 className="feedback-submit"
                 type="button"
-                onClick={() => setShowImprove(false)}
+                onClick={submitImprove}
+                disabled={improveChecked.length === 0 && !improveText.trim()}
               >
-                Enregistrer
+                Envoyer
               </button>
             </div>
           )}
@@ -722,14 +757,25 @@ function ChatPage({
           </header>
         )}
 
-        {messages.length === 0 && !sidebarOpen && (
+        {messages.length === 0 && (
           <div className="welcome-top-bar">
+            {!sidebarOpen && (
+              <button
+                className="sidebar-expand"
+                onClick={() => setSidebarOpen(true)}
+                title="Afficher la barre latérale"
+              >
+                <PanelLeftOpen size={20} />
+              </button>
+            )}
             <button
-              className="sidebar-expand"
-              onClick={() => setSidebarOpen(true)}
-              title="Afficher la barre latérale"
+              className="header-admin-btn"
+              onClick={onAdmin}
+              title="Administration"
+              aria-label="Administration"
+              style={{ marginLeft: "auto" }}
             >
-              <PanelLeftOpen size={20} />
+              <Settings size={16} />
             </button>
           </div>
         )}
@@ -1101,6 +1147,25 @@ function DocumentsTab({ token, onSessionExpired }: { token: string; onSessionExp
                   <span className={`doc-badge ${doc.active ? "active" : "inactive"}`}>{doc.active ? "Actif" : "Inactif"}</span>
                   <button className="doc-action-btn" onClick={() => toggleDoc(doc.id, !doc.active)}>
                     {doc.active ? "Désactiver" : "Activer"}
+                  </button>
+                  <button
+                    className="doc-action-btn"
+                    title="Télécharger le contenu"
+                    onClick={async () => {
+                      const res = await fetch(`${API_BASE}/conseil/admin/documents/${doc.id}/download`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                      });
+                      if (!res.ok) return;
+                      const blob = await res.blob();
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = doc.originalFilename.replace(/\.[^.]+$/, "") + ".txt";
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
+                    <Download size={13} />
                   </button>
                   <button className="doc-action-btn danger" onClick={() => deleteDoc(doc.id)}>🗑</button>
                 </div>

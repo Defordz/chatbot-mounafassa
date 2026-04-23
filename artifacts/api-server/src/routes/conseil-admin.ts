@@ -304,6 +304,38 @@ router.delete(
   }
 );
 
+router.get(
+  "/conseil/admin/documents/:id/download",
+  authMiddleware,
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const docs = await db
+        .select()
+        .from(conseilDocumentsTable)
+        .where(eq(conseilDocumentsTable.id, Number(id)))
+        .limit(1);
+      if (docs.length === 0) return res.status(404).json({ error: "Document not found" });
+      const doc = docs[0];
+
+      const chunks = await db
+        .select({ content: conseilChunksTable.content, chunkIndex: conseilChunksTable.chunkIndex })
+        .from(conseilChunksTable)
+        .where(eq(conseilChunksTable.documentId, Number(id)))
+        .orderBy(conseilChunksTable.chunkIndex);
+
+      const fullText = chunks.map(c => c.content).join("\n\n");
+      const filename = encodeURIComponent(doc.originalFilename.replace(/\.[^.]+$/, "") + ".txt");
+
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${filename}`);
+      res.send(fullText);
+    } catch {
+      res.status(500).json({ error: "Failed to download document" });
+    }
+  }
+);
+
 router.get("/conseil/admin/feedbacks", authMiddleware, async (_req, res) => {
   try {
     const feedbacks = await db
