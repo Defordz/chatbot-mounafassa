@@ -1446,7 +1446,10 @@ body, .sidebar, .main-header, .input-box, .msg-bubble.assistant, .typing-bubble,
   height: 110px;
   object-fit: contain;
   margin-bottom: 20px;
-  filter: drop-shadow(0 4px 24px rgba(82,183,136,0.35));
+  background: rgba(255,255,255,0.92);
+  border-radius: 50%;
+  padding: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.25), 0 0 0 6px rgba(255,255,255,0.12);
 }
 
 .landing-title {
