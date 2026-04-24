@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "EX7A_33Vz2z3_hpK_qMOL"
+uri = "file://chatbot-conseil.zip"
+type = "unspecified"
+title = "Chatbot Conseil — Code source"
