@@ -61,8 +61,15 @@ async function getConfig() {
   return rows[0];
 }
 
-function authMiddleware(_req: Request, _res: Response, next: NextFunction) {
-  next();
+function authMiddleware(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+  try {
+    jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ error: "Invalid token" });
+  }
 }
 
 async function getEmbedding(text: string): Promise<number[]> {
