@@ -6,3 +6,9 @@ id = "EX7A_33Vz2z3_hpK_qMOL"
 uri = "file://chatbot-conseil.zip"
 type = "unspecified"
 title = "Chatbot Conseil — Code source"
+
+[[outputs]]
+id = "QWfa3yRmmtghKhs1jC5La"
+uri = "file://chatbot-conseil-complet.zip"
+type = "unspecified"
+title = "Chatbot Conseil — Tous les fichiers source"
