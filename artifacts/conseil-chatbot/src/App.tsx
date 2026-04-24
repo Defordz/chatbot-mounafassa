@@ -1374,9 +1374,64 @@ function ConfigTab({ token, onSessionExpired }: { token: string; onSessionExpire
   );
 }
 
+/* ─── Landing Page ───────────────────────────────────── */
+function LandingPage({ onEnter, onAdmin }: { onEnter: () => void; onAdmin: () => void }) {
+  return (
+    <div className="landing-page">
+      <div className="landing-bg" />
+      <div className="landing-content">
+        <div className="landing-logo-wrap">
+          <img src={councillogo} alt="Conseil de la Concurrence" className="landing-logo" />
+        </div>
+
+        <div className="landing-hero">
+          <img src={chatbotLogo} alt="Chatbot" className="landing-bot-avatar" />
+          <h1 className="landing-title">Chatbot IA Mounafassa</h1>
+          <p className="landing-subtitle">
+            Assistant juridique intelligent spécialisé en droit marocain de la concurrence,
+            basé sur les textes officiels du Conseil de la Concurrence.
+          </p>
+
+          <div className="landing-features">
+            <div className="landing-feature">
+              <span className="landing-feature-icon">⚖️</span>
+              <span>Droit de la concurrence marocain</span>
+            </div>
+            <div className="landing-feature">
+              <span className="landing-feature-icon">📄</span>
+              <span>Textes officiels & décisions du Conseil</span>
+            </div>
+            <div className="landing-feature">
+              <span className="landing-feature-icon">🤖</span>
+              <span>Intelligence artificielle avancée</span>
+            </div>
+            <div className="landing-feature">
+              <span className="landing-feature-icon">🔒</span>
+              <span>Réponses fiables et sourcées</span>
+            </div>
+          </div>
+
+          <button className="landing-cta" onClick={onEnter}>
+            Accéder au Chatbot
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div className="landing-footer">
+          <p>© {new Date().getFullYear()} Conseil de la Concurrence — Royaume du Maroc</p>
+          <button className="landing-admin-link" onClick={onAdmin}>
+            <Settings size={13} />
+            Administration
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Root App ───────────────────────────────────────── */
 export default function App() {
-  const [page, setPage] = useState<"chat" | "admin">("chat");
+  const [page, setPage] = useState<"landing" | "chat" | "admin">("landing");
   const [botConfig, setBotConfig] = useState<BotConfig>({
     botName: "Chatbot IA Conseil",
     greeting: "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
@@ -1395,9 +1450,18 @@ export default function App() {
     return (
       <AdminPage
         onBack={() => {
-          setPage("chat");
+          setPage("landing");
           fetch(`${API_BASE}/conseil/config`).then(r => r.json()).then(setBotConfig).catch(() => {});
         }}
+      />
+    );
+  }
+
+  if (page === "landing") {
+    return (
+      <LandingPage
+        onEnter={() => setPage("chat")}
+        onAdmin={() => setPage("admin")}
       />
     );
   }
