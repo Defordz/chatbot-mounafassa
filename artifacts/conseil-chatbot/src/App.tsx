@@ -908,80 +908,10 @@ function ChatPage({
 /* ─── AdminPage ──────────────────────────────────────── */
 function AdminPage({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<"documents" | "feedback" | "config">("documents");
-  const [token, setToken] = useState(() => localStorage.getItem("conseil-admin-token") || "");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [sessionExpiredMsg, setSessionExpiredMsg] = useState("");
-
-  async function login(e: React.FormEvent) {
-    e.preventDefault();
-    setLoginLoading(true);
-    setLoginError("");
-    try {
-      const res = await fetch(`${API_BASE}/conseil/admin/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: loginPassword }),
-      });
-      if (!res.ok) { setLoginError("Mot de passe incorrect"); return; }
-      const { token: t } = await res.json();
-      setToken(t);
-      setSessionExpiredMsg("");
-      localStorage.setItem("conseil-admin-token", t);
-    } catch { setLoginError("Erreur de connexion"); }
-    finally { setLoginLoading(false); }
-  }
-
-  function logout() {
-    setToken("");
-    localStorage.removeItem("conseil-admin-token");
-  }
+  const token = "no-auth";
 
   function handleSessionExpired() {
-    localStorage.removeItem("conseil-admin-token");
-    setToken("");
-    setSessionExpiredMsg("Votre session a expiré. Veuillez vous reconnecter.");
-  }
-
-  if (!token) {
-    return (
-      <div className="admin-page">
-        <div className="admin-login-wrap">
-          <button onClick={onBack} className="admin-back-btn">
-            ← Retour au chat
-          </button>
-          <div style={{ textAlign: "center", marginBottom: "24px" }}>
-            <div className="admin-icon-wrap">
-              <Settings size={24} />
-            </div>
-            <h1 className="admin-title">Administration</h1>
-            <p className="admin-subtitle">Accès restreint</p>
-          </div>
-          {sessionExpiredMsg && (
-            <p className="admin-error" style={{ textAlign: "center", marginBottom: "16px" }}>
-              {sessionExpiredMsg}
-            </p>
-          )}
-          <form onSubmit={login} className="admin-form">
-            <div className="admin-field">
-              <label>Mot de passe</label>
-              <input
-                type="password"
-                value={loginPassword}
-                onChange={e => setLoginPassword(e.target.value)}
-                placeholder="Mot de passe admin"
-                autoFocus
-              />
-              {loginError && <p className="admin-error">{loginError}</p>}
-            </div>
-            <button type="submit" disabled={loginLoading} className="admin-submit-btn">
-              {loginLoading ? "Connexion…" : "Se connecter"}
-            </button>
-          </form>
-        </div>
-      </div>
-    );
+    /* no-op: auth disabled */
   }
 
   return (
@@ -992,9 +922,9 @@ function AdminPage({ onBack }: { onBack: () => void }) {
           <img src={councillogo} alt="Logo" style={{ height: "36px", objectFit: "contain", background: "white", borderRadius: "6px", padding: "4px 8px" }} />
           <span style={{ fontWeight: 700, fontSize: "18px" }}>Administration</span>
         </div>
-        <button onClick={logout} className="admin-logout-btn">
+        <button onClick={onBack} className="admin-logout-btn">
           <LogOut size={14} />
-          Déconnexion
+          Retour
         </button>
       </header>
 
